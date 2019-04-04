@@ -1,0 +1,183 @@
+The system is: Windows - 10.0.17134 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: D:/Microsoft Visual Studio/VC/Tools/MSVC/14.15.26726/bin/Hostx86/x86/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.15.26729 для x86
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.15.26729.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: D:/Microsoft Visual Studio/VC/Tools/MSVC/14.15.26726/bin/Hostx86/x86/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Оптимизирующий компилятор Microsoft (R) C/C++ версии 19.15.26729 для x86
+(C) Корпорация Майкрософт (Microsoft Corporation).  Все права защищены.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.15.26729.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/3.12.2/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_173d4\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_173d4.dir\build.make /nologo -L                  CMakeFiles\cmTC_173d4.dir\build
+Building C object CMakeFiles/cmTC_173d4.dir/testCCompiler.c.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nmF00C.tmp
+testCCompiler.c
+Linking C executable cmTC_173d4.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_173d4.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_173d4.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nmF07A.tmp
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_f0e10\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_f0e10.dir\build.make /nologo -L                  CMakeFiles\cmTC_f0e10.dir\build
+Building C object CMakeFiles/cmTC_f0e10.dir/CMakeCCompilerABI.c.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nmF52C.tmp
+CMakeCCompilerABI.c
+Linking C executable cmTC_f0e10.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_f0e10.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_f0e10.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nmF5D9.tmp
+
+
+
+
+Detecting C [] compiler features compiled with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_0f431\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_0f431.dir\build.make /nologo -L                  CMakeFiles\cmTC_0f431.dir\build
+Building C object CMakeFiles/cmTC_0f431.dir/feature_tests.c.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nmFA3D.tmp
+feature_tests.c
+Linking C executable cmTC_0f431.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_0f431.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_0f431.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nmFABB.tmp
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_aa11a\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_aa11a.dir\build.make /nologo -L                  CMakeFiles\cmTC_aa11a.dir\build
+Building CXX object CMakeFiles/cmTC_aa11a.dir/testCXXCompiler.cxx.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nm29.tmp
+testCXXCompiler.cxx
+Linking CXX executable cmTC_aa11a.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_aa11a.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_aa11a.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nm97.tmp
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_3d13c\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_3d13c.dir\build.make /nologo -L                  CMakeFiles\cmTC_3d13c.dir\build
+Building CXX object CMakeFiles/cmTC_3d13c.dir/CMakeCXXCompilerABI.cpp.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nm4CC.tmp
+CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_3d13c.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_3d13c.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_3d13c.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nm54A.tmp
+
+
+
+
+Detecting CXX [] compiler features compiled with the following output:
+Change Dir: C:/Users/User/CLionProjects/Kursovaya/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command:"nmake" "/nologo" "cmTC_8f796\fast"
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\HostX86\x86\nmake.exe" -f CMakeFiles\cmTC_8f796.dir\build.make /nologo -L                  CMakeFiles\cmTC_8f796.dir\build
+Building CXX object CMakeFiles/cmTC_8f796.dir/feature_tests.cxx.obj
+	"D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\cl.exe" @C:\Users\User\AppData\Local\Temp\nmB93.tmp
+feature_tests.cxx
+Linking CXX executable cmTC_8f796.exe
+	"D:\CLion 2018.2.4\bin\cmake\win\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_8f796.dir --manifests  -- "D:\Microsoft Visual Studio\VC\Tools\MSVC\14.15.26726\bin\Hostx86\x86\link.exe" /nologo @CMakeFiles\cmTC_8f796.dir\objects1.rsp @C:\Users\User\AppData\Local\Temp\nmC20.tmp
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates

@@ -68,6 +68,8 @@ void infoCreateFile();
 int searchAndFilteringMenu();
 int pointsFilter(INFORMATION* info);
 int timeOfLapFilter(INFORMATION* info);
+int ageFilter(INFORMATION* info);
+int yearOfBirthFilter(INFORMATION* info);
 
 
 int main() {
@@ -104,8 +106,8 @@ int main() {
                                     switch (searchAndFilteringMenu()) {
                                         case 1: pointsFilter(info); break;
                                         case 2: timeOfLapFilter(info); break;
-                                        case 3: break;
-                                        case 4: break;
+                                        case 3: ageFilter(info); break;
+                                        case 4: yearOfBirthFilter(info); break;
                                         case 5: break;
                                         case 6: break;
                                         case 7: break;
@@ -1147,5 +1149,87 @@ int timeOfLapFilter(INFORMATION* info) {
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с временем круга меньше %02i:%02i.\n\n", minutesOfLap, secondsOfLap);
+    return 0;
+}
+
+int ageFilter(INFORMATION* info) {
+    int age = 0, isAtLeastOneMember = 0;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    do {
+        printf("Введите возраст: ");
+        age = inputCheck("Введите количество очков: ");
+        if (age < 0 || age > 119)
+            printf("[Ошибка!]Введите число больше 0 и меньше 119!\n");
+    } while (age < 0 || age > 119);
+    printf("Участники, возраст которых больше %i: ", age);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if ((info + i)->dateOfBirth.age > age) {
+            if (isAtLeastOneMember == 0) {
+                printf("\n================================================================================================================================\n");
+                printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+                printf("================================================================================================================================\n");
+            }
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+            printf("\n");
+            isAtLeastOneMember = 1;
+        }
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            printf("================================================================================================================================\n\n");
+    }
+    if (isAtLeastOneMember == 0)
+        printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", age);
+    return 0;
+}
+
+int yearOfBirthFilter(INFORMATION* info) {
+    int yearOfBirth = 0, isAtLeastOneMember = 0;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    do {
+        printf("Введите год рождения: ");
+        yearOfBirth = inputCheck("Введите год рождения: ");
+        if (yearOfBirth < 1900 || yearOfBirth > 2019)
+            printf("[Ошибка!]Введите число больше 1900 и меньше 2019!\n");
+    } while (yearOfBirth < 1900 || yearOfBirth > 2019);
+    printf("Участники, год рождения у которых больше %i: ", yearOfBirth);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if ((info + i)->dateOfBirth.year > yearOfBirth) {
+            if (isAtLeastOneMember == 0) {
+                printf("\n================================================================================================================================\n");
+                printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+                printf("================================================================================================================================\n");
+            }
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+            printf("\n");
+            isAtLeastOneMember = 1;
+        }
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            printf("================================================================================================================================\n\n");
+    }
+    if (isAtLeastOneMember == 0)
+        printf("[Ошибка!]Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
     return 0;
 }

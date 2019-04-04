@@ -176,9 +176,9 @@ int main() {
 int menu() {
     int choice;
     printf("Меню: \n");
-    printf("1. - Вход под администратором.\n");
-    printf("2. - Вход под пользователем.\n");
-    printf("3. - Выход.\n");
+    printf("1.Вход под администратором.\n");
+    printf("2.Вход под пользователем.\n");
+    printf("3.Выход.\n");
     printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");

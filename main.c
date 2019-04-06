@@ -79,8 +79,10 @@ int main() {
     USER *user = NULL;
     user = userLoad(user);
     int adminSubMenuFlag = 0, userManagementFlag = 0, userSubMenuFlag = 0, searchAndFilteringFlag = 0;
-    if (user == NULL)
+    if (user == NULL) {
+        system("pause");
         return 0;
+    }
     while (1) {
         switch (menu()) {
             case 1: {
@@ -232,7 +234,7 @@ int countLines(const char* filename) {
 }
 
 int adminLogin(USER *user) {
-    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0;
+    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
@@ -254,6 +256,7 @@ int adminLogin(USER *user) {
             ch = (char)_getch();
             if (ch != '\0') {
                 if (ch == 13 || ch == 9) {
+                    counter++;
                     password[j] = '\0';
                     break;
                 }
@@ -265,9 +268,12 @@ int adminLogin(USER *user) {
                     continue;
                 }
                 else {
-                    if (j < 29) {
+                    if (j < 29 && counter <= 5) {
                         password[j++] = ch;
                         putchar('*');
+                    } else if(j < 29){
+                        password[j++] = ch;
+                        putchar(ch);
                     }
                 }
             }
@@ -289,7 +295,7 @@ int adminLogin(USER *user) {
 }
 
 int userLogin(USER *user) {
-    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0;
+    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
@@ -323,9 +329,12 @@ int userLogin(USER *user) {
                     continue;
                 }
                 else {
-                    if (j < 29) {
+                    if (j < 29 && counter <= 5) {
                         password[j++] = ch;
                         putchar('*');
+                    } else if(j < 29){
+                        password[j++] = ch;
+                        putchar(ch);
                     }
                 }
             }
@@ -364,8 +373,16 @@ USER* userLoad(USER* user) {
     FILE* file = NULL;
     usersLinesCounter = countLines("db.txt") - 1;
     if ((file = fopen("db.txt", "r")) == NULL) {
-        printf("[Ошибка!]Инициализация пользователей: Не удалось открыть файл с логинами/паролями!\n");
-        return NULL;
+        if ((file = fopen("db.txt", "w")) != NULL){
+            fprintf(file, "%s %s %i\n", "admin", "admin", 1);
+            fclose(file);
+            user = userLoad(user);
+            return user;
+        } else {
+            printf("[Ошибка!]Инициальзация пользователей: Не удалось создать файл с логинами/паролями!\n");
+            system("pause");
+            exit(0);
+        }
     }
     if (usersLinesCounter != 0) {
         user = (USER*)malloc(usersLinesCounter*(sizeof(USER)));

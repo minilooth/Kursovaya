@@ -71,6 +71,9 @@ int timeOfLapFilter(INFORMATION* info);
 int ageFilter(INFORMATION* info);
 int yearOfBirthFilter(INFORMATION* info);
 int timeOfLapSorting(INFORMATION* info);
+int numberSearch(INFORMATION* info);
+int surnameSearch(INFORMATION* info);
+int searchingAndFiltering(INFORMATION* info);
 
 
 int main() {
@@ -104,26 +107,7 @@ int main() {
                             case 3: info = infoEdit(info); break;
                             case 4: info = infoDelete(info); break;
                             case 5: infoPrint(info); break;
-                            case 6: {
-                                while (searchAndFilteringFlag == 0) {
-                                    switch (searchAndFilteringMenu()) {
-                                        case 1: pointsFilter(info); break;
-                                        case 2: timeOfLapFilter(info); break;
-                                        case 3: ageFilter(info); break;
-                                        case 4: yearOfBirthFilter(info); break;
-                                        case 5: break;
-                                        case 6: break;
-                                        case 7: break;
-                                        case 8: break;
-                                        case 9: timeOfLapSorting(info); break;
-                                        case 10: searchAndFilteringFlag = 1; break;
-                                        default: break;
-                                    }
-                                    if (searchAndFilteringFlag == 1) break;
-                                }
-                                searchAndFilteringFlag = 0;
-                                break;
-                            }
+                            case 6: searchingAndFiltering(info); break;
                             case 7: {
                                 while (userManagementFlag == 0) {
                                     switch (userManagement()) {
@@ -162,7 +146,7 @@ int main() {
                             }
                             case 2: infoPrint(info); break;
                             case 3: break;
-                            case 4: break;
+                            case 4: searchingAndFiltering(info); break;
                             case 5: free(info); userSubMenuFlag = 1; break;
                             default: break;
                         }
@@ -1289,4 +1273,99 @@ int timeOfLapSorting(INFORMATION* info){
     }
     printf("Сортировка: Массив успешно отсортирован!\n\n");
     return 0;
+}
+
+int numberSearch(INFORMATION* info) {
+    int number = 0, isFounded = 0;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    do {
+        printf("Введите номер: ");
+        number = inputCheck("Введите номер: ");
+        if (number < 0)
+            printf("[Ошибка!]Введите число больше 0!\n");
+    } while (number < 0 );
+    printf("Участник, номер которого %i: ", number);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if ((info + i)->number == number) {
+            printf("\n================================================================================================================================\n");
+            printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+            printf("================================================================================================================================\n");
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                    (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                    (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                    (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                    (info + i)->timeOfLap.seconds);
+            printf("\n");
+            printf("================================================================================================================================\n\n");
+            isFounded = 1;
+            break;
+        }
+    }
+    if (isFounded == 0)
+        printf("[Ошибка!]Нету участника с номером %i.\n\n", number);
+    return 0;
+}
+
+int surnameSearch(INFORMATION* info) {
+    int isAtLeastOneMember = 0;
+    char *surname;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    printf("Введите фамилию: ");
+    surname = limitedStringInput("Введите фамилию: ", 49);
+    printf("Участники, с фамилией %s: ", surname);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if (strcmp((info + i)->fullname.surname,surname) == 0) {
+            if (isAtLeastOneMember == 0) {
+                printf("\n================================================================================================================================\n");
+                printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+                printf("================================================================================================================================\n");
+            }
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+            printf("\n");
+            isAtLeastOneMember = 1;
+        }
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            printf("================================================================================================================================\n\n");
+    }
+    if (isAtLeastOneMember == 0)
+        printf("[Ошибка!]Нет ни одного участника с фамилией %s.\n\n", surname);
+    return 0;
+}
+
+int searchingAndFiltering(INFORMATION* info){
+    while (1) {
+        switch (searchAndFilteringMenu()) {
+            case 1: pointsFilter(info); break;
+            case 2: timeOfLapFilter(info); break;
+            case 3: ageFilter(info); break;
+            case 4: yearOfBirthFilter(info); break;
+            case 5: numberSearch(info); break;
+            case 6: surnameSearch(info); break;
+            case 7: break;
+            case 8: break;
+            case 9: timeOfLapSorting(info); break;
+            case 10: return 0; break;
+            default: break;
+        }
+    }
 }

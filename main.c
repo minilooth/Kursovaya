@@ -70,6 +70,7 @@ int pointsFilter(INFORMATION* info);
 int timeOfLapFilter(INFORMATION* info);
 int ageFilter(INFORMATION* info);
 int yearOfBirthFilter(INFORMATION* info);
+int timeOfLapSorting(INFORMATION* info);
 
 
 int main() {
@@ -114,7 +115,7 @@ int main() {
                                         case 6: break;
                                         case 7: break;
                                         case 8: break;
-                                        case 9: break;
+                                        case 9: timeOfLapSorting(info); break;
                                         case 10: searchAndFilteringFlag = 1; break;
                                         default: break;
                                     }
@@ -1071,8 +1072,8 @@ int searchAndFilteringMenu() {
     printf("5.Поиск по номеру.\n");
     printf("6.Поиск по фамилии.\n");
     printf("7.Поиск по стране.\n");
-    printf("8.Поиск по модели коньков.\n");
     printf("9.Поиск по разряду.\n");
+    printf("9.Сортировка по времени круга.\n");
     printf("10.Выход.\n");
     printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
@@ -1248,5 +1249,44 @@ int yearOfBirthFilter(INFORMATION* info) {
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
+    return 0;
+}
+
+int timeOfLapSorting(INFORMATION* info){
+    INFORMATION tmp;
+    FILE* file = NULL;
+    if (info == NULL) {
+        printf("[Ошибка!]Сортировка: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Сортировка: Файл пуст!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter != 1){
+        for(int i = 1;i < infoLinesCounter; i++)
+            for(int j = i; j > 0; j--)
+                if((info + (j-1))->timeOfLap.minutes == (info + j)->timeOfLap.minutes){
+                    if((info + (j-1))->timeOfLap.seconds > (info + j)->timeOfLap.seconds){
+                        tmp = *(info + (j - 1));
+                        *(info + (j - 1)) = *(info + j);
+                        *(info + j) = tmp;
+                    }
+                } else if ((info + (j-1))->timeOfLap.minutes > (info + j)->timeOfLap.minutes){
+                    tmp = *(info + (j - 1));
+                    *(info + (j - 1)) = *(info + j);
+                    *(info + j) = tmp;
+                }
+        if ((file = fopen("info.txt", "w")) == NULL) {
+            printf("[Ошибка!]Сортировка: Не удалось открыть файл! Файл отчищен!\n\n");
+            return 0;
+        }
+        for (int j = 0; j < infoLinesCounter; j++) {
+            fprintf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i\n", (info + j)->number, (info + j)->fullname.firstname, (info + j)->fullname.surname, (info + j)->fullname.lastname, (info + j)->country, (info + j)->dateOfBirth.day, (info + j)->dateOfBirth.month, (info + j)->dateOfBirth.year, (info + j)->dateOfBirth.age, (info + j)->model, (info + j)->category, (info + j)->points, (info + j)->timeOfLap.minutes, (info + j)->timeOfLap.seconds);
+            _flushall();
+        }
+        fclose(file);
+    }
+    printf("Сортировка: Массив успешно отсортирован!\n\n");
     return 0;
 }

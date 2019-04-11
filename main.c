@@ -90,19 +90,27 @@ int main() {
         return 0;
     }
     while (1) {
+        system("cls");
         switch (menu()) {
             case 1: {
+                system("cls");
                 if (adminLogin(user) == 1) {
                     while (adminSubMenuFlag == 0) {
+                        system("cls");
                         switch (adminSubmenu()) {
                             case 1: {
+                                system("cls");
                                 if (info == NULL) {
                                     if (infoCheckFile() == 0)
                                         infoCreateFile();
                                     info = infoOpen(info);
                                     printf("Открытие информации: Файл успешно открыт!\n\n");
+                                    system("pause");
                                 }
-                                else printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
+                                else {
+                                    printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
+                                    system("pause");
+                                }
                                 break;
                             }
                             case 2: info = infoAdd(info); isInfoSorted = 0; break;
@@ -277,11 +285,13 @@ int adminLogin(USER *user) {
     if ((user + i)->isAdmin == 1) {
         printf("\nВы успешно авторизовались.\n\n");
         free(login);
+        system("pause");
         return 1;
     }
     else {
         printf("\n[Ошибка!]Авторизация: Войдите через пользователя!\n\n");
         free(login);
+        system("pause");
         return 0;
     }
 }
@@ -1252,8 +1262,10 @@ int yearOfBirthFilter(INFORMATION* info) {
             printf("\n");
             isAtLeastOneMember = 1;
         }
-        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1) {
             printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
+            system("pause");
+        }
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
@@ -1335,12 +1347,10 @@ int numberSearch(INFORMATION* info) {
     }
     if (isFounded == 0)
         printf("[Ошибка!]Нету участника с номером %i.\n\n", number);
-
     return 0;
 }
 
 int surnameSearch(INFORMATION* info) {
-    system("cls");
     int isAtLeastOneMember = 0;
     char *surname;
     if (info == NULL) {
@@ -1375,7 +1385,6 @@ int surnameSearch(INFORMATION* info) {
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с фамилией %s.\n\n", surname);
-    system("pause");
     return 0;
 }
 
@@ -1412,7 +1421,6 @@ int countrySearch(INFORMATION* info){
     }
     printf("Введите страну: ");
     country = limitedStringInput("Введите страну: ", 49);
-    system("cls");
     printf("Участники, из страны %s: ", country);
     for (int i = 0; i < infoLinesCounter; i++) {
         if (strcmp((info + i)->country,country) == 0) {
@@ -1435,7 +1443,6 @@ int countrySearch(INFORMATION* info){
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника из страны %s.\n\n", country);
-    else system("pause");
     return 0;
 }
 
@@ -1452,7 +1459,6 @@ int categorySearch(INFORMATION* info){
     }
     printf("Введите разряд: ");
     category = limitedStringInput("Введите разряд: ", 49);
-    system("cls");
     printf("Участники, с разрядом %s: ", category);
     for (int i = 0; i < infoLinesCounter; i++) {
         if (strcmp((info + i)->category,category) == 0) {
@@ -1475,6 +1481,5 @@ int categorySearch(INFORMATION* info){
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с разрядом %s.\n\n", category);
-    else system("pause");
     return 0;
 }

@@ -74,6 +74,8 @@ int timeOfLapSorting(INFORMATION* info);
 int numberSearch(INFORMATION* info);
 int surnameSearch(INFORMATION* info);
 int searchingAndFiltering(INFORMATION* info);
+int countrySearch(INFORMATION* info);
+int categorySearch(INFORMATION* info);
 
 
 int main() {
@@ -82,7 +84,7 @@ int main() {
     INFORMATION *info = NULL;
     USER *user = NULL;
     user = userLoad(user);
-    int adminSubMenuFlag = 0, userManagementFlag = 0, userSubMenuFlag = 0, searchAndFilteringFlag = 0;
+    int adminSubMenuFlag = 0, userManagementFlag = 0, userSubMenuFlag = 0, isInfoSorted = 0;
     if (user == NULL) {
         system("pause");
         return 0;
@@ -103,11 +105,11 @@ int main() {
                                 else printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
                                 break;
                             }
-                            case 2: info = infoAdd(info); break;
-                            case 3: info = infoEdit(info); break;
-                            case 4: info = infoDelete(info); break;
+                            case 2: info = infoAdd(info); isInfoSorted = 0; break;
+                            case 3: info = infoEdit(info); isInfoSorted = 0; break;
+                            case 4: info = infoDelete(info); isInfoSorted = 0; break;
                             case 5: infoPrint(info); break;
-                            case 6: searchingAndFiltering(info); break;
+                            case 6: isInfoSorted = searchingAndFiltering(info); break;
                             case 7: {
                                 while (userManagementFlag == 0) {
                                     switch (userManagement()) {
@@ -145,8 +147,13 @@ int main() {
                                 break;
                             }
                             case 2: infoPrint(info); break;
-                            case 3: break;
-                            case 4: searchingAndFiltering(info); break;
+                            case 3: {
+                                if (isInfoSorted == 1){
+
+                                } else printf("[Ошибка!]Участники отсортированы!");
+                                break;
+                            }
+                            case 4: isInfoSorted = searchingAndFiltering(info); break;
                             case 5: free(info); userSubMenuFlag = 1; break;
                             default: break;
                         }
@@ -618,7 +625,7 @@ int infoPrint(INFORMATION* info) {
         printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
         printf("--------------------------------------------------------------------------------------------------------------------------------\n");
         for (int i = 0; i < infoLinesCounter; i++) {
-            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |", (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age, (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |", (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age, (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
             printf("\n");
         }
         printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
@@ -772,8 +779,8 @@ INFORMATION* infoEdit(INFORMATION* info) {
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
             (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname, (info + i)->country,
-            (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age, (info + i)->model,
-            (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
+            (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age, (info + i)->category,
+            (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
     printf("\n");
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     while (infoEditFlag == 0) {
@@ -1110,7 +1117,7 @@ int pointsFilter(INFORMATION* info) {
                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                    (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                    (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                    (info + i)->timeOfLap.seconds);
             printf("\n");
             isAtLeastOneMember = 1;
@@ -1158,7 +1165,7 @@ int timeOfLapFilter(INFORMATION* info) {
                        (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                        (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                       (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                       (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
                 printf("\n");
                 isAtLeastOneMember = 1;
@@ -1199,7 +1206,7 @@ int ageFilter(INFORMATION* info) {
                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                    (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                    (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                    (info + i)->timeOfLap.seconds);
             printf("\n");
             isAtLeastOneMember = 1;
@@ -1240,7 +1247,7 @@ int yearOfBirthFilter(INFORMATION* info) {
                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                    (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                    (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                    (info + i)->timeOfLap.seconds);
             printf("\n");
             isAtLeastOneMember = 1;
@@ -1283,7 +1290,7 @@ int timeOfLapSorting(INFORMATION* info){
             return 0;
         }
         for (int j = 0; j < infoLinesCounter; j++) {
-            fprintf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i\n", (info + j)->number, (info + j)->fullname.firstname, (info + j)->fullname.surname, (info + j)->fullname.lastname, (info + j)->country, (info + j)->dateOfBirth.day, (info + j)->dateOfBirth.month, (info + j)->dateOfBirth.year, (info + j)->dateOfBirth.age, (info + j)->model, (info + j)->category, (info + j)->points, (info + j)->timeOfLap.minutes, (info + j)->timeOfLap.seconds);
+            fprintf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i\n", (info + j)->number, (info + j)->fullname.firstname, (info + j)->fullname.surname, (info + j)->fullname.lastname, (info + j)->country, (info + j)->dateOfBirth.day, (info + j)->dateOfBirth.month, (info + j)->dateOfBirth.year, (info + j)->dateOfBirth.age, (info + j)->category, (info + j)->model, (info + j)->points, (info + j)->timeOfLap.minutes, (info + j)->timeOfLap.seconds);
             _flushall();
         }
         fclose(file);
@@ -1318,7 +1325,7 @@ int numberSearch(INFORMATION* info) {
                     (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                     (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                     (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                    (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                    (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                     (info + i)->timeOfLap.seconds);
             printf("\n");
             printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
@@ -1328,10 +1335,12 @@ int numberSearch(INFORMATION* info) {
     }
     if (isFounded == 0)
         printf("[Ошибка!]Нету участника с номером %i.\n\n", number);
+
     return 0;
 }
 
 int surnameSearch(INFORMATION* info) {
+    system("cls");
     int isAtLeastOneMember = 0;
     char *surname;
     if (info == NULL) {
@@ -1356,7 +1365,7 @@ int surnameSearch(INFORMATION* info) {
                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                    (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
                    (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                   (info + i)->model, (info + i)->category, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                    (info + i)->timeOfLap.seconds);
             printf("\n");
             isAtLeastOneMember = 1;
@@ -1366,10 +1375,13 @@ int surnameSearch(INFORMATION* info) {
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с фамилией %s.\n\n", surname);
+    system("pause");
     return 0;
 }
 
 int searchingAndFiltering(INFORMATION* info){
+    system("cls");
+    int isInfoSorted = 0;
     while (1) {
         switch (searchAndFilteringMenu()) {
             case 1: pointsFilter(info); break;
@@ -1378,11 +1390,91 @@ int searchingAndFiltering(INFORMATION* info){
             case 4: yearOfBirthFilter(info); break;
             case 5: numberSearch(info); break;
             case 6: surnameSearch(info); break;
-            case 7: break;
-            case 8: break;
-            case 9: timeOfLapSorting(info); break;
-            case 10: return 0; break;
+            case 7: countrySearch(info); break;
+            case 8: categorySearch(info); break;
+            case 9: timeOfLapSorting(info); isInfoSorted = 1; break;
+            case 10: return isInfoSorted;
             default: break;
         }
     }
+}
+
+int countrySearch(INFORMATION* info){
+    int isAtLeastOneMember = 0;
+    char *country;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    printf("Введите страну: ");
+    country = limitedStringInput("Введите страну: ", 49);
+    system("cls");
+    printf("Участники, из страны %s: ", country);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if (strcmp((info + i)->country,country) == 0) {
+            if (isAtLeastOneMember == 0) {
+                printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
+                printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+                printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+            }
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+            printf("\n");
+            isAtLeastOneMember = 1;
+        }
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
+    }
+    if (isAtLeastOneMember == 0)
+        printf("[Ошибка!]Нет ни одного участника из страны %s.\n\n", country);
+    else system("pause");
+    return 0;
+}
+
+int categorySearch(INFORMATION* info){
+    int isAtLeastOneMember = 0;
+    char *category;
+    if (info == NULL) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        return 0;
+    }
+    printf("Введите разряд: ");
+    category = limitedStringInput("Введите разряд: ", 49);
+    system("cls");
+    printf("Участники, с разрядом %s: ", category);
+    for (int i = 0; i < infoLinesCounter; i++) {
+        if (strcmp((info + i)->category,category) == 0) {
+            if (isAtLeastOneMember == 0) {
+                printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
+                printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+                printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+            }
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+            printf("\n");
+            isAtLeastOneMember = 1;
+        }
+        if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
+    }
+    if (isAtLeastOneMember == 0)
+        printf("[Ошибка!]Нет ни одного участника с разрядом %s.\n\n", category);
+    else system("pause");
+    return 0;
 }

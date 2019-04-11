@@ -42,6 +42,7 @@ typedef struct {
 
 int usersLinesCounter = 0;
 int infoLinesCounter = 0;
+int isInfoSorted = 0;
 
 
 int menu();
@@ -51,7 +52,7 @@ int userSubmenu();
 int adminLogin(USER* user);
 int userLogin(USER* user);
 int countLines(const char* filename);
-int userManagement();
+int userManagementMenu();
 USER* userLoad(USER* user);
 USER* userAdd(USER* user);
 USER* userDelete(USER* user);
@@ -70,12 +71,14 @@ int pointsFilter(INFORMATION* info);
 int timeOfLapFilter(INFORMATION* info);
 int ageFilter(INFORMATION* info);
 int yearOfBirthFilter(INFORMATION* info);
-int timeOfLapSorting(INFORMATION* info);
+INFORMATION* timeOfLapSorting(INFORMATION* info);
 int numberSearch(INFORMATION* info);
 int surnameSearch(INFORMATION* info);
 int searchingAndFiltering(INFORMATION* info);
 int countrySearch(INFORMATION* info);
 int categorySearch(INFORMATION* info);
+int printTop(INFORMATION* info);
+USER* userManagement(USER* user);
 
 
 int main() {
@@ -84,7 +87,7 @@ int main() {
     INFORMATION *info = NULL;
     USER *user = NULL;
     user = userLoad(user);
-    int adminSubMenuFlag = 0, userManagementFlag = 0, userSubMenuFlag = 0, isInfoSorted = 0;
+    int adminSubMenuFlag = 0, userSubMenuFlag = 0;
     if (user == NULL) {
         system("pause");
         return 0;
@@ -93,24 +96,17 @@ int main() {
         system("cls");
         switch (menu()) {
             case 1: {
-                system("cls");
                 if (adminLogin(user) == 1) {
                     while (adminSubMenuFlag == 0) {
                         system("cls");
                         switch (adminSubmenu()) {
                             case 1: {
                                 system("cls");
-                                if (info == NULL) {
-                                    if (infoCheckFile() == 0)
-                                        infoCreateFile();
+                                if (infoCheckFile() == 0) {
+                                    infoCreateFile();
                                     info = infoOpen(info);
-                                    printf("Открытие информации: Файл успешно открыт!\n\n");
-                                    system("pause");
-                                }
-                                else {
-                                    printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
-                                    system("pause");
-                                }
+                                } else info = infoOpen(info);
+                                system("pause");
                                 break;
                             }
                             case 2: info = infoAdd(info); isInfoSorted = 0; break;
@@ -118,22 +114,8 @@ int main() {
                             case 4: info = infoDelete(info); isInfoSorted = 0; break;
                             case 5: infoPrint(info); break;
                             case 6: isInfoSorted = searchingAndFiltering(info); break;
-                            case 7: {
-                                while (userManagementFlag == 0) {
-                                    switch (userManagement()) {
-                                        case 1: user = userAdd(user); break;
-                                        case 2: user = userDelete(user); break;
-                                        case 3: user = userEdit(user); break;
-                                        case 4: userPrint(user); break;
-                                        case 5: userManagementFlag = 1; break;
-                                        default: break;
-                                    }
-                                    if (userManagementFlag == 1) break;
-                                }
-                                userManagementFlag = 0;
-                                break;
-                            }
-                            case 8: free(info); adminSubMenuFlag = 1; break;
+                            case 7: user = userManagement(user); break;
+                            case 8: adminSubMenuFlag = 1; break;
                             default: break;
                         }
                         if (adminSubMenuFlag == 1) break;
@@ -145,24 +127,20 @@ int main() {
             case 2: {
                 if (userLogin(user) == 1) {
                     while (userSubMenuFlag == 0) {
+                        system("cls");
                         switch (userSubmenu()) {
                             case 1: {
+                                system("cls");
                                 if (infoCheckFile() == 1) {
                                     info = infoOpen(info);
-                                    printf("Открытие информации: Файл успешно открыт!\n\n");
                                 }
-                                else printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n\n");
+                                system("pause");
                                 break;
                             }
                             case 2: infoPrint(info); break;
-                            case 3: {
-                                if (isInfoSorted == 1){
-
-                                } else printf("[Ошибка!]Участники отсортированы!");
-                                break;
-                            }
+                            case 3: printTop(info); break;
                             case 4: isInfoSorted = searchingAndFiltering(info); break;
-                            case 5: free(info); userSubMenuFlag = 1; break;
+                            case 5: userSubMenuFlag = 1; break;
                             default: break;
                         }
                         if (userSubMenuFlag == 1) break;
@@ -171,7 +149,7 @@ int main() {
                 }
                 break;
             }
-            case 3: free(user); return 0;
+            case 3: free(info); free(user); return 0;
             default: break;
         }
     }
@@ -183,7 +161,6 @@ int menu() {
     printf("1.Вход под администратором.\n");
     printf("2.Вход под пользователем.\n");
     printf("3.Выход.\n");
-    printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");
     return choice;
@@ -200,7 +177,6 @@ int adminSubmenu() {
     printf("6.Различные процедуры поиска и фильтрации данных.\n");
     printf("7.Управление пользователями.\n");
     printf("8.Выход в меню.\n");
-    printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");
     return choice;
@@ -214,7 +190,6 @@ int userSubmenu() {
     printf("3.Выполнение задачи.\n");
     printf("4.Различные процедуры поиска и фильтрации данных.\n");
     printf("5.Выход в меню.\n");
-    printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");
     return choice;
@@ -234,6 +209,7 @@ int countLines(const char* filename) {
 }
 
 int adminLogin(USER *user) {
+    system("cls");
     int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
@@ -246,6 +222,7 @@ int adminLogin(USER *user) {
             }
         if (isLoginRight == 0) {
             printf("[Ошибка!]Такого администратора не существует!\n\n");
+            system("pause");
             return 0;
         }
     } while (isLoginRight != 1);
@@ -290,13 +267,14 @@ int adminLogin(USER *user) {
     }
     else {
         printf("\n[Ошибка!]Авторизация: Войдите через пользователя!\n\n");
-        free(login);
         system("pause");
+        free(login);
         return 0;
     }
 }
 
 int userLogin(USER *user) {
+    system("cls");
     int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
@@ -309,6 +287,7 @@ int userLogin(USER *user) {
             }
         if (isLoginRight == 0) {
             printf("[Ошибка!]Такого пользователя не существует!\n\n");
+            system("pause");
             free(login);
             return 0;
         }
@@ -348,16 +327,18 @@ int userLogin(USER *user) {
     if ((user + i)->isAdmin == 0) {
         printf("\nВы успешно авторизовались.\n\n");
         free(login);
+        system("pause");
         return 1;
     }
     else {
         printf("\n[Ошибка!]Авторизация! Войдите через администратора!\n\n");
+        system("pause");
         free(login);
         return 0;
     }
 }
 
-int userManagement() {
+int userManagementMenu() {
     int choice;
     printf("Управление пользователями:\n");
     printf("1.Добавить аккаунт.\n");
@@ -365,7 +346,6 @@ int userManagement() {
     printf("3.Редактировать аккаунт.\n");
     printf("4.Просмотр всех аккаунтов.\n");
     printf("5.Назад.\n");
-    printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");
     return choice;
@@ -425,7 +405,6 @@ USER* userAdd(USER* user) {
     strcpy((user + usersLinesCounter)->password, password);
     free(password);
     do {
-        printf("Администратор?(1 - Да|0 - Нет): ");
         (user + usersLinesCounter)->isAdmin = inputCheck("Администратор?(1 - Да|0 - Нет): ");
         if ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1) {
             printf("[Ошибка!]Не правильный ввод!\n");
@@ -461,6 +440,19 @@ void userPrint(USER* user) {
     printf("-----------------------------------------------------------------------------------------------\n\n");
     system("pause");
     system("cls");
+}
+
+USER* userManagement(USER* user) {
+    while (1) {
+        switch (userManagementMenu()) {
+            case 1: user = userAdd(user); break;
+            case 2: user = userDelete(user); break;
+            case 3: user = userEdit(user); break;
+            case 4: userPrint(user); break;
+            case 5: return user;
+            default: break;
+        }
+    }
 }
 
 USER* userDelete(USER* user) {
@@ -529,7 +521,6 @@ USER* userEdit(USER* user) {
         printf("2.Пароль.\n");
         printf("3.Права администратора.\n");
         printf("4.Назад.\n");
-        printf("Ваш выбор: ");
         choice = inputCheck("Ваш выбор: ");
         printf("\n");
         switch (choice) {
@@ -591,9 +582,10 @@ USER* userEdit(USER* user) {
 
 int infoCheckFile() {
     FILE* file = NULL;
-    if ((file = fopen("info.txt", "rt+")) == NULL)
+    if ((file = fopen("info.txt", "rt+")) == NULL) {
+        printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n\n");
         return 0;
-    else {
+    } else {
         fclose(file);
         return 1;
     }
@@ -601,8 +593,6 @@ int infoCheckFile() {
 
 void infoCreateFile() {
     FILE* file = NULL;
-    if ((file = fopen("info.txt", "rt+")) == NULL)
-        printf("Открытие информации: Файл не существует! Создаю файл...\n");
     if (!file)
         if ((file = fopen("info.txt", "wt+")) != NULL)
             printf("Открытие информации: Файл успешно создан!\n");
@@ -610,23 +600,34 @@ void infoCreateFile() {
 }
 
 INFORMATION* infoOpen(INFORMATION* info) {
-    FILE* file = NULL;
-    if ((file = fopen("info.txt", "rt+")) != NULL) {
-        infoLinesCounter = countLines("info.txt") - 1;
-        if (infoLinesCounter != -1) {
-            info = (INFORMATION*)malloc(infoLinesCounter * sizeof(INFORMATION));
-            for (int i = 0; i < infoLinesCounter; i++) {
-                fscanf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i", &((info + i)->number), (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname, (info + i)->country, &((info + i)->dateOfBirth.day), &((info + i)->dateOfBirth.month), &((info + i)->dateOfBirth.year), &((info + i)->dateOfBirth.age), (info + i)->category, (info + i)->model, &((info + i)->points), &((info + i)->timeOfLap.minutes), &((info + i)->timeOfLap.seconds));
+    if(info == NULL) {
+        FILE *file = NULL;
+        if ((file = fopen("info.txt", "rt+")) != NULL) {
+            infoLinesCounter = countLines("info.txt") - 1;
+            if (infoLinesCounter != -1) {
+                info = (INFORMATION *) malloc(infoLinesCounter * sizeof(INFORMATION));
+                for (int i = 0; i < infoLinesCounter; i++) {
+                    fscanf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i", &((info + i)->number),
+                           (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname,
+                           (info + i)->country, &((info + i)->dateOfBirth.day), &((info + i)->dateOfBirth.month),
+                           &((info + i)->dateOfBirth.year), &((info + i)->dateOfBirth.age), (info + i)->category,
+                           (info + i)->model, &((info + i)->points), &((info + i)->timeOfLap.minutes),
+                           &((info + i)->timeOfLap.seconds));
+                }
             }
+            fclose(file);
+            printf("Открытие информации: Файл успешно открыт!\n\n");
         }
-        fclose(file);
+        return info;
+    } else {
+        printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
+        return info;
     }
-    return info;
 }
 
 int infoPrint(INFORMATION* info) {
     if (info == NULL) {
-        printf("[Ошибка!]Вывод информации: Файл пуст!\n\n");
+        printf("[Ошибка!]Вывод информации: Файл еще не открыт!\n\n");
         return 0;
     }
     if (infoLinesCounter != 0) {
@@ -671,7 +672,6 @@ INFORMATION* infoAdd(INFORMATION* info) {
     }
     printf("Добавление участника.\n");
     do {
-        printf("Введите номер участника: ");
         do {
             (info + infoLinesCounter)->number = inputCheck("Введите номер участника: ");
             if ((info + infoLinesCounter)->number < 1)
@@ -703,19 +703,16 @@ INFORMATION* infoAdd(INFORMATION* info) {
     strcpy((info + infoLinesCounter)->country, country);
     free(country);
     do {
-        printf("Введите день рождения участника: ");
         (info + infoLinesCounter)->dateOfBirth.day = inputCheck("Введите день рождения участника: ");
         if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31)
             printf("[Ошибка!]Введите число от 1 до 31!\n");
     } while ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31);
     do {
-        printf("Введите месяц рождения участника(числом): ");
         (info + infoLinesCounter)->dateOfBirth.month = inputCheck("Введите месяц рождения участника(числом): ");
         if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12)
             printf("[Ошибка!]Введите число от 1 до 12!\n");
     } while ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12);
     do {
-        printf("Введите год рождения участника: ");
         (info + infoLinesCounter)->dateOfBirth.year = inputCheck("Введите год рождения участника: ");
         if ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019)
             printf("[Ошибка!]Введите число от 1900 до 2019!\n");
@@ -732,19 +729,16 @@ INFORMATION* infoAdd(INFORMATION* info) {
     strcpy((info + infoLinesCounter)->model, model);
     free(model);
     do {
-        printf("Введите количество очков участника: ");
         (info + infoLinesCounter)->points = inputCheck("Введите количество очков участника: ");
         if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999)
             printf("[Ошибка!]Введите число от 0 до 9999!\n");
     } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);
     do {
-        printf("Введите минуты круга учатсника: ");
         (info + infoLinesCounter)->timeOfLap.minutes = inputCheck("Введите минуты круга участника: ");
         if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59)
             printf("[Ошибка!]Введите число от 0 до 59!\n");
     } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59);
     do {
-        printf("Введите секунды круга участника: ");
         (info + infoLinesCounter)->timeOfLap.seconds = inputCheck("Введите секунды круга участника: ");
         if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59)
             printf("[Ошибка!]Введите число от 0 до 59!\n");
@@ -772,7 +766,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
         return info;
     }
     do {
-        printf("Введите номер участника, которого нужно отредактировать: ");
         number = inputCheck("Введите номер участника, которого нужно отредактировать: ");
         for (i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->number == number) {
@@ -809,7 +802,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
         printf("12.Минуты круга.\n");
         printf("13.Секунды круга.\n");
         printf("14.Назад.\n");
-        printf("Ваш выбор: ");
         choice = inputCheck("Ваш выбор: ");
         printf("\n");
         switch (choice) {
@@ -818,7 +810,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
                 printf("Изменеие номера.\n");
                 do {
                     do {
-                        printf("Введите новый номер: ");
                         newNumber = inputCheck("Введите новый номер: ");
                         if (newNumber < 1) printf("[Ошибка!]Введите число больше 0!\n");
                     } while (newNumber < 1);
@@ -888,7 +879,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
                 printf("Изменение месяца рождения.\n");
                 int newBirthMonth = 0;
                 do {
-                    printf("Введите новый месяц рождения(числом): ");
                     newBirthMonth = inputCheck("Введите новый номер: ");
                     if (newBirthMonth < 1 || newBirthMonth > 12)
                         printf("[Ошибка!]Введите число от 1 до 12!\n\n");
@@ -901,7 +891,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
                 printf("Изменение года рождения.\n");
                 int newBirthYear = 0;
                 do {
-                    printf("Введите новый год рождения: ");
                     newBirthYear = inputCheck("Введите новый год рождения: ");
                     if (newBirthYear < 1900 || newBirthYear > 2019)
                         printf("[Ошибка!]Введите число от 1900 до 2019!\n");
@@ -933,7 +922,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
             case 11: {
                 printf("Изменение количества очков.\n");
                 do {
-                    printf("Введите новое количество очков: ");
                     (info + infoLinesCounter)->points = inputCheck("Введите новое количество очков: ");
                     if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999)
                         printf("[Ошибка!]Введите число от 0 до 9999!\n");
@@ -943,7 +931,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
             case 12: {
                 printf("Изменение минут круга.\n");
                 do {
-                    printf("Введите новые минуты круга: ");
                     (info + infoLinesCounter)->timeOfLap.minutes = inputCheck("Введите новые минуты круга: ");
                     if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59)
                         printf("[Ошибка!]Введите число от 0 до 59!\n");
@@ -954,7 +941,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
             case 13: {
                 printf("Изменение секунд круга.\n");
                 do {
-                    printf("Введите новые секунды круга: ");
                     (info + infoLinesCounter)->timeOfLap.seconds = inputCheck("Введите новые секунды круга: ");
                     if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59)
                         printf("[Ошибка!]Введите число от 0 до 59!\n");
@@ -992,7 +978,6 @@ INFORMATION* infoDelete(INFORMATION *info) {
     }
     printf("Удаление участника.\n");
     do {
-        printf("Введите номер участника для удаления: ");
         delNumber = inputCheck("Введите номер участника для удаления: ");
         for (i = 0; i < infoLinesCounter; i++) {
             if (delNumber == (info + i)->number) {
@@ -1023,6 +1008,7 @@ INFORMATION* infoDelete(INFORMATION *info) {
 
 int inputCheck(const char *inputText) {
     while (1) {
+        printf("%s", inputText);
         char *buffer = NULL;
         int numberEntered = 0, i = 0, check = 0, isNumeral = 0, flag = 0;
         buffer = limitedStringInput(buffer, 99);
@@ -1093,7 +1079,6 @@ int searchAndFilteringMenu() {
     printf("9.Поиск по разряду.\n");
     printf("9.Сортировка по времени круга.\n");
     printf("10.Выход.\n");
-    printf("Ваш выбор: ");
     choice = inputCheck("Ваш выбор: ");
     printf("\n");
     return choice;
@@ -1110,7 +1095,6 @@ int pointsFilter(INFORMATION* info) {
         return 0;
     }
     do {
-        printf("Введите количество очков: ");
         points = inputCheck("Введите количество очков: ");
         if (points < 0 || points > 9999)
             printf("[Ошибка!]Введите число больше 0 и меньше 9999!\n");
@@ -1151,13 +1135,11 @@ int timeOfLapFilter(INFORMATION* info) {
         return 0;
     }
     do {
-        printf("Введите количество минут круга: ");
         minutesOfLap = inputCheck("Введите количество минут круга: ");
         if (minutesOfLap < 0 || minutesOfLap > 59)
             printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
     } while (minutesOfLap < 0 || minutesOfLap > 59);
     do {
-        printf("Введите количество секунд круга: ");
         secondsOfLap = inputCheck("Введите количество секунд круга: ");
         if (secondsOfLap < 0 || secondsOfLap > 59)
             printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
@@ -1199,8 +1181,7 @@ int ageFilter(INFORMATION* info) {
         return 0;
     }
     do {
-        printf("Введите возраст: ");
-        age = inputCheck("Введите количество очков: ");
+        age = inputCheck("Введите возраст: ");
         if (age < 0 || age > 119)
             printf("[Ошибка!]Введите число больше 0 и меньше 119!\n");
     } while (age < 0 || age > 119);
@@ -1240,7 +1221,6 @@ int yearOfBirthFilter(INFORMATION* info) {
         return 0;
     }
     do {
-        printf("Введите год рождения: ");
         yearOfBirth = inputCheck("Введите год рождения: ");
         if (yearOfBirth < 1900 || yearOfBirth > 2019)
             printf("[Ошибка!]Введите число больше 1900 и меньше 2019!\n");
@@ -1272,7 +1252,7 @@ int yearOfBirthFilter(INFORMATION* info) {
     return 0;
 }
 
-int timeOfLapSorting(INFORMATION* info){
+INFORMATION* timeOfLapSorting(INFORMATION* info){
     INFORMATION tmp;
     FILE* file = NULL;
     if (info == NULL) {
@@ -1307,7 +1287,8 @@ int timeOfLapSorting(INFORMATION* info){
         }
         fclose(file);
     }
-    printf("Сортировка: Массив успешно отсортирован!\n\n");
+    isInfoSorted = 1;
+    printf("Сортировка: Участники успешно отсортированы!\n\n");
     return 0;
 }
 
@@ -1322,7 +1303,6 @@ int numberSearch(INFORMATION* info) {
         return 0;
     }
     do {
-        printf("Введите номер: ");
         number = inputCheck("Введите номер: ");
         if (number < 0)
             printf("[Ошибка!]Введите число больше 0!\n");
@@ -1481,5 +1461,34 @@ int categorySearch(INFORMATION* info){
     }
     if (isAtLeastOneMember == 0)
         printf("[Ошибка!]Нет ни одного участника с разрядом %s.\n\n", category);
+    return 0;
+}
+
+int printTop(INFORMATION* info){
+    if (isInfoSorted == 0){
+        printf("[Ошибка!]Информация не отсортирована!\n\n");
+        return 0;
+    }
+    if (info == NULL) {
+        printf("[Ошибка!]Файл не открыт!\n\n");
+        return 0;
+    }
+    if (infoLinesCounter == 0) {
+        printf("[Ошибка!]Файл пуст!\n\n");
+        return 0;
+    }
+    printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < infoLinesCounter && i < 3; i++) {
+        printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
+                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
+                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
+                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
+                   (info + i)->timeOfLap.seconds);
+        printf("\n");
+    }
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
     return 0;
 }

@@ -104,7 +104,7 @@ int main() {
                                     if (infoCheckFile() == 0)
                                         infoCreateFile();
                                     info = infoOpen(info);
-                                    printf("Открытие информации: Файл успешно открыт!\n\n");
+                                    printf("Открытие информации: Файл успешно открытaa!\n\n");
                                     system("pause");
                                 }
                                 else {

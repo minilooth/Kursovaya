@@ -52,6 +52,7 @@ int adminLogin(USER* user);
 int userLogin(USER* user);
 int countLines(const char* filename);
 int userManagementMenu();
+USER* userManagement(USER* user);
 USER* userLoad(USER* user);
 USER* userAdd(USER* user);
 USER* userDelete(USER* user);
@@ -66,6 +67,7 @@ char* limitedStringInput(char* input, int limit);
 int infoCheckFile();
 void infoCreateFile();
 int searchAndFilteringMenu();
+int searchingAndFiltering(INFORMATION* info);
 int pointsFilter(INFORMATION* info);
 int timeOfLapFilter(INFORMATION* info);
 int ageFilter(INFORMATION* info);
@@ -73,11 +75,9 @@ int yearOfBirthFilter(INFORMATION* info);
 INFORMATION* timeOfLapSorting(INFORMATION* info);
 int numberSearch(INFORMATION* info);
 int surnameSearch(INFORMATION* info);
-int searchingAndFiltering(INFORMATION* info);
 int countrySearch(INFORMATION* info);
 int categorySearch(INFORMATION* info);
 int printTop(INFORMATION* info);
-USER* userManagement(USER* user);
 
 
 int main() {
@@ -186,7 +186,7 @@ int userSubmenu() {
     printf("Подменю(для пользователей):\n");
     printf("1.Открытие файла с данными.\n");
     printf("2.Просмотр всех данных в табличной форме.\n");
-    printf("3.Просмотреть топ-3 быстрых участников.\n");
+    printf("3.Просмотреть топ-3 самых быстрых участников.\n");
     printf("4.Различные процедуры поиска и фильтрации данных.\n");
     printf("5.Выход в меню.\n");
     choice = inputCheck("Ваш выбор: ");

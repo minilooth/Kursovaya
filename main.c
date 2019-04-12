@@ -42,7 +42,6 @@ typedef struct {
 
 int usersLinesCounter = 0;
 int infoLinesCounter = 0;
-int isInfoSorted = 0;
 
 
 int menu();
@@ -109,11 +108,11 @@ int main() {
                                 system("pause");
                                 break;
                             }
-                            case 2: info = infoAdd(info); isInfoSorted = 0; break;
-                            case 3: info = infoEdit(info); isInfoSorted = 0; break;
-                            case 4: info = infoDelete(info); isInfoSorted = 0; break;
+                            case 2: info = infoAdd(info); break;
+                            case 3: info = infoEdit(info); break;
+                            case 4: info = infoDelete(info); break;
                             case 5: infoPrint(info); break;
-                            case 6: isInfoSorted = searchingAndFiltering(info); break;
+                            case 6: searchingAndFiltering(info); break;
                             case 7: user = userManagement(user); break;
                             case 8: adminSubMenuFlag = 1; break;
                             default: break;
@@ -139,7 +138,7 @@ int main() {
                             }
                             case 2: infoPrint(info); break;
                             case 3: printTop(info); break;
-                            case 4: isInfoSorted = searchingAndFiltering(info); break;
+                            case 4: searchingAndFiltering(info); break;
                             case 5: userSubMenuFlag = 1; break;
                             default: break;
                         }
@@ -187,7 +186,7 @@ int userSubmenu() {
     printf("Подменю(для пользователей):\n");
     printf("1.Открытие файла с данными.\n");
     printf("2.Просмотр всех данных в табличной форме.\n");
-    printf("3.Выполнение задачи.\n");
+    printf("3.Просмотреть топ-3 быстрых участников.\n");
     printf("4.Различные процедуры поиска и фильтрации данных.\n");
     printf("5.Выход в меню.\n");
     choice = inputCheck("Ваш выбор: ");
@@ -444,6 +443,7 @@ void userPrint(USER* user) {
 
 USER* userManagement(USER* user) {
     while (1) {
+        system("cls");
         switch (userManagementMenu()) {
             case 1: user = userAdd(user); break;
             case 2: user = userDelete(user); break;
@@ -516,6 +516,7 @@ USER* userEdit(USER* user) {
     else printf("%-22s|", no);
     printf("\n-----------------------------------------------------------------------------------------\n\n");
     while (editFlag == 0) {
+        system("cls");
         printf("Что отредактировать?\n");
         printf("1.Логин.\n");
         printf("2.Пароль.\n");
@@ -1253,6 +1254,7 @@ int yearOfBirthFilter(INFORMATION* info) {
 }
 
 INFORMATION* timeOfLapSorting(INFORMATION* info){
+    system("cls");
     INFORMATION tmp;
     FILE* file = NULL;
     if (info == NULL) {
@@ -1287,8 +1289,8 @@ INFORMATION* timeOfLapSorting(INFORMATION* info){
         }
         fclose(file);
     }
-    isInfoSorted = 1;
     printf("Сортировка: Участники успешно отсортированы!\n\n");
+    system("pause");
     return 0;
 }
 
@@ -1369,9 +1371,8 @@ int surnameSearch(INFORMATION* info) {
 }
 
 int searchingAndFiltering(INFORMATION* info){
-    system("cls");
-    int isInfoSorted = 0;
     while (1) {
+        system("cls");
         switch (searchAndFilteringMenu()) {
             case 1: pointsFilter(info); break;
             case 2: timeOfLapFilter(info); break;
@@ -1381,8 +1382,8 @@ int searchingAndFiltering(INFORMATION* info){
             case 6: surnameSearch(info); break;
             case 7: countrySearch(info); break;
             case 8: categorySearch(info); break;
-            case 9: timeOfLapSorting(info); isInfoSorted = 1; break;
-            case 10: return isInfoSorted;
+            case 9: timeOfLapSorting(info); break;
+            case 10: return 0;
             default: break;
         }
     }
@@ -1465,30 +1466,49 @@ int categorySearch(INFORMATION* info){
 }
 
 int printTop(INFORMATION* info){
-    if (isInfoSorted == 0){
-        printf("[Ошибка!]Информация не отсортирована!\n\n");
-        return 0;
-    }
+    system("cls");
     if (info == NULL) {
         printf("[Ошибка!]Файл не открыт!\n\n");
+        system("pause");
         return 0;
     }
     if (infoLinesCounter == 0) {
         printf("[Ошибка!]Файл пуст!\n\n");
+        system("pause");
         return 0;
     }
-    printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
+    INFORMATION* infoCopy = NULL;
+    infoCopy = (INFORMATION*)realloc(NULL,sizeof(INFORMATION)*infoLinesCounter);
+    memcpy(infoCopy,info,sizeof(INFORMATION)*infoLinesCounter);
+    INFORMATION tmp;
+    if (infoLinesCounter != 1){
+        for(int i = 1;i < infoLinesCounter; i++)
+            for(int j = i; j > 0; j--)
+                if((infoCopy + (j-1))->timeOfLap.minutes == (infoCopy + j)->timeOfLap.minutes){
+                    if((infoCopy + (j-1))->timeOfLap.seconds > (infoCopy + j)->timeOfLap.seconds){
+                        tmp = *(infoCopy + (j - 1));
+                        *(infoCopy + (j - 1)) = *(infoCopy + j);
+                        *(infoCopy + j) = tmp;
+                    }
+                } else if ((infoCopy + (j-1))->timeOfLap.minutes > (infoCopy + j)->timeOfLap.minutes){
+                    tmp = *(infoCopy + (j - 1));
+                    *(infoCopy + (j - 1)) = *(infoCopy + j);
+                    *(infoCopy + j) = tmp;
+                }
+    }
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
     for (int i = 0; i < infoLinesCounter && i < 3; i++) {
         printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |",
-                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
-                   (info + i)->fullname.lastname, (info + i)->country, (info + i)->dateOfBirth.day,
-                   (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
-                   (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
-                   (info + i)->timeOfLap.seconds);
+                   (infoCopy + i)->number, (infoCopy + i)->fullname.firstname, (infoCopy + i)->fullname.surname,
+                   (infoCopy + i)->fullname.lastname, (infoCopy + i)->country, (infoCopy + i)->dateOfBirth.day,
+                   (infoCopy + i)->dateOfBirth.month, (infoCopy + i)->dateOfBirth.year, (infoCopy + i)->dateOfBirth.age,
+                   (infoCopy + i)->category, (infoCopy + i)->model, (infoCopy + i)->points, (infoCopy + i)->timeOfLap.minutes,
+                   (infoCopy + i)->timeOfLap.seconds);
         printf("\n");
     }
     printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
+    system("pause");
     return 0;
 }

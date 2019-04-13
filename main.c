@@ -87,10 +87,6 @@ int main() {
     USER *user = NULL;
     user = userLoad(user);
     int adminSubMenuFlag = 0, userSubMenuFlag = 0;
-    if (user == NULL) {
-        system("pause");
-        return 0;
-    }
     while (1) {
         system("cls");
         switch (menu()) {
@@ -361,7 +357,11 @@ USER* userLoad(USER* user) {
             system("pause");
             exit(0);
         }
-    } else if (usersLinesCounter != 0) {
+    } else if (usersLinesCounter == 0) {
+        printf("[Ошибка!]Инициализация пользователей: Файл с логинами/пароля пуст!\n");
+        system("pause");
+        exit(0);
+    } else {
         user = (USER*)malloc(usersLinesCounter*(sizeof(USER)));
         for (int i = 0; i < usersLinesCounter; i++)
             fscanf(file, "%s %s %i", (user + i)->login, (user + i)->password, &((user + i)->isAdmin));
@@ -416,9 +416,9 @@ USER* userAdd(USER* user) {
 void userPrint(USER* user) {
     system("cls");
     char yes[] = "Да", no[] = "Нет";
-    printf("-----------------------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------------\n");
     printf("|№    |ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
-    printf("-----------------------------------------------------------------------------------------------\n");
+    printf("------------------------------------------------------------------------------------------------\n");
     for (int i = 0; i < usersLinesCounter; i++) {
         printf("|%-5i|%-31s|%-32s|", i + 1, (user + i)->login, (user + i)->password);
         if ((user + i)->isAdmin == 1)
@@ -426,7 +426,7 @@ void userPrint(USER* user) {
         else printf("%-22s|", no);
         printf("\n");
     }
-    printf("-----------------------------------------------------------------------------------------------\n\n");
+    printf("------------------------------------------------------------------------------------------------\n\n");
     system("pause");
 }
 
@@ -556,6 +556,7 @@ USER* userEdit(USER* user) {
             case 4: editFlag = 1; break;
             default: break;
         }
+        system("pause");
         if (editFlag == 1) break;
     }
     if ((file = fopen("db.txt", "w")) != NULL) {
@@ -563,7 +564,6 @@ USER* userEdit(USER* user) {
             fprintf(file, "%s %s %i\n", (user + i)->login, (user + i)->password, (user + i)->isAdmin);
         fclose(file);
     } else printf("[Ошибка!]Редактирование пользователей: Не удалось открыть файл с логинами/паролями! Пользователь не отредактирован! Файл отчищен!\n\n");
-    system("pause");
     return user;
 }
 
@@ -623,7 +623,7 @@ void infoPrint(INFORMATION* info) {
         printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
         printf("--------------------------------------------------------------------------------------------------------------------------------\n");
         for (int i = 0; i < infoLinesCounter; i++) {
-            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %02i/%02i/%04i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
                     (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname, (info + i)->fullname.lastname, (info + i)->country,
                     (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age, (info + i)->category,
                     (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
@@ -762,7 +762,7 @@ INFORMATION* infoEdit(INFORMATION* info) {
             printf("--------------------------------------------------------------------------------------------------------------------------------\n");
             printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
             printf("--------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %-2i/%02i/%-4i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %02i/%02i/%04i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
                    (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
                    (info + i)->fullname.lastname, (info + i)->country,
                    (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year,
@@ -862,7 +862,7 @@ INFORMATION* infoEdit(INFORMATION* info) {
                     printf("Изменение месяца рождения.\n");
                     int newBirthMonth = 0;
                     do {
-                        newBirthMonth = inputCheck("Введите новый номер: ");
+                        newBirthMonth = inputCheck("Введите новый месяц рождения(числом): ");
                         if (newBirthMonth < 1 || newBirthMonth > 12)
                             printf("[Ошибка!]Введите число от 1 до 12!\n\n");
                     } while (newBirthMonth < 1 || newBirthMonth > 12);
@@ -878,10 +878,11 @@ INFORMATION* infoEdit(INFORMATION* info) {
                         if (newBirthYear < 1900 || newBirthYear > 2019)
                             printf("[Ошибка!]Введите число от 1900 до 2019!\n");
                     } while (newBirthYear < 1900 || newBirthYear > 2019);
-                    if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)
-                        (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;
+                    (info + i)->dateOfBirth.year = newBirthYear;
+                    if ((info + i)->dateOfBirth.month >= aTm->tm_mon + 1)
+                        (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;
                     else
-                        (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;
+                        (info + i)->dateOfBirth.age = 2019 - (info + i)->dateOfBirth.year;
                     printf("Год рождения успешно изменен!\n\n");
                     break;
                 }
@@ -906,33 +907,34 @@ INFORMATION* infoEdit(INFORMATION* info) {
                 case 11: {
                     printf("Изменение количества очков.\n");
                     do {
-                        (info + infoLinesCounter)->points = inputCheck("Введите новое количество очков: ");
-                        if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999)
+                        (info + i)->points = inputCheck("Введите новое количество очков: ");
+                        if ((info + i)->points < 0 || (info + i)->points > 9999)
                             printf("[Ошибка!]Введите число от 0 до 9999!\n");
-                    } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);
+                    } while ((info + i)->points < 0 || (info + i)->points > 9999);
                     printf("Количество очков успешно изменено!\n\n");
+                    break;
                 }
                 case 12: {
                     printf("Изменение минут круга.\n");
                     do {
-                        (info + infoLinesCounter)->timeOfLap.minutes = inputCheck("Введите новые минуты круга: ");
-                        if ((info + infoLinesCounter)->timeOfLap.minutes < 0 ||
-                            (info + infoLinesCounter)->timeOfLap.minutes > 59)
+                        (info + i)->timeOfLap.minutes = inputCheck("Введите новые минуты круга: ");
+                        if ((info + i)->timeOfLap.minutes < 0 ||
+                            (info + i)->timeOfLap.minutes > 59)
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
-                    } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 ||
-                             (info + infoLinesCounter)->timeOfLap.minutes > 59);
+                    } while ((info + i)->timeOfLap.minutes < 0 ||
+                             (info + i)->timeOfLap.minutes > 59);
                     printf("Минуты круга успешно изменены!\n\n");
                     break;
                 }
                 case 13: {
                     printf("Изменение секунд круга.\n");
                     do {
-                        (info + infoLinesCounter)->timeOfLap.seconds = inputCheck("Введите новые секунды круга: ");
-                        if ((info + infoLinesCounter)->timeOfLap.seconds < 0 ||
-                            (info + infoLinesCounter)->timeOfLap.seconds > 59)
+                        (info + i)->timeOfLap.seconds = inputCheck("Введите новые секунды круга: ");
+                        if ((info + i)->timeOfLap.seconds < 0 ||
+                            (info + i)->timeOfLap.seconds > 59)
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
-                    } while ((info + infoLinesCounter)->timeOfLap.seconds < 0 ||
-                             (info + infoLinesCounter)->timeOfLap.seconds > 59);
+                    } while ((info + i)->timeOfLap.seconds < 0 ||
+                             (info + i)->timeOfLap.seconds > 59);
                     printf("Секунды круга успешно изменены!\n\n");
                     break;
                 }
@@ -955,7 +957,6 @@ INFORMATION* infoEdit(INFORMATION* info) {
             }
         } else printf("[Ошибка!]Редактирование информации: Не удалось перезаписать файл! Файл отчищен!\n");
     }
-    system("pause");
     return info;
 }
 
@@ -1070,7 +1071,7 @@ int searchAndFilteringMenu() {
     printf("5.Поиск по номеру.\n");
     printf("6.Поиск по фамилии.\n");
     printf("7.Поиск по стране.\n");
-    printf("9.Поиск по разряду.\n");
+    printf("8.Поиск по разряду.\n");
     printf("9.Сортировка по времени круга.\n");
     printf("10.Выход.\n");
     choice = inputCheck("Ваш выбор: ");
@@ -1090,9 +1091,10 @@ void pointsFilter(INFORMATION* info) {
             if (points < 0 || points > 9999)
                 printf("[Ошибка!]Введите число больше 0 и меньше 9999!\n");
         } while (points < 0 || points > 9999);
+        system("cls");
         printf("Участники, у которых очков больше %i: ", points);
         for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->points > points) {
+            if ((info + i)->points >= points) {
                 if (isAtLeastOneMember == 0) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
@@ -1132,6 +1134,7 @@ void timeOfLapFilter(INFORMATION* info) {
             if (secondsOfLap < 0 || secondsOfLap > 59)
                 printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
         } while (secondsOfLap < 0 || secondsOfLap > 59);
+        system("cls");
         printf("Участники, у которых время круга меньше %02i:%02i : ", minutesOfLap, secondsOfLap);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->timeOfLap.minutes < minutesOfLap)
@@ -1172,6 +1175,7 @@ void ageFilter(INFORMATION* info) {
             if (age < 0 || age > 119)
                 printf("[Ошибка!]Введите число больше 0 и меньше 119!\n");
         } while (age < 0 || age > 119);
+        system("cls");
         printf("Участники, возраст которых больше %i: ", age);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->dateOfBirth.age > age) {
@@ -1189,7 +1193,7 @@ void ageFilter(INFORMATION* info) {
                 isAtLeastOneMember = 1;
             }
             if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
-                printf("================================================================================================================================\n\n");
+                printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
         if (isAtLeastOneMember == 0)
             printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", age);
@@ -1209,6 +1213,7 @@ void yearOfBirthFilter(INFORMATION* info) {
             if (yearOfBirth < 1900 || yearOfBirth > 2019)
                 printf("[Ошибка!]Введите число больше 1900 и меньше 2019!\n");
         } while (yearOfBirth < 1900 || yearOfBirth > 2019);
+        system("cls");
         printf("Участники, год рождения у которых больше %i: ", yearOfBirth);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->dateOfBirth.year > yearOfBirth) {
@@ -1285,6 +1290,7 @@ void numberSearch(INFORMATION* info) {
             if (number < 0)
                 printf("[Ошибка!]Введите число больше 0!\n");
         } while (number < 0);
+        system("cls");
         printf("Участник, номер которого %i: ", number);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->number == number) {
@@ -1318,6 +1324,7 @@ void surnameSearch(INFORMATION* info) {
         char *surname;
         printf("Введите фамилию: ");
         surname = limitedStringInput("Введите фамилию: ", 49);
+        system("cls");
         printf("Участники, с фамилией %s: ", surname);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->fullname.surname, surname) == 0) {
@@ -1372,6 +1379,7 @@ void countrySearch(INFORMATION* info){
         char *country;
         printf("Введите страну: ");
         country = limitedStringInput("Введите страну: ", 49);
+        system("cls");
         printf("Участники, из страны %s: ", country);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->country,country) == 0) {
@@ -1407,6 +1415,7 @@ void categorySearch(INFORMATION* info){
         char *category;
         printf("Введите разряд: ");
         category = limitedStringInput("Введите разряд: ", 49);
+        system("cls");
         printf("Участники, с разрядом %s: ", category);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->category,category) == 0) {

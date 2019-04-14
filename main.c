@@ -333,7 +333,7 @@ int userLogin(USER *user) {
 
 int userManagementMenu() {
     int choice;
-    printf("Управление пользователями:\n");
+    printf("Меню управления пользователями/администраторами:\n");
     printf("1.Добавить аккаунт.\n");
     printf("2.Удалить аккаунт.\n");
     printf("3.Редактировать аккаунт.\n");
@@ -769,30 +769,30 @@ INFORMATION* infoEdit(INFORMATION* info) {
                    (info + i)->dateOfBirth.age, (info + i)->category,
                    (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
             printf("--------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("Что изменить?\n");
-            printf("1.Номер.\n");
-            printf("2.Имя.\n");
-            printf("3.Фамилию.\n");
-            printf("4.Отчество.\n");
-            printf("5.Страну.\n");
-            printf("6.День рождения.\n");
-            printf("7.Месяц рождения.\n");
-            printf("8.Год рождения.\n");
-            printf("9.Разряд.\n");
-            printf("10.Модель коньков.\n");
-            printf("11.Количество очков.\n");
-            printf("12.Минуты круга.\n");
-            printf("13.Секунды круга.\n");
-            printf("14.Назад.\n");
+            printf("Меню редактирования учатсника:\n");
+            printf("1.Изменение номера участника.\n");
+            printf("2.Изменение имени участника.\n");
+            printf("3.Изменение фамилии участника.\n");
+            printf("4.Изменение отчества участника.\n");
+            printf("5.Изменение страны участника.\n");
+            printf("6.Изменение дня рождения участника.\n");
+            printf("7.Изменение месяца рождения участника.\n");
+            printf("8.Изменение года рождения участника.\n");
+            printf("9.Изменение разряда участника.\n");
+            printf("10.Изменение модели коньков участника.\n");
+            printf("11.Изменение количества очков участника.\n");
+            printf("12.Изменение минут круга участника.\n");
+            printf("13.Изменение секунд круга участника.\n");
+            printf("14.Выход из меню редактирования участника.\n");
             choice = inputCheck("Ваш выбор: ");
             printf("\n");
             switch (choice) {
                 case 1: {
                     int newNumber = 0;
-                    printf("Изменеие номера.\n");
+                    printf("Изменеие номера участника.\n");
                     do {
                         do {
-                            newNumber = inputCheck("Введите новый номер: ");
+                            newNumber = inputCheck("Введите новый номер участника: ");
                             if (newNumber < 1)
                                 printf("[Ошибка!]Введите число больше 0!\n");
                         } while (newNumber < 1);
@@ -806,75 +806,75 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Участник с таким номером уже существует!\n");
                     } while (isNumberExist == 1);
                     (info + i)->number = newNumber;
-                    printf("Номер успешно изменен!\n\n");
+                    printf("Номер участника успешно изменен!\n\n");
                     break;
                 }
                 case 2: {
-                    printf("Изменение имени.\n");
-                    printf("Введите новое имя: ");
+                    printf("Изменение имени участника.\n");
+                    printf("Введите новое имя участника: ");
                     firstname = limitedStringInput(firstname, 49);
                     strcpy((info + i)->fullname.firstname, firstname);
                     free(firstname);
-                    printf("Имя успешно изменено!\n\n");
+                    printf("Имя участника успешно изменено!\n\n");
                     break;
                 }
                 case 3: {
-                    printf("Изменение фамилии.\n");
-                    printf("Введите новую фамилию: ");
+                    printf("Изменение фамилии участника.\n");
+                    printf("Введите новую фамилию участника: ");
                     surname = limitedStringInput(surname, 49);
                     strcpy((info + i)->fullname.surname, surname);
                     free(surname);
-                    printf("Фамилия успешна изменена!\n\n");
+                    printf("Фамилия участника успешна изменена!\n\n");
                     break;
                 }
                 case 4: {
-                    printf("Изменение отчества.\n");
-                    printf("Введите новое отчество: ");
+                    printf("Изменение отчества участника.\n");
+                    printf("Введите новое отчество участника: ");
                     lastname = limitedStringInput(lastname, 49);
                     strcpy((info + i)->fullname.lastname, lastname);
                     free(lastname);
-                    printf("Отчество успешно изменено!\n\n");
+                    printf("Отчество участника успешно изменено!\n\n");
                     break;
                 }
                 case 5: {
-                    printf("Изменение страны.\n");
-                    printf("Введите новую страну: ");
+                    printf("Изменение страны участника.\n");
+                    printf("Введите новую страну участника: ");
                     country = limitedStringInput(country, 29);
                     strcpy((info + i)->country, country);
                     free(country);
-                    printf("Страна успешно изменена.\n\n");
+                    printf("Страна участника успешно изменена.\n\n");
                     break;
                 }
                 case 6: {
-                    printf("Изменение дня рождения.\n");
+                    printf("Изменение дня рождения участника.\n");
                     int newBirthDay = 0;
                     do {
-                        printf("Введите новый день рождения: ");
+                        printf("Введите новый день рождения участника: ");
                         scanf_s("%i", &newBirthDay);
                         if (newBirthDay < 1 || newBirthDay > 31)
                             printf("[Ошибка!]Введите число от 1 до 31!\n");
                     } while (newBirthDay < 1 || newBirthDay > 31);
                     (info + i)->dateOfBirth.day = newBirthDay;
-                    printf("День рождения успешно изменен!\n\n");
+                    printf("День рождения участника успешно изменен!\n\n");
                     break;
                 }
                 case 7: {
-                    printf("Изменение месяца рождения.\n");
+                    printf("Изменение месяца рождения участника.\n");
                     int newBirthMonth = 0;
                     do {
-                        newBirthMonth = inputCheck("Введите новый месяц рождения(числом): ");
+                        newBirthMonth = inputCheck("Введите новый месяц рождения участника(числом): ");
                         if (newBirthMonth < 1 || newBirthMonth > 12)
                             printf("[Ошибка!]Введите число от 1 до 12!\n\n");
                     } while (newBirthMonth < 1 || newBirthMonth > 12);
                     (info + i)->dateOfBirth.month = newBirthMonth;
-                    printf("Месяц рождения успешно изменен!\n\n");
+                    printf("Месяц рождения участника успешно изменен!\n\n");
                     break;
                 }
                 case 8: {
-                    printf("Изменение года рождения.\n");
+                    printf("Изменение года рождения участника.\n");
                     int newBirthYear = 0;
                     do {
-                        newBirthYear = inputCheck("Введите новый год рождения: ");
+                        newBirthYear = inputCheck("Введите новый год рождения участника: ");
                         if (newBirthYear < 1900 || newBirthYear > 2019)
                             printf("[Ошибка!]Введите число от 1900 до 2019!\n");
                     } while (newBirthYear < 1900 || newBirthYear > 2019);
@@ -883,59 +883,59 @@ INFORMATION* infoEdit(INFORMATION* info) {
                         (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;
                     else
                         (info + i)->dateOfBirth.age = 2019 - (info + i)->dateOfBirth.year;
-                    printf("Год рождения успешно изменен!\n\n");
+                    printf("Год рождения участника успешно изменен!\n\n");
                     break;
                 }
                 case 9: {
-                    printf("Изменение разряда.\n");
-                    printf("Введите новый разряд: ");
+                    printf("Изменение разряда участника.\n");
+                    printf("Введите новый разряд участника: ");
                     category = limitedStringInput(category, 29);
                     strcpy((info + i)->category, category);
                     free(category);
-                    printf("Разряд успешно изменен!\n\n");
+                    printf("Разряд участника успешно изменен!\n\n");
                     break;
                 }
                 case 10: {
-                    printf("Изменение модели коньков.\n");
-                    printf("Введите новую модель коньков: ");
+                    printf("Изменение модели коньков участника.\n");
+                    printf("Введите новую модель коньков участника: ");
                     model = limitedStringInput(model, 29);
                     strcpy((info + i)->model, model);
                     free(model);
-                    printf("Модель коньков успешно изменена!\n\n");
+                    printf("Модель коньков участника успешно изменена!\n\n");
                     break;
                 }
                 case 11: {
-                    printf("Изменение количества очков.\n");
+                    printf("Изменение количества очков участника.\n");
                     do {
-                        (info + i)->points = inputCheck("Введите новое количество очков: ");
+                        (info + i)->points = inputCheck("Введите новое количество очков участника: ");
                         if ((info + i)->points < 0 || (info + i)->points > 9999)
                             printf("[Ошибка!]Введите число от 0 до 9999!\n");
                     } while ((info + i)->points < 0 || (info + i)->points > 9999);
-                    printf("Количество очков успешно изменено!\n\n");
+                    printf("Количество очков участника успешно изменено!\n\n");
                     break;
                 }
                 case 12: {
-                    printf("Изменение минут круга.\n");
+                    printf("Изменение минут круга участника.\n");
                     do {
-                        (info + i)->timeOfLap.minutes = inputCheck("Введите новые минуты круга: ");
+                        (info + i)->timeOfLap.minutes = inputCheck("Введите новые минуты круга участника: ");
                         if ((info + i)->timeOfLap.minutes < 0 ||
                             (info + i)->timeOfLap.minutes > 59)
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
                     } while ((info + i)->timeOfLap.minutes < 0 ||
                              (info + i)->timeOfLap.minutes > 59);
-                    printf("Минуты круга успешно изменены!\n\n");
+                    printf("Минуты круга участника успешно изменены!\n\n");
                     break;
                 }
                 case 13: {
-                    printf("Изменение секунд круга.\n");
+                    printf("Изменение секунд круга участника.\n");
                     do {
-                        (info + i)->timeOfLap.seconds = inputCheck("Введите новые секунды круга: ");
+                        (info + i)->timeOfLap.seconds = inputCheck("Введите новые секунды круга участника: ");
                         if ((info + i)->timeOfLap.seconds < 0 ||
                             (info + i)->timeOfLap.seconds > 59)
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
                     } while ((info + i)->timeOfLap.seconds < 0 ||
                              (info + i)->timeOfLap.seconds > 59);
-                    printf("Секунды круга успешно изменены!\n\n");
+                    printf("Секунды круга участника успешно изменены!\n\n");
                     break;
                 }
                 case 14:

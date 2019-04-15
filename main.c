@@ -95,7 +95,7 @@ int main() {
     USER *user = NULL;
     user = userLoad(user);
     int adminSubMenuFlag = FALSE, userSubMenuFlag = FALSE;
-    while (1) {
+    while (TRUE) {
         system("cls");
         switch (menu()) {
             case 1: {
@@ -161,7 +161,7 @@ int menu(){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     indicateCursor(FALSE);
     while(1){
-        if (ch != 0 && ch != -32){
+        if (ch != 0){
             system("cls");
             printf("ÃÂÌ˛:\n");
             if (ch == 13) {
@@ -197,7 +197,7 @@ int adminSubmenu(){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     indicateCursor(FALSE);
     while(1){
-        if (ch != 0 && ch != -32){
+        if (ch != 0){
             system("cls");
             if (ch == 13) {
                 indicateCursor(TRUE);
@@ -258,7 +258,7 @@ int userSubmenu(){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     indicateCursor(FALSE);
     while(1){
-        if (ch != 0 && ch != -32){
+        if (ch != 0){
             system("cls");
             if (ch == 13) {
                 indicateCursor(TRUE);
@@ -698,7 +698,7 @@ int userEditMenu(USER* user, int i){
     char yes[] = "ƒ‡", no[] = "ÕÂÚ";
     int choice = 1, ch = ' ';
     while (TRUE) {
-        if (ch != 0 && ch != -32) {
+        if (ch != 0) {
             system("cls");
             printf("-----------------------------------------------------------------------------------------\n");
             printf("|ÀŒ√»Õ:                         |œ¿–ŒÀ‹:                         |œ–¿¬¿ ¿ƒÃ»Õ»—“–¿“Œ–¿: |\n");
@@ -920,7 +920,7 @@ int infoEditMenu(INFORMATION* info, int i){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     int choice = 1, ch = ' ';
     while (TRUE) {
-        if (ch != 0 && ch != -32) {
+        if (ch != 0) {
             system("cls");
             printf("--------------------------------------------------------------------------------------------------------------------------------\n");
             printf("|ÕŒÃ≈–|»Ãﬂ             ‘¿Ã»À»ﬂ         Œ“◊≈—“¬Œ       |  —“–¿Õ¿  |ƒ¿“¿  –Œ∆ƒ≈Õ»ﬂ|¬Œ«–¿—“|  –¿«–ﬂƒ  |  ÃŒƒ≈À‹  |Œ◊ »|¬–≈Ãﬂ  –”√¿|\n");
@@ -1315,7 +1315,7 @@ int searchAndFilteringMenu(){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     int choice = 1, ch = ' ';
     while (TRUE) {
-        if (ch != 0 && ch != -32) {
+        if (ch != 0) {
             system("cls");
             indicateCursor(FALSE);
             if (ch == 13) {

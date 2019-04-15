@@ -62,14 +62,16 @@ USER* userAdd(USER* user);
 USER* userDelete(USER* user);
 USER* userEdit(USER* user);
 int userEditMenu(USER* user, int i);
+void printEditingUser(USER* user, int i);
 void userPrint(USER* user);
 INFORMATION* infoOpen(INFORMATION* info);
 INFORMATION* infoAdd(INFORMATION* info);
 INFORMATION* infoEdit(INFORMATION* info);
 INFORMATION* infoDelete(INFORMATION *info);
 int infoEditMenu(INFORMATION* info, int i);
+void printEditingInfo(INFORMATION* info, int i);
 void infoPrint(INFORMATION* info);
-char* limitedStringInput(char* input, int limit);
+char* limitedStringInput(char* input, int limit,const char* inputText);
 int infoCheckFile();
 void infoCreateFile();
 int searchAndFilteringMenu();
@@ -318,7 +320,7 @@ int adminLogin(USER *user) {
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
-        login = limitedStringInput(login, 29);
+        login = limitedStringInput(login, 29, "Введите логин: ");
         for (i = 0; i < usersLinesCounter; i++)
             if (strcmp(login, (user + i)->login) == 0) {
                 isLoginRight = TRUE;
@@ -327,7 +329,7 @@ int adminLogin(USER *user) {
         if (isLoginRight == FALSE) {
             printf("[Ошибка!]Такого администратора не существует!\n\n");
             system("pause");
-            return 0;
+            return FALSE;
         }
     } while (isLoginRight != TRUE);
     do {
@@ -383,7 +385,7 @@ int userLogin(USER *user) {
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
-        login = limitedStringInput(login, 29);
+        login = limitedStringInput(login, 29, "Введите логин: ");
         for (i = 0; i < usersLinesCounter; i++)
             if (strcmp(login, (user + i)->login) == 0) {
                 isLoginRight = TRUE;
@@ -393,7 +395,7 @@ int userLogin(USER *user) {
             printf("[Ошибка!]Такого пользователя не существует!\n\n");
             system("pause");
             free(login);
-            return 0;
+            return FALSE;
         }
     } while (isLoginRight != TRUE);
     do {
@@ -523,7 +525,7 @@ USER* userAdd(USER* user) {
     printf("Добавить пользователя:\n");
     do {
         printf("Введите логин: ");
-        login = limitedStringInput(login, 29);
+        login = limitedStringInput(login, 29, "Введите логин: ");
         strcpy((user + usersLinesCounter)->login, login);
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, (user + usersLinesCounter)->login) == 0) {
@@ -535,7 +537,7 @@ USER* userAdd(USER* user) {
     } while ((loginIsNotExist != TRUE));
     free(login);
     printf("Введите пароль: ");
-    password = limitedStringInput(password, 29);
+    password = limitedStringInput(password, 29, "Введите пароль: ");
     strcpy((user + usersLinesCounter)->password, password);
     free(password);
     do {
@@ -594,7 +596,7 @@ USER* userDelete(USER* user) {
     printf("Удаление аккаунта.\n");
     do {
         printf("Введите логин аккаунта, который вы хотите удалить: ");
-        login = limitedStringInput(login, 29);
+        login = limitedStringInput(login, 29, "Введите логин аккаунта, который вы хотите удалить: ");
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, login) == 0) {
                 loginIsExist = TRUE;
@@ -620,12 +622,23 @@ USER* userDelete(USER* user) {
 }
 
 USER* userEdit(USER* user) {
-    char *login = NULL, *newLogin = NULL, *newPassword = NULL;
+    char *login = NULL, *newLogin = NULL, *newPassword = NULL, yes[] = "Да", no[] = "Нет";
     int i = 0, loginIsExist = FALSE, isNewLoginNotExist = FALSE, editFlag = FALSE;
     FILE* file = NULL;
+    printf("------------------------------------------------------------------------------------------------\n");
+    printf("|№    |ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
+    printf("------------------------------------------------------------------------------------------------\n");
+    for (i = 0; i < usersLinesCounter; i++) {
+        printf("|%-5i|%-31s|%-32s|", i + 1, (user + i)->login, (user + i)->password);
+        if ((user + i)->isAdmin == 1)
+            printf("%-22s|", yes);
+        else printf("%-22s|", no);
+        printf("\n");
+    }
+    printf("------------------------------------------------------------------------------------------------\n\n");
     do {
         printf("Введите логин аккаунта, который вы хотите отредактировать: ");
-        login = limitedStringInput(login, 29);
+        login = limitedStringInput(login, 29, "Введите логин аккаунта, который вы хотите отредактировать: ");
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, login) == 0) {
                 loginIsExist = TRUE;
@@ -642,7 +655,7 @@ USER* userEdit(USER* user) {
                 printf("Изменить логин.\n");
                 do {
                     printf("Введите новый логин: ");
-                    newLogin = limitedStringInput(newLogin, 29);
+                    newLogin = limitedStringInput(newLogin, 29, "Введите новый логин: ");
                     for (int j = 0; j < usersLinesCounter; j++) {
                         if (strcmp((user + j)->login, newLogin) == 0) {
                             isNewLoginNotExist = FALSE;
@@ -654,28 +667,36 @@ USER* userEdit(USER* user) {
                         printf("[Ошибка!]Такой логин уже существует!\n");
                 } while (isNewLoginNotExist == FALSE);
                 strcpy((user + i)->login, newLogin);
+                printEditingUser(user, i);
                 printf("Логин успешно изменен!\n\n");
                 free(newLogin);
+                system("pause");
                 break;
             }
             case 2: {
                 printf("Изменение пароля.\n");
                 printf("Введите новый пароль: ");
-                newPassword = limitedStringInput(newPassword, 29);
+                newPassword = limitedStringInput(newPassword, 29, "Введите новый пароль: ");
                 strcpy((user + i)->password, newPassword);
+                printEditingUser(user, i);
                 printf("Пароль успешно изменен!\n\n");
                 free(newPassword);
+                system("pause");
                 break;
             }
             case 3: {
                 if ((user + i)->isAdmin == 1) {
                     (user + i)->isAdmin = 0;
+                    printEditingUser(user, i);
                     printf("Права администратора успешно изменены.\n\n");
+                    system("pause");
                     break;
                 }
                 else {
                     (user + i)->isAdmin = 1;
+                    printEditingUser(user, i);
                     printf("Права администратора успешно изменены.\n\n");
+                    system("pause");
                     break;
                 }
             }
@@ -693,21 +714,25 @@ USER* userEdit(USER* user) {
     return user;
 }
 
+void printEditingUser(USER* user, int i){
+    char yes[] = "Да", no[] = "Нет";
+    system("cls");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("|ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("|%-31s|%-32s|", (user + i)->login, (user + i)->password);
+    if ((user + i)->isAdmin == 1)
+        printf("%-22s|", yes);
+    else printf("%-22s|", no);
+    printf("\n-----------------------------------------------------------------------------------------\n\n");
+}
+
 int userEditMenu(USER* user, int i){
     void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    char yes[] = "Да", no[] = "Нет";
     int choice = 1, ch = ' ';
     while (TRUE) {
         if (ch != 0) {
-            system("cls");
-            printf("-----------------------------------------------------------------------------------------\n");
-            printf("|ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
-            printf("-----------------------------------------------------------------------------------------\n");
-            printf("|%-31s|%-32s|", (user + i)->login, (user + i)->password);
-            if ((user + i)->isAdmin == 1)
-                printf("%-22s|", yes);
-            else printf("%-22s|", no);
-            printf("\n-----------------------------------------------------------------------------------------\n\n");
+            printEditingUser(user, i);
             indicateCursor(FALSE);
             if (ch == 13) {
                 indicateCursor(TRUE);
@@ -841,19 +866,19 @@ INFORMATION* infoAdd(INFORMATION* info) {
             if (isExist == TRUE) printf("Участник с таким номером уже существует!\n");
         } while (isExist == TRUE);
         printf("Введите имя участника: ");
-        firstname = limitedStringInput(firstname, 49);
+        firstname = limitedStringInput(firstname, 49, "Введите имя участника: ");
         strcpy((info + infoLinesCounter)->fullname.firstname, firstname);
         free(firstname);
         printf("Введите фамилию участника: ");
-        surname = limitedStringInput(surname, 49);
+        surname = limitedStringInput(surname, 49, "Введите фамилию участника: ");
         strcpy((info + infoLinesCounter)->fullname.surname, surname);
         free(surname);
         printf("Введите отчество участника: ");
-        lastname = limitedStringInput(lastname, 49);
+        lastname = limitedStringInput(lastname, 49, "Введите отчество участника: ");
         strcpy((info + infoLinesCounter)->fullname.lastname, lastname);
         free(lastname);
         printf("Введите страну учатника: ");
-        country = limitedStringInput(country, 29);
+        country = limitedStringInput(country, 29, "Введите страну учатника: ");
         strcpy((info + infoLinesCounter)->country, country);
         free(country);
         do {
@@ -877,11 +902,11 @@ INFORMATION* infoAdd(INFORMATION* info) {
             (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;
         else (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;
         printf("Введите разряд участника: ");
-        category = limitedStringInput(category, 29);
+        category = limitedStringInput(category, 29, "Введите разряд участника: ");
         strcpy((info + infoLinesCounter)->category, category);
         free(category);
         printf("Введите модель коньков участника: ");
-        model = limitedStringInput(model, 29);
+        model = limitedStringInput(model, 29, "Введите модель коньков участника: ");
         strcpy((info + infoLinesCounter)->model, model);
         free(model);
         do {
@@ -921,17 +946,7 @@ int infoEditMenu(INFORMATION* info, int i){
     int choice = 1, ch = ' ';
     while (TRUE) {
         if (ch != 0) {
-            system("cls");
-            printf("--------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
-            printf("--------------------------------------------------------------------------------------------------------------------------------\n");
-            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %02i/%02i/%04i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
-                   (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
-                   (info + i)->fullname.lastname, (info + i)->country,
-                   (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year,
-                   (info + i)->dateOfBirth.age, (info + i)->category,
-                   (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
-            printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+            printEditingInfo(info, i);
             indicateCursor(FALSE);
             if (ch == 13) {
                 indicateCursor(TRUE);
@@ -1017,17 +1032,45 @@ int infoEditMenu(INFORMATION* info, int i){
     }
 }
 
+void printEditingInfo(INFORMATION* info, int i){
+    system("cls");
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+    printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %02i/%02i/%04i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
+           (info + i)->number, (info + i)->fullname.firstname, (info + i)->fullname.surname,
+           (info + i)->fullname.lastname, (info + i)->country,
+           (info + i)->dateOfBirth.day, (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year,
+           (info + i)->dateOfBirth.age, (info + i)->category,
+           (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes, (info + i)->timeOfLap.seconds);
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+}
+
 INFORMATION* infoEdit(INFORMATION* info) {
-    if (info == NULL)
+    if (info == NULL) {
         printf("[Ошибка!]Редактирование информации: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+        system("pause");
+    }
+    else if (infoLinesCounter == 0) {
         printf("[Ошибка!]Редактирование информации: Файл пуст!\n\n");
+        system("pause");
+    }
     else {
         time_t t = time(NULL);
         FILE *file = NULL;
         struct tm *aTm = localtime(&t);
         int number = 0, isExist = FALSE, i = 0, j = 0, isNumberExist = FALSE, infoEditFlag = FALSE;
         char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
+        printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+        printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
+        printf("--------------------------------------------------------------------------------------------------------------------------------\n");
+        for (j = 0; j < infoLinesCounter; j++) {
+            printf("|%-3i  |%-15s %-15s %-15s|%-10s|  %02i/%02i/%04i  |  %-3i  |%-10s|%-10s|%-4i|   %02i:%02i   |\n",
+                   (info + j)->number, (info + j)->fullname.firstname, (info + j)->fullname.surname, (info + j)->fullname.lastname, (info + j)->country,
+                   (info + j)->dateOfBirth.day, (info + j)->dateOfBirth.month, (info + j)->dateOfBirth.year, (info + j)->dateOfBirth.age, (info + j)->category,
+                   (info + j)->model, (info + j)->points, (info + j)->timeOfLap.minutes, (info + j)->timeOfLap.seconds);
+        }
+        printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         do {
             number = inputCheck("Введите номер участника, которого нужно отредактировать: ");
             for (i = 0; i < infoLinesCounter; i++) {
@@ -1059,43 +1102,53 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Участник с таким номером уже существует!\n");
                     } while (isNumberExist == TRUE);
                     (info + i)->number = newNumber;
+                    printEditingInfo(info,i);
                     printf("Номер участника успешно изменен!\n\n");
+                    system("pause");
                     break;
                 }
                 case 2: {
                     printf("Изменение имени участника.\n");
                     printf("Введите новое имя участника: ");
-                    firstname = limitedStringInput(firstname, 49);
+                    firstname = limitedStringInput(firstname, 49, "Введите новое имя участника: ");
                     strcpy((info + i)->fullname.firstname, firstname);
                     free(firstname);
+                    printEditingInfo(info,i);
                     printf("Имя участника успешно изменено!\n\n");
+                    system("pause");
                     break;
                 }
                 case 3: {
                     printf("Изменение фамилии участника.\n");
                     printf("Введите новую фамилию участника: ");
-                    surname = limitedStringInput(surname, 49);
+                    surname = limitedStringInput(surname, 49, "Введите новую фамилию участника: ");
                     strcpy((info + i)->fullname.surname, surname);
                     free(surname);
+                    printEditingInfo(info,i);
                     printf("Фамилия участника успешна изменена!\n\n");
+                    system("pause");
                     break;
                 }
                 case 4: {
                     printf("Изменение отчества участника.\n");
                     printf("Введите новое отчество участника: ");
-                    lastname = limitedStringInput(lastname, 49);
+                    lastname = limitedStringInput(lastname, 49, "Введите новое отчество участника: ");
                     strcpy((info + i)->fullname.lastname, lastname);
                     free(lastname);
+                    printEditingInfo(info,i);
                     printf("Отчество участника успешно изменено!\n\n");
+                    system("pause");
                     break;
                 }
                 case 5: {
                     printf("Изменение страны участника.\n");
                     printf("Введите новую страну участника: ");
-                    country = limitedStringInput(country, 29);
+                    country = limitedStringInput(country, 29, "Введите новую страну участника: ");
                     strcpy((info + i)->country, country);
                     free(country);
+                    printEditingInfo(info,i);
                     printf("Страна участника успешно изменена.\n\n");
+                    system("pause");
                     break;
                 }
                 case 6: {
@@ -1108,7 +1161,9 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Введите число от 1 до 31!\n");
                     } while (newBirthDay < 1 || newBirthDay > 31);
                     (info + i)->dateOfBirth.day = newBirthDay;
+                    printEditingInfo(info,i);
                     printf("День рождения участника успешно изменен!\n\n");
+                    system("pause");
                     break;
                 }
                 case 7: {
@@ -1120,7 +1175,9 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Введите число от 1 до 12!\n\n");
                     } while (newBirthMonth < 1 || newBirthMonth > 12);
                     (info + i)->dateOfBirth.month = newBirthMonth;
+                    printEditingInfo(info,i);
                     printf("Месяц рождения участника успешно изменен!\n\n");
+                    system("pause");
                     break;
                 }
                 case 8: {
@@ -1136,25 +1193,31 @@ INFORMATION* infoEdit(INFORMATION* info) {
                         (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;
                     else
                         (info + i)->dateOfBirth.age = 2019 - (info + i)->dateOfBirth.year;
+                    printEditingInfo(info,i);
                     printf("Год рождения участника успешно изменен!\n\n");
+                    system("pause");
                     break;
                 }
                 case 9: {
                     printf("Изменение разряда участника.\n");
                     printf("Введите новый разряд участника: ");
-                    category = limitedStringInput(category, 29);
+                    category = limitedStringInput(category, 29, "Введите новый разряд участника: ");
                     strcpy((info + i)->category, category);
                     free(category);
+                    printEditingInfo(info,i);
                     printf("Разряд участника успешно изменен!\n\n");
+                    system("pause");
                     break;
                 }
                 case 10: {
                     printf("Изменение модели коньков участника.\n");
                     printf("Введите новую модель коньков участника: ");
-                    model = limitedStringInput(model, 29);
+                    model = limitedStringInput(model, 29, "Введите новую модель коньков участника: ");
                     strcpy((info + i)->model, model);
                     free(model);
+                    printEditingInfo(info,i);
                     printf("Модель коньков участника успешно изменена!\n\n");
+                    system("pause");
                     break;
                 }
                 case 11: {
@@ -1164,7 +1227,9 @@ INFORMATION* infoEdit(INFORMATION* info) {
                         if ((info + i)->points < 0 || (info + i)->points > 9999)
                             printf("[Ошибка!]Введите число от 0 до 9999!\n");
                     } while ((info + i)->points < 0 || (info + i)->points > 9999);
+                    printEditingInfo(info,i);
                     printf("Количество очков участника успешно изменено!\n\n");
+                    system("pause");
                     break;
                 }
                 case 12: {
@@ -1176,7 +1241,9 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
                     } while ((info + i)->timeOfLap.minutes < 0 ||
                              (info + i)->timeOfLap.minutes > 59);
+                    printEditingInfo(info,i);
                     printf("Минуты круга участника успешно изменены!\n\n");
+                    system("pause");
                     break;
                 }
                 case 13: {
@@ -1188,7 +1255,9 @@ INFORMATION* infoEdit(INFORMATION* info) {
                             printf("[Ошибка!]Введите число от 0 до 59!\n");
                     } while ((info + i)->timeOfLap.seconds < 0 ||
                              (info + i)->timeOfLap.seconds > 59);
+                    printEditingInfo(info,i);
                     printf("Секунды круга участника успешно изменены!\n\n");
+                    system("pause");
                     break;
                 }
                 case 14:
@@ -1259,7 +1328,7 @@ int inputCheck(const char *inputText) {
         char *buffer = NULL;
         int numberEntered = 0, i = 0, check = 0, isNumeral = FALSE, flag = FALSE;
         printf("%s", inputText);
-        buffer = limitedStringInput(buffer, 99);
+        buffer = limitedStringInput(buffer, 99,"");
         while (buffer[i] != '\0') {
             if (buffer[i] == '-' && flag == FALSE) {
                 i++;
@@ -1282,7 +1351,7 @@ int inputCheck(const char *inputText) {
     }
 }
 
-char* limitedStringInput(char* input, int limit) {
+char* limitedStringInput(char* input, int limit,const char* inputText) {
     char ch;
     int i = 0;
     input = (char*)realloc(NULL, sizeof(char)*(limit + 1));
@@ -1290,9 +1359,14 @@ char* limitedStringInput(char* input, int limit) {
         ch = (char)_getch();
         if (ch != '\0') {
             if (ch == 13 || ch == 9) {
-                input[i] = '\0';
-                putchar('\n');
-                break;
+                if (i > 0){
+                    input[i] = '\0';
+                    putchar('\n');
+                    break;
+                } else {
+                    printf("\n[Ошибка!]Введите хотябы один символ!\n");
+                    printf("%s", inputText);
+                }
             }
             else if (ch == 8 && i > 0) {
                 i--;
@@ -1624,9 +1698,9 @@ void surnameSearch(INFORMATION* info) {
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         int isAtLeastOneMember = FALSE;
-        char *surname;
+        char *surname = NULL;
         printf("Введите фамилию: ");
-        surname = limitedStringInput("Введите фамилию: ", 49);
+        surname = limitedStringInput(surname, 49, "Введите фамилию: ");
         system("cls");
         printf("Участники, с фамилией %s: ", surname);
         for (int i = 0; i < infoLinesCounter; i++) {
@@ -1674,14 +1748,14 @@ int searchingAndFiltering(INFORMATION* info){
 
 void countrySearch(INFORMATION* info){
     if (info == NULL)
-        printf("[Ошибка!]Файл не открыт!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
     else if (infoLinesCounter == 0)
-        printf("[Ошибка!]Файл пуст!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         int isAtLeastOneMember = FALSE;
-        char *country;
+        char *country = NULL;
         printf("Введите страну: ");
-        country = limitedStringInput("Введите страну: ", 49);
+        country = limitedStringInput(country, 49, "Введите страну: ");
         system("cls");
         printf("Участники, из страны %s: ", country);
         for (int i = 0; i < infoLinesCounter; i++) {
@@ -1710,14 +1784,14 @@ void countrySearch(INFORMATION* info){
 
 void categorySearch(INFORMATION* info){
     if (info == NULL)
-        printf("[Ошибка!]Файл не открыт!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
     else if (infoLinesCounter == 0)
-        printf("[Ошибка!]Файл пуст!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         int isAtLeastOneMember = FALSE;
-        char *category;
+        char *category = NULL;
         printf("Введите разряд: ");
-        category = limitedStringInput("Введите разряд: ", 49);
+        category = limitedStringInput(category, 49, "Введите разряд: ");
         system("cls");
         printf("Участники, с разрядом %s: ", category);
         for (int i = 0; i < infoLinesCounter; i++) {
@@ -1747,9 +1821,9 @@ void categorySearch(INFORMATION* info){
 void printTop(INFORMATION* info){
     system("cls");
     if (info == NULL)
-        printf("[Ошибка!]Файл не открыт!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
     else if (infoLinesCounter == 0)
-        printf("[Ошибка!]Файл пуст!\n\n");
+        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         INFORMATION* infoCopy = NULL;
         infoCopy = (INFORMATION*)realloc(NULL,sizeof(INFORMATION)*infoLinesCounter);

@@ -3,4 +3,4 @@ rammstein rammstein 0
 admin admin 1
 qwert qwert 1
 privet poka 0
-koshka sobaka 1
+sobaka koshka 1

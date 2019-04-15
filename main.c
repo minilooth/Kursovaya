@@ -94,18 +94,18 @@ int main() {
     INFORMATION *info = NULL;
     USER *user = NULL;
     user = userLoad(user);
-    int adminSubMenuFlag = 0, userSubMenuFlag = 0;
+    int adminSubMenuFlag = FALSE, userSubMenuFlag = FALSE;
     while (1) {
         system("cls");
         switch (menu()) {
             case 1: {
-                if (adminLogin(user) == 1) {
-                    while (adminSubMenuFlag == 0) {
+                if (adminLogin(user) == TRUE) {
+                    while (adminSubMenuFlag == FALSE) {
                         system("cls");
                         switch (adminSubmenu()) {
                             case 1: {
                                 system("cls");
-                                if (infoCheckFile() == 0) {
+                                if (infoCheckFile() == FALSE) {
                                     infoCreateFile();
                                     info = infoOpen(info);
                                 } else info = infoOpen(info);
@@ -117,23 +117,23 @@ int main() {
                             case 5: infoPrint(info); break;
                             case 6: searchingAndFiltering(info); break;
                             case 7: user = userManagement(user); break;
-                            case 8: adminSubMenuFlag = 1; break;
+                            case 8: adminSubMenuFlag = TRUE; break;
                             default: break;
                         }
-                        if (adminSubMenuFlag == 1) break;
+                        if (adminSubMenuFlag == TRUE) break;
                     }
-                    adminSubMenuFlag = 0;
+                    adminSubMenuFlag = FALSE;
                 }
                 break;
             }
             case 2: {
-                if (userLogin(user) == 1) {
-                    while (userSubMenuFlag == 0) {
+                if (userLogin(user) == TRUE) {
+                    while (userSubMenuFlag == FALSE) {
                         system("cls");
                         switch (userSubmenu()) {
                             case 1: {
                                 system("cls");
-                                if (infoCheckFile() == 1) {
+                                if (infoCheckFile() == TRUE) {
                                     info = infoOpen(info);
                                 }
                                 break;
@@ -141,12 +141,12 @@ int main() {
                             case 2: infoPrint(info); break;
                             case 3: printTop(info); break;
                             case 4: searchingAndFiltering(info); break;
-                            case 5: userSubMenuFlag = 1; break;
+                            case 5: userSubMenuFlag = TRUE; break;
                             default: break;
                         }
-                        if (userSubMenuFlag == 1) break;
+                        if (userSubMenuFlag == TRUE) break;
                     }
-                    userSubMenuFlag = 0;
+                    userSubMenuFlag = FALSE;
                 }
                 break;
             }
@@ -314,22 +314,22 @@ int countLines(const char* filename) {
 
 int adminLogin(USER *user) {
     system("cls");
-    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
+    int isLoginRight = FALSE, isPasswordRight = FALSE, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
         login = limitedStringInput(login, 29);
         for (i = 0; i < usersLinesCounter; i++)
             if (strcmp(login, (user + i)->login) == 0) {
-                isLoginRight = 1;
+                isLoginRight = TRUE;
                 break;
             }
-        if (isLoginRight == 0) {
+        if (isLoginRight == FALSE) {
             printf("[Ошибка!]Такого администратора не существует!\n\n");
             system("pause");
             return 0;
         }
-    } while (isLoginRight != 1);
+    } while (isLoginRight != TRUE);
     do {
         j = 0;
         printf("Введите пароль: ");
@@ -360,42 +360,42 @@ int adminLogin(USER *user) {
             }
         }
         if (strcmp(password, (user + i)->password) == 0)
-            isPasswordRight = 1;
+            isPasswordRight = TRUE;
         else printf("\n[Ошибка!]Неверный пароль!\n");
-    } while (isPasswordRight != 1);
+    } while (isPasswordRight != TRUE);
     if ((user + i)->isAdmin == 1) {
         printf("\nВы успешно авторизовались.\n\n");
         free(login);
         system("pause");
-        return 1;
+        return TRUE;
     }
     else {
         printf("\n[Ошибка!]Авторизация: Войдите через пользователя!\n\n");
         system("pause");
         free(login);
-        return 0;
+        return FALSE;
     }
 }
 
 int userLogin(USER *user) {
     system("cls");
-    int isLoginRight = 0, isPasswordRight = 0, i = 0, j = 0, counter = 0;
+    int isLoginRight = FALSE, isPasswordRight = FALSE, i = 0, j = 0, counter = 0;
     char *login = NULL, password[30], ch;
     do {
         printf("Введите логин: ");
         login = limitedStringInput(login, 29);
         for (i = 0; i < usersLinesCounter; i++)
             if (strcmp(login, (user + i)->login) == 0) {
-                isLoginRight = 1;
+                isLoginRight = TRUE;
                 break;
             }
-        if (isLoginRight == 0) {
+        if (isLoginRight == FALSE) {
             printf("[Ошибка!]Такого пользователя не существует!\n\n");
             system("pause");
             free(login);
             return 0;
         }
-    } while (isLoginRight != 1);
+    } while (isLoginRight != TRUE);
     do {
         j = 0;
         printf("Введите пароль: ");
@@ -425,9 +425,9 @@ int userLogin(USER *user) {
             }
         }
         if (strcmp(password, (user + i)->password) == 0)
-            isPasswordRight = 1;
+            isPasswordRight = TRUE;
         else printf("\n[Ошибка!]Неверный пароль!\n");
-    } while (isPasswordRight != 1);
+    } while (isPasswordRight != TRUE);
     if ((user + i)->isAdmin == 0) {
         printf("\nВы успешно авторизовались.\n\n");
         free(login);
@@ -517,24 +517,22 @@ USER* userLoad(USER* user) {
 
 USER* userAdd(USER* user) {
     user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));
-    int loginIsNotExist = 0, i = 0;
+    int loginIsNotExist = FALSE, i = 0;
     char *login = NULL, *password = NULL;
     FILE* file = NULL;
     printf("Добавить пользователя:\n");
     do {
-        loginIsNotExist = 0;
         printf("Введите логин: ");
         login = limitedStringInput(login, 29);
         strcpy((user + usersLinesCounter)->login, login);
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, (user + usersLinesCounter)->login) == 0) {
                 printf("[Ошибка!]Этот аккаунт уже существует!\n");
-                loginIsNotExist = 0;
+                loginIsNotExist = FALSE;
                 break;
-            }
-            else loginIsNotExist = 1;
+            } else loginIsNotExist = TRUE;
         }
-    } while ((loginIsNotExist != 1));
+    } while ((loginIsNotExist != TRUE));
     free(login);
     printf("Введите пароль: ");
     password = limitedStringInput(password, 29);
@@ -591,7 +589,7 @@ USER* userManagement(USER* user) {
 
 USER* userDelete(USER* user) {
     char *login = NULL;
-    int i = 0, loginIsExist = 0;
+    int i = 0, loginIsExist = FALSE;
     FILE* file = NULL;
     printf("Удаление аккаунта.\n");
     do {
@@ -599,13 +597,13 @@ USER* userDelete(USER* user) {
         login = limitedStringInput(login, 29);
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, login) == 0) {
-                loginIsExist = 1;
+                loginIsExist = TRUE;
                 break;
             }
         }
-        if (loginIsExist == 0)
+        if (loginIsExist == FALSE)
             printf("[Ошибка!]Такого аккаунта не существует!\n");
-    } while (loginIsExist != 1);
+    } while (loginIsExist != TRUE);
     free(login);
     if ((file = fopen("db.txt", "w")) != NULL) {
         for(int j = i; j < usersLinesCounter; j++)
@@ -623,23 +621,22 @@ USER* userDelete(USER* user) {
 
 USER* userEdit(USER* user) {
     char *login = NULL, *newLogin = NULL, *newPassword = NULL;
-    int i = 0, loginIsExist = 0, isNewLoginNotExist = 0, editFlag = 0;
+    int i = 0, loginIsExist = FALSE, isNewLoginNotExist = FALSE, editFlag = FALSE;
     FILE* file = NULL;
     do {
-        loginIsExist = 0;
         printf("Введите логин аккаунта, который вы хотите отредактировать: ");
         login = limitedStringInput(login, 29);
         for (i = 0; i < usersLinesCounter; i++) {
             if (strcmp((user + i)->login, login) == 0) {
-                loginIsExist = 1;
+                loginIsExist = TRUE;
                 break;
-            }
+            } else loginIsExist = FALSE;
         }
-        if (loginIsExist == 0)
+        if (loginIsExist == FALSE)
             printf("[Ошибка!]Такого аккаунта не существует!\n");
-    } while (loginIsExist != 1);
+    } while (loginIsExist != TRUE);
     free(login);
-    while (editFlag == 0) {
+    while (editFlag == FALSE) {
         switch (userEditMenu(user,i)) {
             case 1: {
                 printf("Изменить логин.\n");
@@ -648,14 +645,14 @@ USER* userEdit(USER* user) {
                     newLogin = limitedStringInput(newLogin, 29);
                     for (int j = 0; j < usersLinesCounter; j++) {
                         if (strcmp((user + j)->login, newLogin) == 0) {
-                            isNewLoginNotExist = 0;
+                            isNewLoginNotExist = FALSE;
                             break;
                         }
-                        else isNewLoginNotExist = 1;
+                        else isNewLoginNotExist = TRUE;
                     }
-                    if (isNewLoginNotExist == 0)
+                    if (isNewLoginNotExist == FALSE)
                         printf("[Ошибка!]Такой логин уже существует!\n");
-                } while (isNewLoginNotExist == 0);
+                } while (isNewLoginNotExist == FALSE);
                 strcpy((user + i)->login, newLogin);
                 printf("Логин успешно изменен!\n\n");
                 free(newLogin);
@@ -826,7 +823,7 @@ INFORMATION* infoAdd(INFORMATION* info) {
         info = (INFORMATION *) realloc(info, ((infoLinesCounter + 1) * sizeof(INFORMATION)));
         time_t t = time(NULL);
         struct tm *aTm = localtime(&t);
-        int isExist = 0;
+        int isExist = FALSE;
         char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
         printf("Добавление участника.\n");
         do {
@@ -837,12 +834,12 @@ INFORMATION* infoAdd(INFORMATION* info) {
             } while ((info + infoLinesCounter)->number < 1);
             for (int i = 0; i < infoLinesCounter; i++) {
                 if ((info + i)->number == (info + infoLinesCounter)->number) {
-                    isExist = 1;
+                    isExist = TRUE;
                     break;
-                } else isExist = 0;
+                } else isExist = FALSE;
             }
-            if (isExist == 1) printf("Участник с таким номером уже существует!\n");
-        } while (isExist == 1);
+            if (isExist == TRUE) printf("Участник с таким номером уже существует!\n");
+        } while (isExist == TRUE);
         printf("Введите имя участника: ");
         firstname = limitedStringInput(firstname, 49);
         strcpy((info + infoLinesCounter)->fullname.firstname, firstname);
@@ -1029,19 +1026,19 @@ INFORMATION* infoEdit(INFORMATION* info) {
         time_t t = time(NULL);
         FILE *file = NULL;
         struct tm *aTm = localtime(&t);
-        int number = 0, isExist = 0, i = 0, j = 0, isNumberExist = 0, infoEditFlag = 0;
+        int number = 0, isExist = FALSE, i = 0, j = 0, isNumberExist = FALSE, infoEditFlag = FALSE;
         char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
         do {
             number = inputCheck("Введите номер участника, которого нужно отредактировать: ");
             for (i = 0; i < infoLinesCounter; i++) {
                 if ((info + i)->number == number) {
-                    isExist = 1;
+                    isExist = TRUE;
                     break;
-                } else isExist = 0;
+                } else isExist = FALSE;
             }
-            if (isExist == 0) printf("[Ошибка!]Участника с таким номером не существует!\n");
-        } while (isExist == 0);
-        while (infoEditFlag == 0) {
+            if (isExist == FALSE) printf("[Ошибка!]Участника с таким номером не существует!\n");
+        } while (isExist == FALSE);
+        while (infoEditFlag == FALSE) {
             switch (infoEditMenu(info,i)) {
                 case 1: {
                     int newNumber = 0;
@@ -1054,13 +1051,13 @@ INFORMATION* infoEdit(INFORMATION* info) {
                         } while (newNumber < 1);
                         for (j = 0; j < infoLinesCounter; j++) {
                             if ((info + j)->number == newNumber) {
-                                isNumberExist = 1;
+                                isNumberExist = TRUE;
                                 break;
-                            } else isNumberExist = 0;
+                            } else isNumberExist = FALSE;
                         }
-                        if (isNumberExist == 1)
+                        if (isNumberExist == TRUE)
                             printf("[Ошибка!]Участник с таким номером уже существует!\n");
-                    } while (isNumberExist == 1);
+                    } while (isNumberExist == TRUE);
                     (info + i)->number = newNumber;
                     printf("Номер участника успешно изменен!\n\n");
                     break;
@@ -1195,12 +1192,12 @@ INFORMATION* infoEdit(INFORMATION* info) {
                     break;
                 }
                 case 14:
-                    infoEditFlag = 1;
+                    infoEditFlag = TRUE;
                     break;
                 default:
                     break;
             }
-            if (infoEditFlag == 1) break;
+            if (infoEditFlag == TRUE) break;
         }
         if ((file = fopen("info.txt", "w")) != NULL) {
             for (j = 0; j < infoLinesCounter; j++) {
@@ -1222,19 +1219,19 @@ INFORMATION* infoDelete(INFORMATION *info) {
     } else if (infoLinesCounter == 0) {
         printf("[Ошибка!]Удаление информации: Файл пуст!\n\n");
     } else {
-        int delNumber = 0, isNumberExist = 0, i = 0;
+        int delNumber = 0, isNumberExist = FALSE, i = 0;
         FILE *file = NULL;
         printf("Удаление участника.\n");
         do {
             delNumber = inputCheck("Введите номер участника для удаления: ");
             for (i = 0; i < infoLinesCounter; i++) {
                 if (delNumber == (info + i)->number) {
-                    isNumberExist = 1;
+                    isNumberExist = TRUE;
                     break;
-                } else isNumberExist = 0;
+                } else isNumberExist = FALSE;
             }
-            if (isNumberExist == 0) printf("[Ошибка!]Участника с таким номером не существует!\n");
-        } while (isNumberExist != 1);
+            if (isNumberExist == FALSE) printf("[Ошибка!]Участника с таким номером не существует!\n");
+        } while (isNumberExist != TRUE);
         for(int j = i; j < infoLinesCounter; j++)
             *(info + j) = *(info + (j + 1));
         info = (INFORMATION*)realloc(info,sizeof(INFORMATION)*infoLinesCounter);
@@ -1259,32 +1256,29 @@ INFORMATION* infoDelete(INFORMATION *info) {
 
 int inputCheck(const char *inputText) {
     while (1) {
-        printf("%s", inputText);
         char *buffer = NULL;
-        int numberEntered = 0, i = 0, check = 0, isNumeral = 0, flag = 0;
+        int numberEntered = 0, i = 0, check = 0, isNumeral = FALSE, flag = FALSE;
+        printf("%s", inputText);
         buffer = limitedStringInput(buffer, 99);
         while (buffer[i] != '\0') {
-            if (buffer[i] == '-' && flag == 0) {
+            if (buffer[i] == '-' && flag == FALSE) {
                 i++;
-                flag = 1;
+                flag = TRUE;
             }
             check = isdigit((unsigned char)buffer[i]);
             if (check == 0) {
-                isNumeral = 0;
+                isNumeral = FALSE;
                 break;
             }
-            else isNumeral = 1;
+            else isNumeral = TRUE;
             i++;
         }
-        if (isNumeral == 1) {
+        if (isNumeral == TRUE) {
             numberEntered = strtol(buffer, NULL, 10);
             free(buffer);
             return numberEntered;
         }
-        else {
-            printf("[Ошибка!]Не правильный ввод!\n");
-            printf("%s", inputText);
-        }
+        else printf("[Ошибка!]Не правильный ввод!\n");
     }
 }
 
@@ -1292,7 +1286,7 @@ char* limitedStringInput(char* input, int limit) {
     char ch;
     int i = 0;
     input = (char*)realloc(NULL, sizeof(char)*(limit + 1));
-    while (1) {
+    while (TRUE) {
         ch = (char)_getch();
         if (ch != '\0') {
             if (ch == 13 || ch == 9) {
@@ -1394,7 +1388,7 @@ void pointsFilter(INFORMATION* info) {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        int points = 0, isAtLeastOneMember = 0;
+        int points = 0, isAtLeastOneMember = FALSE;
         do {
             points = inputCheck("Введите количество очков: ");
             if (points < 0 || points > 9999)
@@ -1403,8 +1397,8 @@ void pointsFilter(INFORMATION* info) {
         system("cls");
         printf("Участники, у которых очков больше %i: ", points);
         for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->points >= points) {
-                if (isAtLeastOneMember == 0) {
+            if ((info + i)->points > points) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1415,12 +1409,12 @@ void pointsFilter(INFORMATION* info) {
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", points);
     }
     system("pause");
@@ -1432,7 +1426,7 @@ void timeOfLapFilter(INFORMATION* info) {
     } else if (infoLinesCounter == 0) {
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     } else {
-        int minutesOfLap = 0, secondsOfLap = 0, isAtLeastOneMember = 0;
+        int minutesOfLap = 0, secondsOfLap = 0, isAtLeastOneMember = FALSE;
         do {
             minutesOfLap = inputCheck("Введите количество минут круга: ");
             if (minutesOfLap < 0 || minutesOfLap > 59)
@@ -1449,7 +1443,7 @@ void timeOfLapFilter(INFORMATION* info) {
             if ((info + i)->timeOfLap.minutes < minutesOfLap)
                 if ((info + i)->timeOfLap.seconds <
                     ((info + i)->timeOfLap.minutes == minutesOfLap ? secondsOfLap : 60)) {
-                    if (isAtLeastOneMember == 0) {
+                    if (isAtLeastOneMember == FALSE) {
                         printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                         printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                         printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1460,12 +1454,12 @@ void timeOfLapFilter(INFORMATION* info) {
                            (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                            (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                            (info + i)->timeOfLap.seconds);
-                    isAtLeastOneMember = 1;
+                    isAtLeastOneMember = TRUE;
                 }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с временем круга меньше %02i:%02i.\n\n", minutesOfLap,
                    secondsOfLap);
     }
@@ -1478,7 +1472,7 @@ void ageFilter(INFORMATION* info) {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        int age = 0, isAtLeastOneMember = 0;
+        int age = 0, isAtLeastOneMember = FALSE;
         do {
             age = inputCheck("Введите возраст: ");
             if (age < 0 || age > 119)
@@ -1488,7 +1482,7 @@ void ageFilter(INFORMATION* info) {
         printf("Участники, возраст которых больше %i: ", age);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->dateOfBirth.age > age) {
-                if (isAtLeastOneMember == 0) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1499,12 +1493,12 @@ void ageFilter(INFORMATION* info) {
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", age);
     }
     system("pause");
@@ -1516,7 +1510,7 @@ void yearOfBirthFilter(INFORMATION* info) {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        int yearOfBirth = 0, isAtLeastOneMember = 0;
+        int yearOfBirth = 0, isAtLeastOneMember = FALSE;
         do {
             yearOfBirth = inputCheck("Введите год рождения: ");
             if (yearOfBirth < 1900 || yearOfBirth > 2019)
@@ -1526,7 +1520,7 @@ void yearOfBirthFilter(INFORMATION* info) {
         printf("Участники, год рождения у которых больше %i: ", yearOfBirth);
         for (int i = 0; i < infoLinesCounter; i++) {
             if ((info + i)->dateOfBirth.year > yearOfBirth) {
-                if (isAtLeastOneMember == 0) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1537,13 +1531,13 @@ void yearOfBirthFilter(INFORMATION* info) {
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1) {
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1) {
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
             }
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
     }
     system("pause");
@@ -1593,7 +1587,7 @@ void numberSearch(INFORMATION* info) {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        int number = 0, isFounded = 0;
+        int number = 0, isFounded = FALSE;
         do {
             number = inputCheck("Введите номер: ");
             if (number < 0)
@@ -1613,11 +1607,11 @@ void numberSearch(INFORMATION* info) {
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
-                isFounded = 1;
+                isFounded = TRUE;
                 break;
             }
         }
-        if (isFounded == 0)
+        if (isFounded == FALSE)
             printf("[Ошибка!]Нету участника с номером %i.\n\n", number);
     }
     system("pause");
@@ -1629,7 +1623,7 @@ void surnameSearch(INFORMATION* info) {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        int isAtLeastOneMember = 0;
+        int isAtLeastOneMember = FALSE;
         char *surname;
         printf("Введите фамилию: ");
         surname = limitedStringInput("Введите фамилию: ", 49);
@@ -1637,7 +1631,7 @@ void surnameSearch(INFORMATION* info) {
         printf("Участники, с фамилией %s: ", surname);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->fullname.surname, surname) == 0) {
-                if (isAtLeastOneMember == 0) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1648,12 +1642,12 @@ void surnameSearch(INFORMATION* info) {
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с фамилией %s.\n\n", surname);
     }
     system("pause");
@@ -1684,7 +1678,7 @@ void countrySearch(INFORMATION* info){
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Файл пуст!\n\n");
     else {
-        int isAtLeastOneMember = 0;
+        int isAtLeastOneMember = FALSE;
         char *country;
         printf("Введите страну: ");
         country = limitedStringInput("Введите страну: ", 49);
@@ -1692,7 +1686,7 @@ void countrySearch(INFORMATION* info){
         printf("Участники, из страны %s: ", country);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->country,country) == 0) {
-                if (isAtLeastOneMember == 0) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1703,12 +1697,12 @@ void countrySearch(INFORMATION* info){
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника из страны %s.\n\n", country);
     }
     system("pause");
@@ -1720,7 +1714,7 @@ void categorySearch(INFORMATION* info){
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Файл пуст!\n\n");
     else {
-        int isAtLeastOneMember = 0;
+        int isAtLeastOneMember = FALSE;
         char *category;
         printf("Введите разряд: ");
         category = limitedStringInput("Введите разряд: ", 49);
@@ -1728,7 +1722,7 @@ void categorySearch(INFORMATION* info){
         printf("Участники, с разрядом %s: ", category);
         for (int i = 0; i < infoLinesCounter; i++) {
             if (strcmp((info + i)->category,category) == 0) {
-                if (isAtLeastOneMember == 0) {
+                if (isAtLeastOneMember == FALSE) {
                     printf("\n--------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |  СТРАНА  |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  |  МОДЕЛЬ  |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("--------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1739,12 +1733,12 @@ void categorySearch(INFORMATION* info){
                        (info + i)->dateOfBirth.month, (info + i)->dateOfBirth.year, (info + i)->dateOfBirth.age,
                        (info + i)->category, (info + i)->model, (info + i)->points, (info + i)->timeOfLap.minutes,
                        (info + i)->timeOfLap.seconds);
-                isAtLeastOneMember = 1;
+                isAtLeastOneMember = TRUE;
             }
-            if (isAtLeastOneMember == 1 && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember == TRUE && i == infoLinesCounter - 1)
                 printf("--------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (isAtLeastOneMember == 0)
+        if (isAtLeastOneMember == FALSE)
             printf("[Ошибка!]Нет ни одного участника с разрядом %s.\n\n", category);
     }
     system("pause");

@@ -8,8 +8,11 @@
 #include <conio.h>
 #define TRUE 1
 #define FALSE 0
-#define UP 72
-#define DOWN 80
+#define KEY_UP 72
+#define KEY_DOWN 80
+#define KEY_RETURN 13
+#define KEY_TAB 9
+#define KEY_BKSP 8
 
 
 typedef struct {
@@ -160,35 +163,28 @@ int main() {
 
 int menu(){
     int choice = 1, ch = ' ';
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    char *line[] = {"Вход под администратором.", "Вход под пользователем.", "Выход.", NULL} , pointer = '>';
     indicateCursor(FALSE);
     while(1){
         if (ch != 0){
             system("cls");
-            printf("Меню:\n");
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 3) choice = 1;
             if (choice < 1) choice = 3;
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Вход под администратором.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Вход под администратором.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Вход под пользователем.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Вход под пользователем.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Выход.\n");
+            printf("Меню:\n");
+            for(int i = 0; line[i]; i++) {
+                if(choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }
@@ -196,60 +192,30 @@ int menu(){
 
 int adminSubmenu(){
     int choice = 1, ch = ' ';
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    char pointer = '>', *line[] = {"Создание/открытие файла.", "Добавление записи.", "Редактирование записи.", "Удаление записи.",
+                     "Просмотр всех данных в табличной форме.", "Различные процедуры поиска и фильтрации данных.",
+                     "Управление пользователями.", "Выход в меню.", NULL};
     indicateCursor(FALSE);
     while(1){
         if (ch != 0){
             system("cls");
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 8) choice = 1;
             if (choice < 1) choice = 8;
             printf("Подменю(для администраторов):\n");
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Создание/открытие файла.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Создание/открытие файла.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Добавление записи.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Добавление записи.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Редактирование записи.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Редактирование записи.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Удаление записи.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Удаление записи.\n");
-            if (choice == 5) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Просмотр всех данных в табличной форме.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Просмотр всех данных в табличной форме.\n");
-            if (choice == 6) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Различные процедуры поиска и фильтрации данных.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Различные процедуры поиска и фильтрации данных.\n");
-            if (choice == 7) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Управление пользователями.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Управление пользователями.\n");
-            if (choice == 8) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход в меню.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Выход в меню.\n");
+            for(int i = 0; line[i]; i++){
+                if(choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }
@@ -257,45 +223,30 @@ int adminSubmenu(){
 
 int userSubmenu(){
     int choice = 1, ch = ' ';
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    char pointer = '>', *line[] = {"Открытие файла с данными.", "Просмотр всех данных в табличной форме.",
+                                    "Просмотр топ-3 самых быстрых участников.", "Различные процедуры поиска и фильтрации данных.",
+                                    "Выход в меню.", NULL};
     indicateCursor(FALSE);
     while(1){
         if (ch != 0){
             system("cls");
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 5) choice = 1;
             if (choice < 1) choice = 5;
             printf("Подменю(для пользователей):\n");
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Открытие файла с данными.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Открытие файла с данными.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Просмотр всех данных в табличной форме.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Просмотр всех данных в табличной форме.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Просмотр топ-3 самых быстрых участников.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Просмотр топ-3 самых быстрых участников.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Различные процедуры поиска и фильтрации данных.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Различные процедуры поиска и фильтрации данных.\n");
-            if (choice == 5) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход в меню.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Выход в меню.\n");
+            for(int i = 0; line[i]; i++){
+                if(choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }
@@ -338,16 +289,16 @@ int adminLogin(USER *user) {
         while (1) {
             ch = (char)_getch();
             if (ch != '\0') {
-                if (ch == 13 || ch == 9) {
+                if (ch == KEY_RETURN || ch == KEY_TAB) {
                     counter++;
                     password[j] = '\0';
                     break;
                 }
-                else if (ch == 8 && j > 0) {
+                else if (ch == KEY_BKSP && j > 0) {
                     j--;
                     printf("\b \b");
                 }
-                else if (ch == 8 && j == 0) {
+                else if (ch == KEY_BKSP && j == 0) {
                     continue;
                 }
                 else {
@@ -404,15 +355,15 @@ int userLogin(USER *user) {
         while (1) {
             ch = (char)_getch();
             if (ch != '\0') {
-                if (ch == 13 || ch == 9) {
+                if (ch == KEY_RETURN || ch == KEY_TAB) {
                     password[j] = '\0';
                     break;
                 }
-                else if (ch == 8 && j > 0) {
+                else if (ch == KEY_BKSP && j > 0) {
                     j--;
                     printf("\b \b");
                 }
-                else if (ch == 8 && j == 0) {
+                else if (ch == KEY_BKSP && j == 0) {
                     continue;
                 }
                 else {
@@ -446,46 +397,29 @@ int userLogin(USER *user) {
 
 int userManagementMenu(){
     int choice = 1, ch = ' ';
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    char pointer = '>', *line[] = {"Добавить аккаунт.", "Удалить аккаунт.", "Редактировать аккаунт.",
+                                    "Просмотр всех аккаунтов.", "Назад.", NULL};
     indicateCursor(FALSE);
     while(1){
-        if (ch != 0 && ch != -32){
+        if (ch != 0){
             system("cls");
-            printf("Меню управления пользователями/администраторами:\n");
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
-                system("cls");
                 return choice;
             }
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 5) choice = 1;
             if (choice < 1) choice = 5;
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Добавить аккаунт.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Добавить аккаунт.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Удалить аккаунт.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Удалить аккаунт.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Редактировать аккаунт.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Редактировать аккаунт.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Просмотр всех аккаунтов.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Просмотр всех аккаунтов.\n");
-            if (choice == 5) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Назад.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Назад.\n");
+            printf("Меню управления пользователями/администраторами:\n");
+            for(int i = 0; line[i]; i++){
+                if(choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }
@@ -728,45 +662,30 @@ void printEditingUser(USER* user, int i){
 }
 
 int userEditMenu(USER* user, int i){
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     int choice = 1, ch = ' ';
+    char pointer = '>', *line[] = {"Изменить логин.", "Изменить пароль.", "Изменить права администратора.",
+                                    "Выход из меню редактирования аккунтов.", NULL};
     while (TRUE) {
         if (ch != 0) {
             printEditingUser(user, i);
             indicateCursor(FALSE);
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            printf("Меню редактирования аккаунтов:\n");
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 4) choice = 1;
             if (choice < 1) choice = 4;
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменить логин.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
+            printf("Меню редактирования аккаунтов:\n");
+            for(int j = 0; line[j]; j++){
+                if(choice == j + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
             }
-            else printf(" Изменить логин.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменить пароль.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            }
-            else printf(" Изменить пароль.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменить права администратора.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            }
-            else printf(" Изменить права администратора.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход из меню редактирования аккунтов.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            }
-            else printf(" Выход из меню редактирования аккунтов.\n");
         }
         ch = _getch();
     }
@@ -942,91 +861,35 @@ INFORMATION* infoAdd(INFORMATION* info) {
 }
 
 int infoEditMenu(INFORMATION* info, int i){
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     int choice = 1, ch = ' ';
+    char pointer = '>', *line[] = {"Изменение номера участника.", "Изменение имени участника.",
+                                     "Изменение фамилии участника.", "Изменение отчества участника.",
+                                     "Изменение страны участника.", "Изменение дня рождения участника.",
+                                     "Изменение месяца рождения участника.", "Изменение года рождения участника.",
+                                     "Изменение разряда участника.", "Изменение модели коньков участника.",
+                                     "Изменение количества очков участника.", "Изменение минут круга участника.",
+                                     "Изменение секунд круга участника.", "Выход из меню редактирования участника.", NULL};
     while (TRUE) {
         if (ch != 0) {
             printEditingInfo(info, i);
             indicateCursor(FALSE);
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            printf("Меню редактирования учаcтника:\n");
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 14) choice = 1;
             if (choice < 1) choice = 14;
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение номера участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение номера участника.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение имени участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение имени участника.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение фамилии участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение фамилии участника.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение отчества участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение отчества участника.\n");
-            if (choice == 5) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение страны участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение страны участника.\n");
-            if (choice == 6) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение дня рождения участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение дня рождения участника.\n");
-            if (choice == 7) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение месяца рождения участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение месяца рождения участника.\n");
-            if (choice == 8) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение года рождения участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение года рождения участника.\n");
-            if (choice == 9) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение разряда участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение разряда участника.\n");
-            if (choice == 10) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение модели коньков участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение модели коньков участника.\n");
-            if (choice == 11) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение количества очков участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение количества очков участника.\n");
-            if (choice == 12) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение минут круга участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение минут круга участника.\n");
-            if (choice == 13) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Изменение секунд круга участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Изменение секунд круга участника.\n");
-            if (choice == 14) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход из меню редактирования участника.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Выход из меню редактирования участника.\n");
+            printf("Меню редактирования учаcтника:\n");
+            for(int j = 0; line[j]; j++){
+                if(choice == j + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }
@@ -1386,71 +1249,32 @@ char* limitedStringInput(char* input, int limit,const char* inputText) {
 }
 
 int searchAndFilteringMenu(){
-    void* hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     int choice = 1, ch = ' ';
+    char pointer = '>', *line[] = {"Фильтр по количеству очков.", "Фильтр по времени круга.",
+                                     "Фильтр по возрасту.", "Фильтр по году рождения.", "Поиск по номеру.",
+                                     "Поиск по фамилии.", "Поиск по стране.", "Поиск по разряду.",
+                                     "Сортировка по времени круга.", "Выход.", NULL};
     while (TRUE) {
         if (ch != 0) {
             system("cls");
             indicateCursor(FALSE);
-            if (ch == 13) {
+            if (ch == KEY_RETURN) {
                 indicateCursor(TRUE);
                 return choice;
             }
-            printf("Меню поиска и фильтрации:\n");
-            if (ch == UP) choice--;
-            if (ch == DOWN) choice++;
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
             if (choice > 10) choice = 1;
             if (choice < 1) choice = 10;
-            if (choice == 1) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Фильтр по количеству очков.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Фильтр по количеству очков.\n");
-            if (choice == 2) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Фильтр по времени круга.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Фильтр по времени круга.\n");
-            if (choice == 3) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Фильтр по возрасту.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Фильтр по возрасту.\n");
-            if (choice == 4) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Фильтр по году рождения.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Фильтр по году рождения.\n");
-            if (choice == 5) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Поиск по номеру.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Поиск по номеру.\n");
-            if (choice == 6) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Поиск по фамилии.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Поиск по фамилии.\n");
-            if (choice == 7) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Поиск по стране.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Поиск по стране.\n");
-            if (choice == 8) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Поиск по разряду.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Поиск по разряду.\n");
-            if (choice == 9) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Сортировка по времени круга.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Сортировка по времени круга.\n");
-            if (choice == 10) {
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 15));
-                printf(">Выход.\n");
-                SetConsoleTextAttribute(hConsole, (WORD)((0 << 4) | 11));
-            } else printf(" Выход.\n");
+            printf("Меню поиска и фильтрации:\n");
+            for(int i = 0; line[i]; i++){
+                if(choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
         ch = _getch();
     }

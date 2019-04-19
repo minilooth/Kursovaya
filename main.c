@@ -64,7 +64,7 @@ int adminSubmenu();//функция подменю администраторов
 int userSubmenu();//функция подменю пользователей
 int userEditMenu(USER* user, int i);//функция меню редактирования пользователей
 int memberEditMenu(INFORMATION* info, int i);//функция меню редактирования участников
-int searchingAndFiltering(INFORMATION* info);//фукнция выбора функции меню поиска и фильтрации
+void searchingAndFiltering(INFORMATION* info);//фукнция выбора функции меню поиска и фильтрации
 int searchAndFilteringMenu();//функция меню поиска и фильтрации
 USER* userManagement(USER* user);//функция выбора функции меню управления пользователями
 int userManagementMenu();//фукнция меню управления пользователями
@@ -437,7 +437,7 @@ int memberEditMenu(INFORMATION* info, int i) {
     }
 }
 
-int searchingAndFiltering(INFORMATION* info) {
+void searchingAndFiltering(INFORMATION* info) {
     while (1) {
         system("cls");
         switch (searchAndFilteringMenu()) {
@@ -450,7 +450,7 @@ int searchingAndFiltering(INFORMATION* info) {
             case 7: countrySearch(info); system("pause"); break;
             case 8: categorySearch(info); system("pause"); break;
             case 9: timeOfLapSorting(info); system("pause"); break;
-            case 10: return 0;
+            case 10: return;
             default: break;
         }
     }

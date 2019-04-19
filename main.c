@@ -146,7 +146,6 @@ int main() {
                             case 8: adminSubMenuFlag = true; break;
                             default: break;
                         }
-                        if (adminSubMenuFlag == true) break;
                     }
                     adminSubMenuFlag = false;
                 }
@@ -179,7 +178,6 @@ int main() {
                             case 5: userSubMenuFlag = true; break;
                             default: break;
                         }
-                        if (userSubMenuFlag == true) break;
                     }
                     userSubMenuFlag = false;
                 }
@@ -1422,7 +1420,6 @@ INFORMATION* memberEdit(INFORMATION* info) {
                 default:
                     break;
             }
-            if (infoEditFlag == true) break;
         }
         if ((checkFile("info.txt") != false)) {
             if ((file = fopen("info.txt", "w")) != NULL) {

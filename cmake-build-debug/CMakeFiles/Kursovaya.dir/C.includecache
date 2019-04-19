@@ -21,4 +21,6 @@ time.h
 -
 conio.h
 -
+stdbool.h
+-
 

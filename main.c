@@ -88,7 +88,9 @@ void displayEditableUser(USER* user, int i);//функция вывода редактируемого акка
 void displayAllUsers(USER* user);//функция вывода всех аккаунтов
 
 //Участники
-INFORMATION* membersInit(INFORMATION* info);//функция открытия файла с участниками
+INFORMATION* membersOpenAdmin(INFORMATION* info);//функция открытия/создания файла для пользователей
+INFORMATION* membersOpenUser(INFORMATION* info);//функция открытия файла для пользователей
+INFORMATION* membersInit(INFORMATION* info);//функция чтения информации об участниках из файла
 INFORMATION* memberAdd(INFORMATION* info);//функция добавления участника
 INFORMATION* memberEdit(INFORMATION* info);//функция редактирования участника
 INFORMATION* memberDelete(INFORMATION *info);//функция удаления участника
@@ -124,25 +126,14 @@ int main() {
                     while (adminSubMenuFlag == false) {
                         system("cls");
                         switch (adminSubmenu()) {
-                            case 1: {
-                                if (checkFile("info.txt") == false) {
-                                    printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n");
-                                    if ((createFile("info.txt")) != false) {
-                                        printf("Открытие информации: Файл успешно создан!\n");
-                                        info = membersInit(info);
-                                    }
-                                    else printf("[Ошибка!]Открытие информации: Не удалось создать файл!\n");
-                                } else info = membersInit(info);
-                                system("pause");
-                                break;
-                            }
+                            case 1: info = membersOpenAdmin(info); system("pause"); break;
                             case 2: info = memberAdd(info); system("pause"); break;
                             case 3: info = memberEdit(info); break;
                             case 4: info = memberDelete(info); system("pause"); break;
                             case 5: displayAllMembers(info); system("pause"); break;
                             case 6: searchingAndFiltering(info); break;
                             case 7: user = userManagement(user); break;
-                            case 8: adminSubMenuFlag = true; break;
+                            case 8: info = NULL; adminSubMenuFlag = true; break;
                             default: break;
                         }
                     }
@@ -155,16 +146,11 @@ int main() {
                     while (userSubMenuFlag == false) {
                         system("cls");
                         switch (userSubmenu()) {
-                            case 1: {
-                                if (checkFile("info.txt") == true) info = membersInit(info);
-                                else printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n\n");
-                                system("pause");
-                                break;
-                            }
+                            case 1: info = membersOpenUser(info); system("pause"); break;
                             case 2: displayAllMembers(info); system("pause"); break;
                             case 3: displayTopMembers(info); system("pause"); break;
                             case 4: searchingAndFiltering(info); break;
-                            case 5: userSubMenuFlag = true; break;
+                            case 5: info = NULL; userSubMenuFlag = true; break;
                             default: break;
                         }
                     }
@@ -1034,6 +1020,32 @@ void displayAllUsers(USER* user) {
 
 
 //Всё что связано с информацией
+INFORMATION* membersOpenAdmin(INFORMATION* info){
+    int choice = 0;
+    if (checkFile("info.txt") == false) {
+        printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n");
+        do {
+            choice = checkToEnterOnlyInt(1, "Создать файл?(1 - Да | 0 - Нет): ");
+            if(choice < 0 || choice > 1) printf("[Ошибка!]Введите 1 или 0!\n");
+        } while (choice < 0 || choice > 1);
+        if (choice == 1){
+            if ((createFile("info.txt")) != false) {
+                printf("Открытие информации: Файл успешно создан!\n");
+                info = membersInit(info);
+            } else printf("[Ошибка!]Открытие информации: Не удалось создать файл!\n");
+        } else putchar('\n');
+    } else info = membersInit(info);
+    return info;
+};
+
+INFORMATION* membersOpenUser(INFORMATION* info){
+    if (checkFile("info.txt") == true)
+        info = membersInit(info);
+    else
+        printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n\n");
+    return info;
+}
+
 INFORMATION* membersInit(INFORMATION* info) {
     FILE *file = NULL;
     if (info != NULL)

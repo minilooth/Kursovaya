@@ -118,6 +118,13 @@ int main() {
     USER *user = NULL;
     user = usersInit(user);
     bool adminSubMenuFlag = false, userSubMenuFlag = false;
+    indicateCursor(false);
+    printf("------------------------------------------------------------------------------------------------------------------------\n"
+           "                        Программа учёта информации об участниках соревнования по бегу на коньках!                       \n"
+           "------------------------------------------------------------------------------------------------------------------------\n"
+           "                                                                                                          © by Minilooth");
+    Sleep(3500);
+    indicateCursor(true);
     while (true) {
         system("cls");
         switch (menu()) {
@@ -496,7 +503,7 @@ USER* userManagement(USER* user) {
 int userManagementMenu() {
     int choice = 1, ch = ' ';
     char pointer = '>', *line[] = { "Добавить аккаунт.", "Удалить аккаунт.", "Редактировать аккаунт.", "Просмотр всех аккаунтов.",
-                                    "Выход из меню управления пользователями/администраторами", NULL };
+                                    "Выход из меню управления пользователями/администраторами.", NULL };
     indicateCursor(false);
     while (1) {
         if (ch != 0) {
@@ -658,7 +665,8 @@ bool adminLogin(USER *user) {
         else printf("\n[Ошибка!]Неверный пароль!\n");
     } while (isPasswordRight != true);
     if ((user + i)->isAdmin == true) {
-        printf("\nВы успешно авторизовались.\n\n");
+        system("cls");
+        printf("Добро пожаловать, %s!\n\n", (user + i)->login);
         free(login);
         system("pause");
         return true;
@@ -724,13 +732,14 @@ bool userLogin(USER *user) {
         else printf("\n[Ошибка!]Неверный пароль!\n");
     } while (isPasswordRight != true);
     if ((user + i)->isAdmin == false) {
-        printf("\nВы успешно авторизовались.\n\n");
+        system("cls");
+        printf("Добро пожаловать, %s!\n\n", (user + i)->login);
         free(login);
         system("pause");
         return true;
     }
     else {
-        printf("\n[Ошибка!]Авторизация! Войдите через администратора!\n\n");
+        printf("\n[Ошибка!]Авторизация: Войдите через администратора!\n\n");
         system("pause");
         free(login);
         return false;
@@ -741,6 +750,9 @@ void registration() {
     FILE *file = NULL;
     char *login = NULL, password[30], ch;
     int i = 0;
+    printf("------------------------------------------------------------------------------------------------------------------------\n"
+           "        Вы зашли в программу в первый раз. Для корректной работы программы нужно зарегистрировать администратора!       \n"
+           "------------------------------------------------------------------------------------------------------------------------\n");
     printf("Регистрация администратора.\n\n");
     login = bufferedInput(29, "Введите логин: ");
     printf("Введите пароль: ");

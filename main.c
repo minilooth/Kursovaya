@@ -71,7 +71,7 @@ int userManagementMenu();//фукнция меню управления пользователями
 
 // Файлы
 int countLines(const char* filename);//функция подсчёта строк в файле
-bool checkFile(const char* filename);//функция проверка файла на существование
+bool checkFile(const char* filename);//функция проверка файла на существование файла
 //true - файл существует, false - файл не существует
 bool createFile(const char* filename);//функция создания файла
 void crypterTool(int status);//функция шифра Цезаря
@@ -80,12 +80,12 @@ void crypterTool(int status);//функция шифра Цезаря
 bool adminLogin(USER* user);//функция входа администраторов
 bool userLogin(USER* user);//функция входа пользователей
 void registration();//функция регистрации администратора
-USER* usersInit(USER* user);//функция открытия файла с аккаунтами
+USER* usersInit(USER* user);//функция чтения аккаунтов из файла
 USER* userAdd(USER* user);//функция добавления аккаунта
 USER* userDelete(USER* user);//функция удаления аккаунта
 USER* userEdit(USER* user);//функция редактирования аккаунта
-void displayEditableUser(USER* user, int i);//функция вывода редактируемого аккаунта
-void displayAllUsers(USER* user);//функция вывода всех аккаунтов
+void displayEditableUser(USER* user, int i);//функция вывода информации о редактируемом аккаунте
+void displayAllUsers(USER* user);//функция вывода информации о всех аккаунтах
 
 //Участники
 INFORMATION* membersOpenAdmin(INFORMATION* info);//функция открытия/создания файла для пользователей
@@ -94,19 +94,19 @@ INFORMATION* membersInit(INFORMATION* info);//функция чтения информации об участ
 INFORMATION* memberAdd(INFORMATION* info);//функция добавления участника
 INFORMATION* memberEdit(INFORMATION* info);//функция редактирования участника
 INFORMATION* memberDelete(INFORMATION *info);//функция удаления участника
-void displayEditableMember(INFORMATION* info, int i);//функция вывода редактирумого участника
-void displayAllMembers(INFORMATION* info);//функция вывода всех участников
+void displayEditableMember(INFORMATION* info, int i);//функция вывода информации об редактируемом участнике
+void displayAllMembers(INFORMATION* info);//функция вывода информации о всех участниках
 
 //Фильтрация и поиск
-void pointsFilter(INFORMATION* info);//функция фильтрации по очкам
-void timeOfLapFilter(INFORMATION* info);//функция фильтрации по времени круга
-void ageFilter(INFORMATION* info);//функция фильтрации по возрасту
-void yearOfBirthFilter(INFORMATION* info);//функция фильтрации по году рождения
-void timeOfLapSorting(INFORMATION* info);//функция сортировки по времени круга
-void numberSearch(INFORMATION* info);//функция поиска по номеру
-void surnameSearch(INFORMATION* info);//функция поиска по фамилии
-void countrySearch(INFORMATION* info);//функция поиска по стране
-void categorySearch(INFORMATION* info);//функция поиска по разряду
+void pointsFilter(INFORMATION* info);//функция фильтрации участников по очкам
+void timeOfLapFilter(INFORMATION* info);//функция фильтрации участников по времени круга
+void ageFilter(INFORMATION* info);//функция фильтрации участников по возрасту
+void yearOfBirthFilter(INFORMATION* info);//функция фильтрации участников по году рождения
+void timeOfLapSorting(INFORMATION* info);//функция сортировки участников по времени круга
+void numberSearch(INFORMATION* info);//функция поиска участников по номеру
+void surnameSearch(INFORMATION* info);//функция поиска участников по фамилии
+void countrySearch(INFORMATION* info);//функция поиска учатстников по стране
+void categorySearch(INFORMATION* info);//функция поиска участников по разряду
 void displayTopMembers(INFORMATION* info);//функция вывода топ-3 лучших участников
 
 
@@ -495,8 +495,8 @@ USER* userManagement(USER* user) {
 
 int userManagementMenu() {
     int choice = 1, ch = ' ';
-    char pointer = '>', *line[] = { "Добавить аккаунт.", "Удалить аккаунт.", "Редактировать аккаунт.",
-                                    "Просмотр всех аккаунтов.", "Назад.", NULL };
+    char pointer = '>', *line[] = { "Добавить аккаунт.", "Удалить аккаунт.", "Редактировать аккаунт.", "Просмотр всех аккаунтов.",
+                                    "Выход из меню управления пользователями/администраторами", NULL };
     indicateCursor(false);
     while (1) {
         if (ch != 0) {

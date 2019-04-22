@@ -114,17 +114,18 @@ int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     system("color 0B");
+    system("mode con cols=128 lines=32");
     INFORMATION *info = NULL;
     USER *user = NULL;
-    user = usersInit(user);
-    bool adminSubMenuFlag = false, userSubMenuFlag = false;
     indicateCursor(false);
-    printf("------------------------------------------------------------------------------------------------------------------------\n"
-           "                        Программа учёта информации об участниках соревнования по бегу на коньках!                       \n"
-           "------------------------------------------------------------------------------------------------------------------------\n"
-           "                                                                                                          © by Minilooth");
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n"
+           "                            Программа учёта информации об участниках соревнования по бегу на коньках                            \n"
+           "--------------------------------------------------------------------------------------------------------------------------------\n"
+           "                                                                                                                  © by Minilooth");
     Sleep(3500);
     indicateCursor(true);
+    user = usersInit(user);
+    bool adminSubMenuFlag = false, userSubMenuFlag = false;
     while (true) {
         system("cls");
         switch (menu()) {
@@ -193,7 +194,9 @@ char* stringInputCheck(int limit, const char* message) {
         if (isLetter == true)
             return buffer;
         else {
-            printf("[Ошибка!]Ошибочный ввод!\n");
+            printf("[Ошибка!]Ошибочный ввод!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
         }
     }
 }
@@ -213,7 +216,9 @@ char* bufferedInput(int limit, const char* inputText) {
                     break;
                 }
                 else {
-                    printf("\n[Ошибка!]Введите хотябы один символ!\n");
+                    printf("\n[Ошибка!]Введите хотя бы один символ!");
+                    Sleep(1000);
+                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
                     printf("%s", inputText);
                 }
             }
@@ -259,7 +264,11 @@ int checkToEnterOnlyInt(int limit, const char *inputText) {
             free(buffer);
             return numberEntered;
         }
-        else printf("[Ошибка!]Не правильный ввод!\n");
+        else {
+            printf("[Ошибка!]Не правильный ввод!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     }
 }
 
@@ -662,11 +671,16 @@ bool adminLogin(USER *user) {
         }
         if (strcmp(password, (user + i)->password) == 0)
             isPasswordRight = true;
-        else printf("\n[Ошибка!]Неверный пароль!\n");
+        else {
+            printf("\n[Ошибка!]Неверный пароль!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     } while (isPasswordRight != true);
     if ((user + i)->isAdmin == true) {
-        system("cls");
-        printf("Добро пожаловать, %s!\n\n", (user + i)->login);
+        printf("\n\nВы успешно авторизовались!");
+        Sleep(1000);
+        printf("%c[2K\rДобро пожаловать, %s!\n\n", 27 ,(user + i)->login);
         free(login);
         system("pause");
         return true;
@@ -729,11 +743,16 @@ bool userLogin(USER *user) {
         }
         if (strcmp(password, (user + i)->password) == 0)
             isPasswordRight = true;
-        else printf("\n[Ошибка!]Неверный пароль!\n");
+        else {
+            printf("\n[Ошибка!]Неверный пароль!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     } while (isPasswordRight != true);
     if ((user + i)->isAdmin == false) {
-        system("cls");
-        printf("Добро пожаловать, %s!\n\n", (user + i)->login);
+        printf("\n\nВы успешно авторизовались!");
+        Sleep(1000);
+        printf("%c[2K\rДобро пожаловать, %s!\n\n", 27,(user + i)->login);
         free(login);
         system("pause");
         return true;
@@ -847,7 +866,11 @@ USER* userAdd(USER* user) {
             }
             else isLoginExist = false;
         }
-        if (isLoginExist == true) printf("[Ошибка!]Такой аккаунт уже существует!\n");
+        if (isLoginExist == true) {
+            printf("[Ошибка!]Такой аккаунт уже существует!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
         else strcpy((user + usersLinesCounter)->login, login);
     } while (isLoginExist == true);
     free(login);
@@ -856,8 +879,11 @@ USER* userAdd(USER* user) {
     free(password);
     do {
         (user + usersLinesCounter)->isAdmin = checkToEnterOnlyInt(1, "Администратор?(1 - Да|0 - Нет): ");
-        if ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1)
-            printf("[Ошибка!]Не правильный ввод! Введите число от 0 до 1!\n");
+        if ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1) {
+            printf("[Ошибка!]Не правильный ввод! Введите число от 0 до 1!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     } while ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1);
     if ((checkFile("db.txt")) != false) {
         //Если файл существует
@@ -894,8 +920,11 @@ USER* userDelete(USER* user) {
                 break;
             }
         }
-        if (isLoginExist == false)
-            printf("[Ошибка!]Такого аккаунта не существует!\n");
+        if (isLoginExist == false) {
+            printf("[Ошибка!]Такого аккаунта не существует!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     } while (isLoginExist != true);
     free(login);
     if ((checkFile("db.txt")) != false) {
@@ -937,8 +966,11 @@ USER* userEdit(USER* user) {
             }
             else isLoginExist = false;
         }
-        if (isLoginExist == false)
-            printf("[Ошибка!]Такого аккаунта не существует!\n");
+        if (isLoginExist == false) {
+            printf("[Ошибка!]Такого аккаунта не существует!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
     } while (isLoginExist == false);
     free(login);
     while (editFlag == false) {
@@ -954,7 +986,11 @@ USER* userEdit(USER* user) {
                         }
                         else isNewLoginExist = false;
                     }
-                    if (isNewLoginExist == true) printf("[Ошибка!]Такой логин уже существует!\n");
+                    if (isNewLoginExist == true) {
+                        printf("[Ошибка!]Такой логин уже существует!\n");
+                        Sleep(1000);
+                        printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                    }
                 } while (isNewLoginExist == true);
                 strcpy((user + i)->login, newLogin);
                 displayEditableUser(user, i);
@@ -1038,7 +1074,11 @@ INFORMATION* membersOpenAdmin(INFORMATION* info){
         printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n");
         do {
             choice = checkToEnterOnlyInt(1, "Создать файл?(1 - Да | 0 - Нет): ");
-            if(choice < 0 || choice > 1) printf("[Ошибка!]Введите 1 или 0!\n");
+            if(choice < 0 || choice > 1) {
+                printf("[Ошибка!]Введите 1 или 0!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (choice < 0 || choice > 1);
         if (choice == 1){
             if ((createFile("info.txt")) != false) {
@@ -1100,8 +1140,11 @@ INFORMATION* memberAdd(INFORMATION* info) {
         do {
             do {
                 (info + infoLinesCounter)->number = checkToEnterOnlyInt(3, "Введите номер участника: ");
-                if ((info + infoLinesCounter)->number < 1)
-                    printf("[Ошибка!]Введите число больше 0!\n");
+                if ((info + infoLinesCounter)->number < 1) {
+                    printf("[Ошибка!]Введите число больше 0!");
+                    Sleep(1000);
+                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                }
             } while ((info + infoLinesCounter)->number < 1);
             for (int i = 0; i < infoLinesCounter; i++) {
                 if ((info + i)->number == (info + infoLinesCounter)->number) {
@@ -1110,7 +1153,11 @@ INFORMATION* memberAdd(INFORMATION* info) {
                 }
                 else isMemberExist = false;
             }
-            if (isMemberExist == true) printf("Участник с таким номером уже существует!\n");
+            if (isMemberExist == true) {
+                printf("[Ошибка!]Участник с таким номером уже существует!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (isMemberExist == true);
         firstname = stringInputCheck(49, "Введите имя участника: ");
         strcpy((info + infoLinesCounter)->fullname.firstname, firstname);
@@ -1126,19 +1173,27 @@ INFORMATION* memberAdd(INFORMATION* info) {
         free(country);
         do {
             (info + infoLinesCounter)->dateOfBirth.day = checkToEnterOnlyInt(2, "Введите день рождения участника: ");
-            if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31)
-                printf("[Ошибка!]Введите число от 1 до 31!\n");
+            if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31) {
+                printf("[Ошибка!]Введите число от 1 до 31!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31);
         do {
             (info + infoLinesCounter)->dateOfBirth.month = checkToEnterOnlyInt(2, "Введите месяц рождения участника(числом): ");
-            if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12)
-                printf("[Ошибка!]Введите число от 1 до 12!\n");
+            if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12){
+                printf("[Ошибка!]Введите число от 1 до 12!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12);
         do {
             (info + infoLinesCounter)->dateOfBirth.year = checkToEnterOnlyInt(4, "Введите год рождения участника: ");
-            if ((info + infoLinesCounter)->dateOfBirth.year < 1900 ||
-                (info + infoLinesCounter)->dateOfBirth.year > 2019)
-                printf("[Ошибка!]Введите число от 1900 до 2019!\n");
+            if ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019){
+                printf("[Ошибка!]Введите число от 1900 до 2019!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->dateOfBirth.year < 1900 ||
                  (info + infoLinesCounter)->dateOfBirth.year > 2019);
         if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)
@@ -1152,18 +1207,27 @@ INFORMATION* memberAdd(INFORMATION* info) {
         free(model);
         do {
             (info + infoLinesCounter)->points = checkToEnterOnlyInt(4, "Введите количество очков участника: ");
-            if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999)
-                printf("[Ошибка!]Введите число от 0 до 9999!\n");
+            if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999){
+                printf("[Ошибка!]Введите число от 0 до 9999!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);
         do {
             (info + infoLinesCounter)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите минуты круга участника: ");
-            if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59)
-                printf("[Ошибка!]Введите число от 0 до 59!\n");
+            if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59) {
+                printf("[Ошибка!]Введите число от 0 до 59!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59);
         do {
             (info + infoLinesCounter)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите секунды круга участника: ");
-            if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59)
-                printf("[Ошибка!]Введите число от 0 до 59!\n");
+            if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59) {
+                printf("[Ошибка!]Введите число от 0 до 59!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59);
         fprintf(file, "%i %s %s %s %s %i %i %i %i %s %s %i %i %i\n", (info + infoLinesCounter)->number,
                 (info + infoLinesCounter)->fullname.firstname, (info + infoLinesCounter)->fullname.surname,
@@ -1203,7 +1267,11 @@ INFORMATION* memberDelete(INFORMATION *info) {
                 }
                 else isNumberExist = false;
             }
-            if (isNumberExist == false) printf("[Ошибка!]Участника с таким номером не существует!\n");
+            if (isNumberExist == false) {
+                printf("[Ошибка!]Участника с таким номером не существует!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (isNumberExist != true);
         for (int j = i; j < infoLinesCounter; j++)
             *(info + j) = *(info + (j + 1));
@@ -1256,7 +1324,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                 }
                 else isMemberExist = false;
             }
-            if (isMemberExist == false) printf("[Ошибка!]Участника с таким номером не существует!\n");
+            if (isMemberExist == false) {
+                printf("[Ошибка!]Участника с таким номером не существует!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (isMemberExist == false);
         while (infoEditFlag == false) {
             switch (memberEditMenu(info, i)) {
@@ -1265,8 +1337,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     do {
                         do {
                             newNumber = checkToEnterOnlyInt(3, "Введите новый номер участника: ");
-                            if (newNumber < 1)
-                                printf("[Ошибка!]Введите число больше 0!\n");
+                            if (newNumber < 1) {
+                                printf("[Ошибка!]Введите число больше 0!");
+                                Sleep(1000);
+                                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            }
                         } while (newNumber < 1);
                         for (j = 0; j < infoLinesCounter; j++) {
                             if ((info + j)->number == newNumber) {
@@ -1275,8 +1350,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                             }
                             else isNumberExist = false;
                         }
-                        if (isNumberExist == true)
-                            printf("[Ошибка!]Участник с таким номером уже существует!\n");
+                        if (isNumberExist == true) {
+                            printf("[Ошибка!]Участник с таким номером уже существует!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while (isNumberExist == true);
                     (info + i)->number = newNumber;
                     displayEditableMember(info, i);
@@ -1328,8 +1406,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение дня рождения участника.\n");
                     do {
                         newBirthDay = checkToEnterOnlyInt(2, "Введите новый день рождения участника: ");
-                        if (newBirthDay < 1 || newBirthDay > 31)
-                            printf("[Ошибка!]Введите число от 1 до 31!\n");
+                        if (newBirthDay < 1 || newBirthDay > 31) {
+                            printf("[Ошибка!]Введите число от 1 до 31!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while (newBirthDay < 1 || newBirthDay > 31);
                     (info + i)->dateOfBirth.day = newBirthDay;
                     displayEditableMember(info, i);
@@ -1341,8 +1422,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение месяца рождения участника.\n");
                     do {
                         newBirthMonth = checkToEnterOnlyInt(2, "Введите новый месяц рождения участника(числом): ");
-                        if (newBirthMonth < 1 || newBirthMonth > 12)
-                            printf("[Ошибка!]Введите число от 1 до 12!\n\n");
+                        if (newBirthMonth < 1 || newBirthMonth > 12) {
+                            printf("[Ошибка!]Введите число от 1 до 12!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while (newBirthMonth < 1 || newBirthMonth > 12);
                     (info + i)->dateOfBirth.month = newBirthMonth;
                     displayEditableMember(info, i);
@@ -1354,8 +1438,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение года рождения участника.\n");
                     do {
                         newBirthYear = checkToEnterOnlyInt(4, "Введите новый год рождения участника: ");
-                        if (newBirthYear < 1900 || newBirthYear > 2019)
-                            printf("[Ошибка!]Введите число от 1900 до 2019!\n");
+                        if (newBirthYear < 1900 || newBirthYear > 2019) {
+                            printf("[Ошибка!]Введите число от 1900 до 2019!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while (newBirthYear < 1900 || newBirthYear > 2019);
                     (info + i)->dateOfBirth.year = newBirthYear;
                     if ((info + i)->dateOfBirth.month >= aTm->tm_mon + 1)
@@ -1391,8 +1478,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение количества очков участника.\n");
                     do {
                         (info + i)->points = checkToEnterOnlyInt(4, "Введите новое количество очков участника: ");
-                        if ((info + i)->points < 0 || (info + i)->points > 9999)
-                            printf("[Ошибка!]Введите число от 0 до 9999!\n");
+                        if ((info + i)->points < 0 || (info + i)->points > 9999) {
+                            printf("[Ошибка!]Введите число от 0 до 9999!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while ((info + i)->points < 0 || (info + i)->points > 9999);
                     displayEditableMember(info, i);
                     printf("Количество очков участника успешно изменено!\n\n");
@@ -1403,8 +1493,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение минут круга участника.\n");
                     do {
                         (info + i)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите новые минуты круга участника: ");
-                        if ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59)
-                            printf("[Ошибка!]Введите число от 0 до 59!\n");
+                        if ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59) {
+                            printf("[Ошибка!]Введите число от 0 до 59!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59);
                     displayEditableMember(info, i);
                     printf("Минуты круга участника успешно изменены!\n\n");
@@ -1415,8 +1508,11 @@ INFORMATION* memberEdit(INFORMATION* info) {
                     printf("Изменение секунд круга участника.\n");
                     do {
                         (info + i)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите новые секунды круга участника: ");
-                        if ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59)
-                            printf("[Ошибка!]Введите число от 0 до 59!\n");
+                        if ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59) {
+                            printf("[Ошибка!]Введите число от 0 до 59!");
+                            Sleep(1000);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                        }
                     } while ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59);
                     displayEditableMember(info, i);
                     printf("Секунды круга участника успешно изменены!\n\n");
@@ -1492,8 +1588,11 @@ void pointsFilter(INFORMATION* info) {
     else {
         do {
             points = checkToEnterOnlyInt(4, "Введите количество очков: ");
-            if (points < 0 || points > 9999)
-                printf("[Ошибка!]Введите число больше 0 и меньше 9999!\n");
+            if (points < 0 || points > 9999) {
+                printf("[Ошибка!]Введите число больше 0 и меньше 9999!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (points < 0 || points > 9999);
         system("cls");
         printf("Участники, у которых очков больше %i: ", points);
@@ -1518,7 +1617,6 @@ void pointsFilter(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", points);
     }
-    //system("pause");
 }
 
 void timeOfLapFilter(INFORMATION* info) {
@@ -1533,13 +1631,19 @@ void timeOfLapFilter(INFORMATION* info) {
     else {
         do {
             minutesOfLap = checkToEnterOnlyInt(2, "Введите количество минут круга: ");
-            if (minutesOfLap < 0 || minutesOfLap > 59)
+            if (minutesOfLap < 0 || minutesOfLap > 59) {
                 printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (minutesOfLap < 0 || minutesOfLap > 59);
         do {
             secondsOfLap = checkToEnterOnlyInt(2, "Введите количество секунд круга: ");
-            if (secondsOfLap < 0 || secondsOfLap > 59)
+            if (secondsOfLap < 0 || secondsOfLap > 59) {
                 printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (secondsOfLap < 0 || secondsOfLap > 59);
         system("cls");
         printf("Участники, у которых время круга меньше %02i:%02i : ", minutesOfLap, secondsOfLap);
@@ -1567,7 +1671,6 @@ void timeOfLapFilter(INFORMATION* info) {
             printf("[Ошибка!]Нет ни одного участника с временем круга меньше %02i:%02i.\n\n", minutesOfLap,
                    secondsOfLap);
     }
-    //system("pause");
 }
 
 void ageFilter(INFORMATION* info) {
@@ -1580,8 +1683,11 @@ void ageFilter(INFORMATION* info) {
     else {
         do {
             age = checkToEnterOnlyInt(3, "Введите возраст: ");
-            if (age < 0 || age > 119)
+            if (age < 0 || age > 119) {
                 printf("[Ошибка!]Введите число больше 0 и меньше 119!\n");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (age < 0 || age > 119);
         system("cls");
         printf("Участники, возраст которых больше %i: ", age);
@@ -1606,7 +1712,6 @@ void ageFilter(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника с очками больше %i.\n\n", age);
     }
-    //system("pause");
 }
 
 void yearOfBirthFilter(INFORMATION* info) {
@@ -1619,8 +1724,11 @@ void yearOfBirthFilter(INFORMATION* info) {
     else {
         do {
             yearOfBirth = checkToEnterOnlyInt(4, "Введите год рождения: ");
-            if (yearOfBirth < 1900 || yearOfBirth > 2019)
+            if (yearOfBirth < 1900 || yearOfBirth > 2019) {
                 printf("[Ошибка!]Введите число больше 1900 и меньше 2019!\n");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (yearOfBirth < 1900 || yearOfBirth > 2019);
         system("cls");
         printf("Участники, год рождения у которых больше %i: ", yearOfBirth);
@@ -1646,7 +1754,6 @@ void yearOfBirthFilter(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
     }
-    //system("pause");
 }
 
 void timeOfLapSorting(INFORMATION* info) {
@@ -1686,7 +1793,6 @@ void timeOfLapSorting(INFORMATION* info) {
         }
         else printf("[Ошибка!]Сортировка: Не удалось открыть файл! Файл отчищен!\n\n");
     }
-    //system("pause");
 }
 
 void numberSearch(INFORMATION* info) {
@@ -1699,8 +1805,11 @@ void numberSearch(INFORMATION* info) {
     else {
         do {
             number = checkToEnterOnlyInt(3, "Введите номер: ");
-            if (number < 0)
+            if (number < 0) {
                 printf("[Ошибка!]Введите число больше 0!\n");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            }
         } while (number < 0);
         system("cls");
         printf("Участник, номер которого %i: ", number);
@@ -1721,9 +1830,8 @@ void numberSearch(INFORMATION* info) {
             }
         }
         if (isFounded == false)
-            printf("[Ошибка!]Нету участника с номером %i.\n\n", number);
+            printf("Участник с номером %i не найден.\n\n", number);
     }
-    //system("pause");
 }
 
 void surnameSearch(INFORMATION* info) {
@@ -1758,7 +1866,6 @@ void surnameSearch(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника с фамилией %s.\n\n", surname);
     }
-    //system("pause");
 }
 
 void countrySearch(INFORMATION* info) {
@@ -1793,7 +1900,6 @@ void countrySearch(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника из страны %s.\n\n", country);
     }
-    //system("pause");
 }
 
 void categorySearch(INFORMATION* info) {
@@ -1828,7 +1934,6 @@ void categorySearch(INFORMATION* info) {
         if (isAtLeastOneMember == false)
             printf("[Ошибка!]Нет ни одного участника с разрядом %s.\n\n", category);
     }
-    //system("pause");
 }
 
 void displayTopMembers(INFORMATION* info) {

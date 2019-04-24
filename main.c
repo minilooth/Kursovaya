@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #define KEY_UP 72
 #define KEY_DOWN 80
+#define KEY_RIGHT 77
+#define KEY_LEFT 75
 #define KEY_RETURN 13
 #define KEY_TAB 9
 #define KEY_BKSP 8
@@ -134,7 +136,7 @@ int main() {
                     while (adminSubMenuFlag == false) {
                         system("cls");
                         switch (adminSubmenu()) {
-                            case 1: info = membersOpenAdmin(info); system("pause"); break;
+                            case 1: info = membersOpenAdmin(info); break;
                             case 2: info = memberAdd(info); system("pause"); break;
                             case 3: info = memberEdit(info); break;
                             case 4: info = memberDelete(info); system("pause"); break;
@@ -769,9 +771,9 @@ void registration() {
     FILE *file = NULL;
     char *login = NULL, password[30], ch;
     int i = 0;
-    printf("------------------------------------------------------------------------------------------------------------------------\n"
-           "        Вы зашли в программу в первый раз. Для корректной работы программы нужно зарегистрировать администратора!       \n"
-           "------------------------------------------------------------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------------------------------------------------------------------\n"
+           "            Вы зашли в программу в первый раз. Для корректной работы программы нужно зарегистрировать администратора!           \n"
+           "--------------------------------------------------------------------------------------------------------------------------------\n");
     printf("Регистрация администратора.\n\n");
     login = bufferedInput(29, "Введите логин: ");
     printf("Введите пароль: ");
@@ -853,7 +855,8 @@ USER* usersInit(USER* user) {
 
 USER* userAdd(USER* user) {
     bool isLoginExist = false;
-    char *login = NULL, *password = NULL;
+    int choice = 1, ch = ' ';
+    char *login = NULL, *password = NULL, *line[] = { "Да", "Нет", NULL }, pointer = '>';
     FILE* file = NULL;
     user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));
     printf("Добавить пользователя:\n");
@@ -877,14 +880,37 @@ USER* userAdd(USER* user) {
     password = bufferedInput(29, "Введите пароль: ");
     strcpy((user + usersLinesCounter)->password, password);
     free(password);
-    do {
-        (user + usersLinesCounter)->isAdmin = checkToEnterOnlyInt(1, "Администратор?(1 - Да|0 - Нет): ");
-        if ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1) {
-            printf("[Ошибка!]Не правильный ввод! Введите число от 0 до 1!");
-            Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+    indicateCursor(false);
+    while (true) {
+        if (ch != 0) {
+            if (ch == KEY_RETURN) {
+                printf("%c[2K\r", 27);
+                printf("Администратор? ");
+                for (int i = 0; line[i]; i++)
+                    if (choice == i + 1)
+                        printf("%s", line[i]);
+                indicateCursor(true);
+                break;
+            }
+            printf("%c[2K\r", 27);
+            if (ch == KEY_LEFT) choice--;
+            if (ch == KEY_RIGHT) choice++;
+            if (choice > 2) choice = 2;
+            if (choice < 1) choice = 1;
+            printf("Администратор? ");
+            for (int i = 0; line[i]; i++) {
+                if (choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s " : " %s ", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
         }
-    } while ((user + usersLinesCounter)->isAdmin < 0 || (user + usersLinesCounter)->isAdmin > 1);
+        ch = _getch();
+    }
+        if (choice == 1) (user + usersLinesCounter)->isAdmin = 1;
+        else (user + usersLinesCounter)->isAdmin = 0;
     if ((checkFile("db.txt")) != false) {
         //Если файл существует
         crypterTool(DECRYPT);//Расшифровать
@@ -1049,44 +1075,65 @@ USER* userEdit(USER* user) {
 void displayEditableUser(USER* user, int i) {
     char yes[] = "Да", no[] = "Нет";
     system("cls");
-    printf("-----------------------------------------------------------------------------------------\n");
-    printf("|ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
-    printf("-----------------------------------------------------------------------------------------\n");
-    printf("|%-31s|%-32s|%-22s|", (user + i)->login, (user + i)->password, (user + i)->isAdmin == 1 ? yes : no);
-    printf("\n-----------------------------------------------------------------------------------------\n\n");
+    printf("-----------------------------------------------------------------------------------\n");
+    printf("|ЛОГИН:                       |ПАРОЛЬ:                      |ПРАВА АДМИНИСТРАТОРА:|\n");
+    printf("-----------------------------------------------------------------------------------\n");
+    printf("|%-29s|%-29s|%-21s|\n", (user + i)->login, (user + i)->password, (user + i)->isAdmin == 1 ? yes : no);
+    printf("-----------------------------------------------------------------------------------\n\n");
 }
 
 void displayAllUsers(USER* user) {
     char yes[] = "Да", no[] = "Нет";
-    printf("------------------------------------------------------------------------------------------------\n");
-    printf("|№    |ЛОГИН:                         |ПАРОЛЬ:                         |ПРАВА АДМИНИСТРАТОРА: |\n");
-    printf("------------------------------------------------------------------------------------------------\n");
+    printf("-----------------------------------------------------------------------------------------\n");
+    printf("|№    |ЛОГИН:                       |ПАРОЛЬ:                      |ПРАВА АДМИНИСТРАТОРА:|\n");
+    printf("-----------------------------------------------------------------------------------------\n");
     for (int i = 0; i < usersLinesCounter; i++)
-        printf("|%-5i|%-31s|%-32s|%-22s|\n", i + 1, (user + i)->login, (user + i)->password, (user + i)->isAdmin == 1 ? yes : no);
-    printf("------------------------------------------------------------------------------------------------\n\n");
+        printf("|%-5i|%-29s|%-29s|%-21s|\n", i + 1, (user + i)->login, (user + i)->password, (user + i)->isAdmin == 1 ? yes : no);
+    printf("-----------------------------------------------------------------------------------------\n\n");
 }
 
 
 //Всё что связано с информацией
 INFORMATION* membersOpenAdmin(INFORMATION* info){
-    int choice = 0;
+    int choice = 1, ch = ' ';
+    char *line[] = { "Да", "Нет", NULL }, pointer = '>';
     if (checkFile("info.txt") == false) {
         printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n");
-        do {
-            choice = checkToEnterOnlyInt(1, "Создать файл?(1 - Да | 0 - Нет): ");
-            if(choice < 0 || choice > 1) {
-                printf("[Ошибка!]Введите 1 или 0!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        indicateCursor(false);
+        while (true) {
+            if (ch != 0) {
+                printf("%c[2K\r", 27);
+                if (ch == KEY_RETURN) {
+                    indicateCursor(true);
+                    break;
+                }
+                if (ch == KEY_LEFT) choice--;
+                if (ch == KEY_RIGHT) choice++;
+                if (choice > 2) choice = 2;
+                if (choice < 1) choice = 1;
+                printf("Создать файл? ");
+                for (int i = 0; line[i]; i++) {
+                    if (choice == i + 1) {
+                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                        printf("%c", pointer);
+                    }
+                    printf(i + 1 == choice ? "%s " : " %s ", line[i]);
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                }
             }
-        } while (choice < 0 || choice > 1);
+            ch = _getch();
+        }
         if (choice == 1){
             if ((createFile("info.txt")) != false) {
                 printf("Открытие информации: Файл успешно создан!\n");
                 info = membersInit(info);
+                system("pause");
             } else printf("[Ошибка!]Открытие информации: Не удалось создать файл!\n");
-        } else putchar('\n');
-    } else info = membersInit(info);
+        }
+    } else {
+        info = membersInit(info);
+        system("pause");
+    }
     return info;
 };
 

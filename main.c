@@ -73,7 +73,6 @@ USER* userManagement(USER* user);//функция выбора функции меню управления пользо
 int userManagementMenu();//фукнция меню управления пользователями
 
 // Файлы
-int countLines(const char* filename);//функция подсчёта строк в файле
 bool checkFile(const char* filename);//функция проверка файла на существование файла
 //true - файл существует, false - файл не существует
 bool createFile(const char* filename);//функция создания файла
@@ -427,19 +426,23 @@ int memberEditMenu(INFORMATION* info, int i) {
                                           "Изменение количества очков участника.", "Изменение минут круга участника.",
                                           "Изменение секунд круга участника.", "Выход из меню редактирования участника.", NULL };
     indicateCursor(false);
+    displayEditableMember(info, i);
     while (true) {
         if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || isShowed == false) {
-            isShowed = true;
-            displayEditableMember(info, i);
             if (ch == KEY_RETURN) {
                 indicateCursor(true);
+                displayEditableMember(info, i);
                 return choice;
             }
             if (ch == KEY_UP) choice--;
             if (ch == KEY_DOWN) choice++;
             if (choice > 14) choice = 1;
             if (choice < 1) choice = 14;
-            printf("Меню редактирования учаcтника:\n");
+            if(isShowed == true)
+                for (int j = 0; j < 15; j++)
+                    printf("%c[2K\r%c[A", 27, 27);
+            isShowed = true;
+            printf("Меню редактирования участника:\n");
             for (int j = 0; line[j]; j++) {
                 if (choice == j + 1) {
                     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
@@ -559,19 +562,6 @@ int userManagementMenu() {
 
 
 //Всё что связано с файлами
-int countLines(const char* filename) {
-    FILE* file;
-    int counter = 0;
-    if ((file = fopen(filename, "r")) == NULL)
-        return 0;
-    while (!feof(file)) {
-        fscanf(file, "%*[^\n]%*c");
-        counter++;
-    }
-    fclose(file);
-    return counter;
-}
-
 bool checkFile(const char* filename) {
     FILE* file = NULL;
     if ((file = fopen(filename, "rt+")) == NULL) {

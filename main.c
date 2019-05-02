@@ -270,7 +270,7 @@ char* bufferedInput(int limit, const char* inputText) {
     while (true) {
         ch = (char)_getch();
         if (ch != '\0') {
-            if (ch == 13 || ch == 9) {
+            if (ch == KEY_RETURN || ch == KEY_TAB) {
                 if (i > 0) {
                     buffer[i] = '\0';
                     putchar('\n');
@@ -283,11 +283,11 @@ char* bufferedInput(int limit, const char* inputText) {
                     printf("%s", inputText);
                 }
             }
-            else if (ch == 8 && i > 0) {
+            else if (ch == KEY_BKSP && i > 0) {
                 i--;
                 printf("\b \b");
             }
-            else if (ch == 8 && !i)
+            else if (ch == KEY_BKSP && !i)
                 continue;
             else {
                 if (i < limit) {

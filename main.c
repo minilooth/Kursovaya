@@ -61,6 +61,7 @@ INFORMATION *info = NULL;
 char* stringInputCheck(int limit, const char* message);//функция ввода только букв
 char* bufferedInput(int limit, const char* inputText);//функция ввода ограниченного кол-ва символов
 int checkToEnterOnlyInt(int limit, const char *inputText);//функция ввода только целых
+char* maskedPasswordInput(int limit, const char* message);
 
 //Меню
 void indicateCursor(bool status);//функция показа/скрытия каретки ввода
@@ -73,6 +74,7 @@ void searchingAndFiltering();//фукнция выбора функции меню поиска и фильтрации
 int searchAndFilteringMenu();//функция меню поиска и фильтрации
 void userManagement();//функция выбора функции меню управления пользователями
 int userManagementMenu();//фукнция меню управления пользователями
+int userLoginOrRegMenu();//функция подменю входа для пользователей
 
 // Файлы
 bool checkFile(const char* filename);//функция проверка файла на существование файла
@@ -83,13 +85,14 @@ void crypterTool(int status);//функция шифра Цезаря
 //Пользователи
 bool adminLogin();//функция входа администраторов
 bool userLogin();//функция входа пользователей
-void registration();//функция регистрации администратора
+void firstStartAdminReg();//функция регистрации администратора при первом запуске
 void usersInit();//функция чтения аккаунтов из файла
 void userAdd();//функция добавления аккаунта
 void userDelete();//функция удаления аккаунта
 void userEdit();//функция редактирования аккаунта
 void displayEditableUser(int i);//функция вывода информации о редактируемом аккаунте
 void displayAllUsers();//функция вывода информации о всех аккаунтах
+void userReg();//функция регистрации пользователя
 
 //Участники
 void membersOpenAdmin();//функция открытия/создания файла для пользователей
@@ -128,49 +131,104 @@ int main() {
     Sleep(3500);
     indicateCursor(true);
     usersInit();
-    bool adminSubMenuFlag = false, userSubMenuFlag = false;
+    bool adminSubMenuFlag = false, userSubMenuFlag = false, userLogOrRegMenuFlag = false;
     while (true) {
         system("cls");
         switch (menu()) {
-            case 1: {
+            case 1:
                 if (adminLogin()) {
                     while (!adminSubMenuFlag) {
                         system("cls");
                         switch (adminSubmenu()) {
-                            case 1: membersOpenAdmin(); break;
-                            case 2: memberAdd(); system("pause"); break;
-                            case 3: memberEdit(); break;
-                            case 4: memberDelete(); system("pause"); break;
-                            case 5: displayAllMembers(); system("pause"); break;
-                            case 6: searchingAndFiltering(); break;
-                            case 7: userManagement(); break;
-                            case 8: info = NULL; adminSubMenuFlag = true; infoLinesCounter = 0; break;
-                            default: break;
+                            case 1:
+                                membersOpenAdmin();
+                                break;
+                            case 2:
+                                memberAdd();
+                                system("pause");
+                                break;
+                            case 3:
+                                memberEdit();
+                                break;
+                            case 4:
+                                memberDelete();
+                                system("pause");
+                                break;
+                            case 5:
+                                displayAllMembers();
+                                system("pause");
+                                break;
+                            case 6:
+                                searchingAndFiltering();
+                                break;
+                            case 7:
+                                userManagement();
+                                break;
+                            case 8:
+                                info = NULL;
+                                adminSubMenuFlag = true;
+                                infoLinesCounter = 0;
+                                break;
+                            default:
+                                break;
                         }
                     }
                     adminSubMenuFlag = false;
                 }
                 break;
-            }
-            case 2: {
-                if (userLogin()) {
-                    while (!userSubMenuFlag) {
-                        system("cls");
-                        switch (userSubmenu()) {
-                            case 1: membersOpenUser(); system("pause"); break;
-                            case 2: displayAllMembers(); system("pause"); break;
-                            case 3: displayTopMembers(); system("pause"); break;
-                            case 4: searchingAndFiltering(); break;
-                            case 5: info = NULL; userSubMenuFlag = true; infoLinesCounter = 0; break;
-                            default: break;
-                        }
+            case 2:
+                while (!userLogOrRegMenuFlag) {
+                    switch (userLoginOrRegMenu()) {
+                        case 1:
+                            if (userLogin()) {
+                                while (!userSubMenuFlag) {
+                                    system("cls");
+                                    switch (userSubmenu()) {
+                                        case 1:
+                                            membersOpenUser();
+                                            system("pause");
+                                            break;
+                                        case 2:
+                                            displayAllMembers();
+                                            system("pause");
+                                            break;
+                                        case 3:
+                                            displayTopMembers();
+                                            system("pause");
+                                            break;
+                                        case 4:
+                                            searchingAndFiltering();
+                                            break;
+                                        case 5:
+                                            info = NULL;
+                                            userSubMenuFlag = true;
+                                            infoLinesCounter = 0;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                userSubMenuFlag = false;
+                            }
+                            break;
+                        case 2:
+                            userReg();
+                            break;
+                        case 3:
+                            userLogOrRegMenuFlag = true;
+                            break;
+                        default:
+                            break;
                     }
-                    userSubMenuFlag = false;
                 }
+                userLogOrRegMenuFlag = false;
                 break;
-            }
-            case 3: free(info); free(user); return 0;
-            default: break;
+            case 3:
+                free(info);
+                free(user);
+                return 0;
+            default:
+                break;
         }
     }
 }
@@ -269,6 +327,51 @@ int checkToEnterOnlyInt(int limit, const char *inputText) {
         }
         else {
             printf("[Ошибка!]Не правильный ввод!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
+    }
+}
+
+char* maskedPasswordInput(int limit, const char* message){
+    char ch, *password = NULL;
+    int i = 0;
+    bool isSpaceEntered = false;
+    password = (char*)realloc(NULL, sizeof(char)*(limit + 1));
+    while(true) {
+        i = 0;
+        printf("%s", message);
+        while (true) {
+            ch = (char) _getch();
+            if (ch != '\0') {
+                if (ch == KEY_RETURN || ch == KEY_TAB) {
+                    password[i] = '\0';
+                    break;
+                } else if (ch == KEY_BKSP && i > 0) {
+                    i--;
+                    printf("\b \b");
+                } else if (ch == KEY_BKSP && i == 0) {
+                    continue;
+                } else if (i < limit) {
+                    password[i++] = ch;
+                    putchar('*');
+                }
+            }
+        }
+        if (i > 0) {
+            for (int j = 0; password[j]; j++) {
+                if (password[j] == ' ') {
+                    isSpaceEntered = true;
+                    break;
+                } else isSpaceEntered = false;
+            }
+            if (isSpaceEntered) {
+                printf("\n[Ошибка!]Пароль не может содержать символ "" ""!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            } else return password;
+        } else {
+            printf("\n[Ошибка!]Введите хотя бы один символ!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
         }
@@ -513,17 +616,24 @@ void userManagement() {
     while (1) {
         system("cls");
         switch (userManagementMenu()) {
-            case 1: userAdd(); break;
-            case 2: userDelete(); break;
-            case 3: userEdit(); break;
-            case 4: {
+            case 1:
+                userAdd();
+                break;
+            case 2:
+                userDelete();
+                break;
+            case 3:
+                userEdit();
+                break;
+            case 4:
                 system("cls");
                 displayAllUsers();
                 system("pause");
                 break;
-            }
-            case 5: return;
-            default: break;
+            case 5:
+                return;
+            default:
+                break;
         }
     }
 }
@@ -560,13 +670,42 @@ int userManagementMenu() {
     }
 }
 
+int userLoginOrRegMenu(){
+    int choice = 1, ch = (int)NULL;
+    bool isShowed = false;
+    const char pointer = '>', *line[] = { "Войти.", "Зарегистрироваться.", "Вернутся в меню." , NULL };
+    indicateCursor(false);
+    while (true) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+            isShowed = true;
+            system("cls");
+            if (ch == KEY_RETURN) {
+                indicateCursor(true);
+                return choice;
+            }
+            if (ch == KEY_UP) choice--;
+            if (ch == KEY_DOWN) choice++;
+            if (choice > 3) choice = 1;
+            if (choice < 1) choice = 3;
+            printf("Вход под пользователем:\n");
+            for (int i = 0; line[i]; i++) {
+                if (choice == i + 1) {
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+                    printf("%c", pointer);
+                }
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+            }
+        }
+        ch = _getch();
+    }
+}
 
 //Всё что связано с файлами
 bool checkFile(const char* filename) {
     FILE* file = NULL;
-    if (!(file = fopen(filename, "rt+"))) {
+    if (!(file = fopen(filename, "rt+")))
         return false;
-    }
     else {
         fclose(file);
         return true;
@@ -779,10 +918,9 @@ bool userLogin() {
     }
 }
 
-void registration() {
+void firstStartAdminReg() {
     FILE *file = NULL;
-    char *login = NULL, ch;
-    int i = 0;
+    char *login = NULL, *password = NULL;
     USER newUser;
     system("cls");
     printf("--------------------------------------------------------------------------------------------------------------------------------\n"
@@ -791,27 +929,8 @@ void registration() {
     printf("Регистрация администратора.\n\n");
     login = bufferedInput(29, "Введите логин: ");
     strcpy(newUser.login,login);
-    printf("Введите пароль: ");
-    while (true) {
-        ch = (char)_getch();
-        if (ch != '\0') {
-            if (ch == KEY_RETURN || ch == KEY_TAB) {
-                newUser.password[i] = '\0';
-                break;
-            }
-            else if (ch == KEY_BKSP && i > 0) {
-                i--;
-                printf("\b \b");
-            }
-            else if (ch == KEY_BKSP && i == 0) {
-                continue;
-            }
-            else if (i < 29) {
-                newUser.password[i++] = ch;
-                putchar('*');
-            }
-        }
-    }
+    password = maskedPasswordInput(29, "Введите пароль: ");
+    strcpy(newUser.password, password);
     newUser.isAdmin = 1;
     if ((file = fopen("db.dat", "ab+"))) {
         fwrite(&newUser, sizeof(USER), 1, file);
@@ -849,7 +968,7 @@ void usersInit() {
                 crypterTool(ENCRYPT); //Зашифровать файл
             } else {
                 //Если нет ни одной строки
-                registration();
+                firstStartAdminReg();
                 usersInit();
             }
         } else {
@@ -860,7 +979,7 @@ void usersInit() {
         }
     } else if (createFile("db.dat")) {
         //Если файл не существует - создать
-        registration();
+        firstStartAdminReg();
         usersInit();
     } else {
         //Если файл не существует и его не удалось создать
@@ -1121,6 +1240,51 @@ void displayAllUsers() {
     printf("-----------------------------------------------------------------------------------------\n\n");
 }
 
+void userReg(){
+    bool isLoginExist = false;
+    char *login = NULL, *password = NULL;
+    FILE* file = NULL;
+    user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));
+    printf("Регистрация пользователя:\n");
+    do {
+        login = bufferedInput(29, "Введите логин: ");
+        for (int i = 0; i < usersLinesCounter; i++) {
+            if (strcmp((user + i)->login, login) == 0) {
+                isLoginExist = true;
+                break;
+            }
+            else isLoginExist = false;
+        }
+        if (isLoginExist) {
+            printf("[Ошибка!]Такой аккаунт уже существует!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
+        else strcpy((user + usersLinesCounter)->login, login);
+    } while (isLoginExist);
+    free(login);
+    password = maskedPasswordInput(29, "Введите пароль: ");
+    strcpy((user + usersLinesCounter)->password, password);
+    free(password);
+    (user + usersLinesCounter)->isAdmin = 0;
+    if (checkFile("db.dat")) {
+        //Если файл существует
+        crypterTool(DECRYPT);//Расшифровать
+        if ((file = fopen("db.dat", "ab+"))) {
+            //Если файл удалось открыть
+            fwrite((user + usersLinesCounter), sizeof(USER), 1, file);
+            fclose(file);
+            printf("\nВы успешно зарегистрировались!\n\n");
+            _flushall();
+            usersLinesCounter++;
+        }
+        else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n"); //Если файл не удалось открыть
+        crypterTool(ENCRYPT);//Зашифровать
+    }
+    else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n"); //Если файл не существует
+    system("pause");
+}
+
 
 //Всё что связано с информацией
 void membersOpenAdmin() {
@@ -1182,19 +1346,14 @@ void membersInit() {
     if (info)
         printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
     else {
-
-
-        file = fopen("info.dat", "rb"); //Подсчёт
-        fseek(file, 0, SEEK_END);     //Кол-ва байт
-        fsize = ftell(file);          //В файле
-
-
-        infoLinesCounter = fsize / sizeof(INFORMATION);
-        fclose(file);
-
-
         if ((file = fopen("info.dat", "rb+"))) {
-            if (infoLinesCounter != -1) {
+            fseek(file, 0, SEEK_END);     //Кол-ва байт
+            fsize = ftell(file);          //В файле
+            infoLinesCounter = fsize / sizeof(INFORMATION);
+            rewind(file);
+
+
+            if (infoLinesCounter != 0) {
                 info = (INFORMATION *)malloc(infoLinesCounter * sizeof(INFORMATION));
                 for (int i = 0; i < infoLinesCounter; i++)
                     fread((info + i), sizeof(INFORMATION), 1, file);
@@ -1216,7 +1375,7 @@ void memberAdd() {
     else if (!(file = fopen("info.dat", "ab+")))
         printf("[Ошибка!]Добавление информации: Не удалось открыть файл для добавления!\n");
     else {
-        info = (INFORMATION *)realloc(info, ((infoLinesCounter + 1) * sizeof(INFORMATION)));
+        info = (INFORMATION *)realloc(info, (infoLinesCounter + 1) * sizeof(INFORMATION));
         printf("Добавление участника.\n");
         do {
             do {

@@ -63,6 +63,7 @@ char* bufferedInput(int limit, const char* inputText);//функция ввода ограниченн
 int checkToEnterOnlyInt(int limit, const char *inputText);//функция ввода только целых
 char* maskedPasswordInput(int limit, const char* message);
 char* loginInput(int limit, const char* message);
+char* categoryInput(int limit, const char* message);
 
 //Меню
 void indicateCursor(bool status);//функция показа/скрытия каретки ввода
@@ -348,6 +349,7 @@ char* maskedPasswordInput(int limit, const char* message){
             if (ch != '\0') {
                 if (ch == KEY_RETURN || ch == KEY_TAB) {
                     password[i] = '\0';
+                    putchar('\n');
                     break;
                 } else if (ch == KEY_BKSP && i > 0) {
                     i--;
@@ -368,12 +370,12 @@ char* maskedPasswordInput(int limit, const char* message){
                 } else isSpaceEntered = false;
             }
             if (isSpaceEntered) {
-                printf("\n[Ошибка!]Пароль не может содержать символ \" \"!");
+                printf("[Ошибка!]Пароль не может содержать символ \" \"!");
                 Sleep(1000);
                 printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
             } else return password;
         } else {
-            printf("\n[Ошибка!]Введите хотя бы один символ!");
+            printf("[Ошибка!]Введите хотя бы один символ!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
         }
@@ -400,6 +402,33 @@ char* loginInput(int limit, const char* message){
             return buffer;
         else {
             printf("[Ошибка!]Логин не может содержать символ \"%c\"!", buffer[i]);
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        }
+    }
+}
+
+char* categoryInput(int limit, const char* message){
+    char *buffer = NULL;
+    int i = 0, checkSymbol = 0;
+    bool isLetter = false;
+    while (true) {
+        i = 0;
+        buffer = bufferedInput(limit, message);
+        while (buffer[i] != '\0') {
+            if(buffer[i] != ' ' && buffer[i] != '.') {
+                checkSymbol = isalnum((unsigned char) buffer[i]);
+                if (!checkSymbol) {
+                    isLetter = false;
+                    break;
+                } else isLetter = true;
+            }
+            i++;
+        }
+        if (isLetter)
+            return buffer;
+        else {
+            printf("[Ошибка!]Разряд не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
         }
@@ -665,6 +694,7 @@ void userManagement() {
                         default: break;
                     }
                 }
+                displayAllUsersFlag = true;
                 break;
             case 5:
                 return;
@@ -1503,7 +1533,7 @@ void memberAdd() {
         if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)
             (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;
         else (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;
-        category = stringInputCheck(29, "Введите разряд участника: ");
+        category = categoryInput(29, "Введите разряд участника: ");
         strcpy((info + infoLinesCounter)->category, category);
         free(category);
         model = stringInputCheck(29, "Введите модель коньков участника: ");
@@ -1744,7 +1774,7 @@ void memberEdit() {
                 }
                 case 9: {
                     printf("Изменение разряда участника.\n");
-                    category = stringInputCheck(29, "Введите новый разряд участника: ");
+                    category = categoryInput(29, "Введите новый разряд участника: ");
                     strcpy((info + i)->category, category);
                     free(category);
                     displayEditableMember(i);
@@ -2183,7 +2213,7 @@ void categorySearch() {
     else if (infoLinesCounter == 0)
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        category = stringInputCheck(49, "Введите разряд: ");
+        category = categoryInput(49, "Введите разряд: ");
         system("cls");
         printf("Участники, с разрядом %s: ", category);
         for (int i = 0; i < infoLinesCounter; i++) {

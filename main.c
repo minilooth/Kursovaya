@@ -1245,7 +1245,7 @@ void userEdit() {
             case 1: {
                 printf("»зменить логин.\n");
                 do {
-                    newLogin = bufferedInput(29, "¬ведите новый логин: ");
+                    newLogin = loginInput(29, "¬ведите новый логин: ");
                     for (int j = 0; j < usersLinesCounter; j++) {
                         if (strcmp((user + j)->login, newLogin) == 0) {
                             isNewLoginExist = true;

@@ -17,17 +17,20 @@
 #define KEY_BKSP 8
 #define DECRYPT 1 //расшифровать
 #define ENCRYPT 0 //зашифровать
+#define infoFieldSize 16
+#define categoryFieldSize 11
+#define logAndPassSize 30
 
 
 typedef struct {
-    char login[30];
-    char password[30];
+    char login[logAndPassSize];
+    char password[logAndPassSize];
     int isAdmin;
 }USER;
 typedef struct {
-    char firstname[16];
-    char surname[16];
-    char lastname[16];
+    char firstname[infoFieldSize];
+    char surname[infoFieldSize];
+    char lastname[infoFieldSize];
 }FULLNAME;
 typedef struct {
     int minutes;
@@ -42,10 +45,10 @@ typedef struct {
 typedef struct {
     int number;
     FULLNAME fullname;
-    char country[16];
+    char country[infoFieldSize];
     DATEOFBIRTH dateOfBirth;
-    char category[11];
-    char model[16];
+    char category[categoryFieldSize];
+    char model[infoFieldSize];
     int points;
     LAP timeOfLap;
 }INFORMATION;
@@ -59,8 +62,8 @@ INFORMATION *info = NULL;
 
 //Ввод
 char* stringInputCheck(int limit, const char* message);//функция ввода только букв
-char* bufferedInput(int limit, const char* inputText);//функция ввода ограниченного кол-ва символов
-int checkToEnterOnlyInt(int limit, const char *inputText);//функция ввода только целых
+char* bufferedInput(int limit, const char* message);//функция ввода ограниченного кол-ва символов
+int checkToEnterOnlyInt(int limit, const char *message);//функция ввода только целых
 char* maskedPasswordInput(int limit, const char* message);
 char* loginInput(int limit, const char* message);
 char* categoryInput(int limit, const char* message);
@@ -267,11 +270,11 @@ char* stringInputCheck(int limit, const char* message) {
     }
 }
 
-char* bufferedInput(int limit, const char* inputText) {
+char* bufferedInput(int limit, const char* message) {
     char ch, *buffer = NULL;
     int i = 0;
     buffer = (char*)realloc(NULL, sizeof(char)*(limit + 1));
-    printf("%s", inputText);
+    printf("%s", message);
     while (true) {
         ch = (char)_getch();
         if (ch != '\0') {
@@ -285,7 +288,7 @@ char* bufferedInput(int limit, const char* inputText) {
                     printf("\n[Ошибка!]Введите хотя бы один символ!");
                     Sleep(1000);
                     printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-                    printf("%s", inputText);
+                    printf("%s", message);
                 }
             }
             else if (ch == KEY_BKSP && i > 0) {
@@ -305,13 +308,13 @@ char* bufferedInput(int limit, const char* inputText) {
     return buffer;
 }
 
-int checkToEnterOnlyInt(int limit, const char *inputText) {
+int checkToEnterOnlyInt(int limit, const char *message) {
     char *buffer = NULL;
     int numberEntered = 0, i = 0, check = 0;
     bool isNumeral = false, flag = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, inputText);
+        buffer = bufferedInput(limit, message);
         while (buffer[i] != '\0') {
             if (buffer[i] == '-' && !flag) {
                 i++;
@@ -2245,9 +2248,9 @@ void displayTopMembers() {
     INFORMATION *infoCopy = NULL, tmp;
     system("cls");
     if (!info)
-        printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
+        printf("[Ошибка!]Вывод топ-3 участников: Файл не открыт!\n\n");
     else if (infoLinesCounter == 0)
-        printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
+        printf("[Ошибка!]Вывод топ-3 участников: Файл пуст!\n\n");
     else {
         infoCopy = (INFORMATION*)realloc(NULL, sizeof(INFORMATION)*infoLinesCounter);
         memcpy(infoCopy, info, sizeof(INFORMATION)*infoLinesCounter);

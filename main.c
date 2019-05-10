@@ -247,25 +247,25 @@ char* stringInputCheck(int limit, const char* message) {
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);         //ввод строки с клавиатуры
+        buffer = bufferedInput(limit, message);         //Ввод строки с клавиатуры
         while (buffer[i] != '\0') {
-            checkLetter = isdigit((unsigned char)buffer[i]);            //проверка символа на цифру от 0 до 9
-            checkSymbol = isalnum((unsigned char)buffer[i]);            //проверка символа на букву или число
-            if (checkLetter != 0 || !checkSymbol) {             //если символ не буква и не цифра
+            checkLetter = isdigit((unsigned char)buffer[i]);            //Проверка символа на цифру от 0 до 9
+            checkSymbol = isalnum((unsigned char)buffer[i]);            //Проверка символа на букву или число
+            if (checkLetter != 0 || !checkSymbol) {             //Если символ не буква и не цифра
                 isLetter = false;
-                break;
+                break;              //Выход из цикла
             }
             else isLetter = true;
             i++;
         }
-        if (isLetter) {             //если массив содержит только буквы
-            buffer[0] = (char)toupper((int)buffer[0]);              //изменение первой буквы на эту же букву верхнего регистра
-            return buffer;
+        if (isLetter) {             //Если массив содержит только буквы
+            buffer[0] = (char)toupper((int)buffer[0]);              //Изменение первой буквы на эту же букву верхнего регистра
+            return buffer;              //Возврат значения функции
         }
-        else {          //если массив содержит не только буквы
+        else {          //Если массив содержит не только буквы
             printf("[Ошибка!]Это поле не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
         }
     }
 }
@@ -273,39 +273,39 @@ char* stringInputCheck(int limit, const char* message) {
 char* bufferedInput(int limit, const char* message) {
     char ch, *buffer = NULL;
     int i = 0;
-    buffer = (char*)realloc(NULL, sizeof(char)*(limit + 1));            //выделение памяти под массив
+    buffer = (char*)realloc(NULL, sizeof(char)*(limit + 1));            //Выделение памяти под массив
     printf("%s", message);
     while (true) {
-        ch = (char)_getch();                //ввод символа с клавиатуры
-        if (ch != '\0') {               //если символ - не нуль-символ
-            if (ch == KEY_RETURN || ch == KEY_TAB) {                //если это символ ввода или табуляции
-                if (i > 0) {            //если счётчик символов больше 0
-                    buffer[i] = '\0';
+        ch = (char)_getch();                //Ввод символа с клавиатуры
+        if (ch != '\0') {               //Если символ - не нуль-символ
+            if (ch == KEY_RETURN || ch == KEY_TAB) {                //Если это символ ввода или табуляции
+                if (i > 0) {            //Если счётчик символов больше 0
+                    buffer[i] = '\0';               //Запись нуль-символа в i-ую ячейку
                     putchar('\n');
-                    break;
+                    break;              //Выход из цикла
                 }
-                else {          //если счётчик сиволов равен 0
+                else {          //Если счётчик сиволов равен 0
                     printf("\n[Ошибка!]Введите хотя бы один символ!");
                     Sleep(1000);
-                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
                     printf("%s", message);
                 }
             }
-            else if (ch == KEY_BKSP && i > 0) {         //если символ backspace и счётчик символов больше 0
+            else if (ch == KEY_BKSP && i > 0) {         //Если символ backspace и счётчик символов больше 0
                 i--;
-                printf("\b \b");                //стереть символ с консоли
+                printf("\b \b");                //Стереть символ с консоли
             }
-            else if (ch == KEY_BKSP && !i)              //если символ backspace и счётчик равен 0
-                continue;
+            else if (ch == KEY_BKSP && !i)              //Если символ backspace и счётчик равен 0
+                continue;               //Переход на следующую итерацию цикла
             else {
-                if (i < limit) {            //если счётчик меньше ограничителя
-                    buffer[i++] = ch;           //запись символа в массив
-                    putchar(ch);                //вывод символа на экран
+                if (i < limit) {            //Если счётчик меньше ограничителя
+                    buffer[i++] = ch;           //Запись символа в массив
+                    putchar(ch);                //Вывод символа на экран
                 }
             }
         }
     }
-    return buffer;
+    return buffer;              //Возврат значения функции
 }
 
 int checkToEnterOnlyInt(int limit, const char *message) {
@@ -314,29 +314,29 @@ int checkToEnterOnlyInt(int limit, const char *message) {
     bool isNumeral = false, flag = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);         //ввод строки с клавиатуры
-        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
-            if (buffer[i] == '-' && !flag) {            //если i-ый символ равен символу "-" и флаг = true
+        buffer = bufferedInput(limit, message);         //Ввод строки с клавиатуры
+        while (buffer[i] != '\0') {             //Пока i-ый символ не нуль-символ
+            if (buffer[i] == '-' && !flag) {            //Если i-ый символ равен символу "-" и флаг = true
                 i++;
                 flag = true;
             }
-            check = isdigit((unsigned char)buffer[i]);              //проверить является ли i-ый символ цифрой
-            if (!check) {           //если check != 0 - не является
+            check = isdigit((unsigned char)buffer[i]);              //Проверить является ли i-ый символ цифрой
+            if (!check) {           //Если i-ый символ не является цифрой
                 isNumeral = false;
                 break;
             }
-            else isNumeral = true;            //если check == 0 - является
+            else isNumeral = true;            //Если i-ый символ является цифрой
             i++;
         }
-        if (isNumeral) {                //если строка содержит только цифры
-            numberEntered = strtol(buffer, NULL, 10);               //преобразование строки в целое число
-            free(buffer);
-            return numberEntered;
+        if (isNumeral) {                //Если строка содержит только цифры
+            numberEntered = strtol(buffer, NULL, 10);               //Преобразование строки в целое число
+            free(buffer);               //Освобождение памяти переменной
+            return numberEntered;               //Возврат значения функции
         }
-        else {                  //если строка содержит не цифры
+        else {                  //Если строка содержит не цифры
             printf("[Ошибка!]Не правильный ввод!");
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
         }
     }
 }
@@ -345,44 +345,44 @@ char* maskedPasswordInput(int limit, const char* message){
     char ch, *password = NULL;
     int i = 0;
     bool isSpaceEntered = false;
-    password = (char*)realloc(NULL, sizeof(char)*(limit + 1));          //выделение памяти под массив
+    password = (char*)realloc(NULL, sizeof(char)*(limit + 1));          //Выделение памяти под массив
     while(true) {
         i = 0;
         printf("%s", message);
-        while (true) {          //посимвольная запись символов в массив
-            ch = (char) _getch();
+        while (true) {          //Посимвольная запись символов в массив
+            ch = (char) _getch();               //Ввод символа
             if (ch != '\0') {
-                if (ch == KEY_RETURN || ch == KEY_TAB) {            //если символ - символ ввода или табуляции
-                    password[i] = '\0';         //запись символа конца массива символов
+                if (ch == KEY_RETURN || ch == KEY_TAB) {            //Если символ - символ ввода или табуляции
+                    password[i] = '\0';         //Запись нуль-символ в i-ую ячейку
                     putchar('\n');
-                    break;
-                } else if (ch == KEY_BKSP && i > 0) {               //если символ - backspace и счётчик символов > 0
+                    break;              //Выход из цикла
+                } else if (ch == KEY_BKSP && i > 0) {               //Если символ - backspace и счётчик символов > 0
                     i--;
-                    printf("\b \b");               //стереть символ с экрана
-                } else if (ch == KEY_BKSP && i == 0) {              //если символ - backspace и счётчик символов = 0
-                    continue;
-                } else if (i < limit) {                 //если счётчик символов меньше ограничителя
-                    password[i++] = ch;         //запись символа в массив
-                    putchar('*');               //вывод на экран символ "*"
+                    printf("\b \b");               //Стереть символ с экрана
+                } else if (ch == KEY_BKSP && i == 0) {              //Если символ - backspace и счётчик символов = 0
+                    continue;               //Переход на следующую итерацию цикла
+                } else if (i < limit) {                 //Если счётчик символов меньше ограничителя
+                    password[i++] = ch;         //Запись символа в массив
+                    putchar('*');               //Вывод на экран символ "*"
                 }
             }
         }
-        if (i > 0) {                //если счётчик символов больше 0
-            for (int j = 0; password[j]; j++) {             //поиск символа "пробел" в массиве символа
-                if (password[j] == ' ') {               //если j-ый символ - пробел
+        if (i > 0) {                //Если счётчик символов больше 0
+            for (int j = 0; password[j]; j++) {             //Поиск символа "пробел" в массиве символа
+                if (password[j] == ' ') {               //Если j-ый символ - пробел
                     isSpaceEntered = true;
-                    break;
+                    break;              //Выход из цикла
                 } else isSpaceEntered = false;
             }
-            if (isSpaceEntered) {               //если обнаружен символ "пробел"
+            if (isSpaceEntered) {               //Если обнаружен символ "пробел"
                 printf("[Ошибка!]Пароль не может содержать символ \" \"!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-            } else return password;         //если не обнаружен
-        } else {            //если счётчик символов равен 0
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
+            } else return password;         //Если "пробел" не обнаружен
+        } else {            //Если счётчик символов равен 0
             printf("[Ошибка!]Введите хотя бы один символ!");
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
         }
     }
 }
@@ -393,22 +393,22 @@ char* loginInput(int limit, const char* message){
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);             //ввод строки
-        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
-            checkSymbol = isalnum((unsigned char)buffer[i]);            //проверка i-го символа на цифру или букву
-            if (!checkSymbol) {             //если i-ый символ - цифра или буква
+        buffer = bufferedInput(limit, message);             //Ввод строки
+        while (buffer[i] != '\0') {             //Пока i-ый символ не нуль-символ
+            checkSymbol = isalnum((unsigned char)buffer[i]);            //Проверка i-го символа на цифру или букву
+            if (!checkSymbol) {             //Если i-ый символ - цифра или буква
                 isLetter = false;
-                break;
+                break;              //Выход из цикла
             }
-            else isLetter = true;           //если i-ый символ - не буква или не цифра
+            else isLetter = true;           //Если i-ый символ - не буква или не цифра
             i++;
         }
-        if (isLetter)               //если строка содержит только буквы или цифры
-            return buffer;
-        else {          //если не содержит не только буквы или цифры
+        if (isLetter)               //Если строка содержит только буквы или цифры
+            return buffer;              //Возврат значения функции
+        else {          //Если не содержит не только буквы или цифры
             printf("[Ошибка!]Логин не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
         }
     }
 }
@@ -419,26 +419,26 @@ char* categoryInput(int limit, const char* message){
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);         //ввод строки
-        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
-            if(buffer[i] != ' ' && buffer[i] != '.') {          //если i-ый символ не пробел и не точка
-                checkLetter = isdigit((unsigned char)buffer[i]);            //проверка символа на цифру от 0 до 9
-                checkSymbol = isalnum((unsigned char) buffer[i]);           //проверка i-го символа на букву
-                if (!checkSymbol || checkLetter != 0) {             //если i-ый символ не буква и не цифра
+        buffer = bufferedInput(limit, message);         //Ввод строки
+        while (buffer[i] != '\0') {             //Пока i-ый символ не нуль-символ
+            if(buffer[i] != ' ' && buffer[i] != '.') {          //Если i-ый символ не пробел и не точка
+                checkLetter = isdigit((unsigned char)buffer[i]);            //Проверка символа на цифру от 0 до 9
+                checkSymbol = isalnum((unsigned char) buffer[i]);           //Проверка i-го символа на букву
+                if (!checkSymbol || checkLetter != 0) {             //Если i-ый символ не буква и не цифра
                     isLetter = false;
-                    break;
-                } else isLetter = true;         //если i-ый символ буква или цифра
+                    break;              //Выход из цикла
+                } else isLetter = true;         //Если i-ый символ буква или цифра
             }
             i++;
         }
-        if (isLetter) {                 //если строка содержит только буквы или цифры
-            buffer[0] = (char)toupper((int)buffer[0]);              //перевод первого символа в верхний регистр
-            return buffer;
+        if (isLetter) {                 //Если строка содержит только буквы или цифры
+            buffer[0] = (char)toupper((int)buffer[0]);              //Перевод первого символа в верхний регистр
+            return buffer;              //Возврат значения функции
         }
-        else {              //если строка содержит не только буквы или цифры
+        else {              //Если строка содержит не только буквы или цифры
             printf("[Ошибка!]Разряд не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
         }
     }
 }
@@ -462,22 +462,22 @@ int menu() {
         if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
             system("cls");              //Очистка экрана
-            if (ch == KEY_RETURN) {             //если был введен символ ввода
-                indicateCursor(true);               //показать каретку ввода
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);               //Показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
-            else if (ch == KEY_DOWN) choice++;              //если был введен символ стрелки вниз
-            if (choice > 3) choice = 1;                 //если указатель выбора больше 3 вернуть его в начальное положение
-            else if (choice < 1) choice = 3;            //если указатель выбора менбше 1 вернуть его в конечного положение
+            if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
+            else if (ch == KEY_DOWN) choice++;              //Если был введен символ стрелки вниз
+            if (choice > 3) choice = 1;                 //Если указатель выбора больше 3 вернуть его в начальное положение
+            else if (choice < 1) choice = 3;            //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню:\n");
-            for (int i = 0; line[i]; i++) {             //вывод меню
-                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
-                    printf("%c", pointer);              //вывод указателя на экран
+            for (int i = 0; line[i]; i++) {             //Вывод меню
+                if (choice == i + 1) {                  //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //вывод строки из массива
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //смена цвета строк
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //Вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Смена цвета строк
             }
         }
         ch = _getch();              //Ввод символа с клавиатуры
@@ -496,22 +496,22 @@ int adminSubmenu() {
         if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
             system("cls");              //Очистка экрана
-            if (ch == KEY_RETURN) {             //если был введен символ ввода
-                indicateCursor(true);               //показать каретку ввода
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);               //Показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
-            if (ch == KEY_DOWN) choice++;                 //если был введен символ стрелки вниз
-            if (choice > 8) choice = 1;                 //если указатель выбора больше 8 вернуть его в начальное положение
-            if (choice < 1) choice = 8;                 //если указатель выбора менбше 1 вернуть его в конечного положение
+            if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                 //Если был введен символ стрелки вниз
+            if (choice > 8) choice = 1;                 //Если указатель выбора больше 8 вернуть его в начальное положение
+            if (choice < 1) choice = 8;                 //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Подменю(для администраторов):\n");
-            for (int i = 0; line[i]; i++) {                 //вывод меню
-                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
-                    printf("%c", pointer);                  //вывод указателя на экран
+            for (int i = 0; line[i]; i++) {                 //Вывод меню
+                if (choice == i + 1) {                  //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);                  //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                 //вывод строки из массива
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);                   //смена цвета строк
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                 //Вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);                   //Смена цвета строк
             }
         }
         ch = _getch();                  //Ввод символа с клавиатуры
@@ -529,22 +529,22 @@ int userSubmenu() {
         if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
             system("cls");                  //Очистка экрана
-            if (ch == KEY_RETURN) {             //если был введен символ ввода
-                indicateCursor(true);                   //показать каретку ввода
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);                   //Показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
-            if (ch == KEY_DOWN) choice++;                   //если был введен символ стрелки вниз
-            if (choice > 5) choice = 1;                 //если указатель выбора больше 5 вернуть его в начальное положение
-            if (choice < 1) choice = 5;                 //если указатель выбора менбше 1 вернуть его в конечного положение
+            if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                   //Если был введен символ стрелки вниз
+            if (choice > 5) choice = 1;                 //Если указатель выбора больше 5 вернуть его в начальное положение
+            if (choice < 1) choice = 5;                 //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Подменю(для пользователей):\n");
-            for (int i = 0; line[i]; i++) {             //вывод меню
-                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
-                    printf("%c", pointer);              //вывод указателя на экран
+            for (int i = 0; line[i]; i++) {             //Вывод меню
+                if (choice == i + 1) {                  //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);            //вывод строки из массива
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);           //смена цвета строк
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);            //Вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);           //Смена цвета строк
             }
         }
         ch = _getch();              //Ввод символа с клавиатуры
@@ -560,23 +560,23 @@ int userEditMenu(int i, bool showPass) {
     while (true) {
         if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            displayEditableUser(i, showPass);                   //функция вывода ректируемого пользователя
-            if (ch == KEY_RETURN) {                 //если был введен символ ввода
-                indicateCursor(true);                   //показать каретку ввода
+            displayEditableUser(i, showPass);                   //Функция вывода ректируемого пользователя
+            if (ch == KEY_RETURN) {                 //Если был введен символ ввода
+                indicateCursor(true);                   //Показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
-            if (ch == KEY_DOWN) choice++;                   //если был введен символ стрелки вниз
-            if (choice > 5) choice = 1;                 //если указатель выбора больше 5 вернуть его в начальное положение
-            if (choice < 1) choice = 5;                 //если указатель выбора менбше 1 вернуть его в конечного положение
+            if (ch == KEY_UP) choice--;                 //Псли был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                   //Псли был введен символ стрелки вниз
+            if (choice > 5) choice = 1;                 //Псли указатель выбора больше 5 вернуть его в начальное положение
+            if (choice < 1) choice = 5;                 //Псли указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню редактирования аккаунтов:\n");
-            for (int j = 0; line[j]; j++) {                 //вывод меню
-                if (choice == j + 1) {                  //если указатель равен (j + 1)-ой ячейке массива строк
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
-                    printf("%c", pointer);                      //вывод указателя на экран
+            for (int j = 0; line[j]; j++) {                 //Вывод меню
+                if (choice == j + 1) {                  //Если указатель равен (j + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);                      //Вывод указателя на экран
                 }
-                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);                //вывод строки из массива
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //смена цвета строк
+                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);                //Вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Смена цвета строк
             }
         }
         ch = _getch();              //Ввод символа с клавиатуры
@@ -1144,7 +1144,7 @@ void userAdd() {
     if (choice == 1) (user + usersLinesCounter)->isAdmin = 1;               //Если выбор равен 1 дать права администратора этому пользователю
     else (user + usersLinesCounter)->isAdmin = 0;               //В других случаях не давать права администратора
     if (checkFile("db.dat")) {              //Если файл существует
-        crypterTool(DECRYPT);               //Расшифровать
+        crypterTool(DECRYPT);               //Расшифровать файл
         if ((file = fopen("db.dat", "ab+"))) {              //Если файл удалось открыть
             fwrite((user + usersLinesCounter), sizeof(USER), 1, file);              //Запись этой ячейки массива структур в файл
             fclose(file);               //Закрыть файл
@@ -1153,7 +1153,7 @@ void userAdd() {
             usersLinesCounter++;
         }
         else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n");             //Если файл не удалось открыть
-        crypterTool(ENCRYPT);               //Зашифровать
+        crypterTool(ENCRYPT);               //Зашифровать файл
     }
     else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n");              //Если файл не существует
     system("pause");
@@ -1377,74 +1377,74 @@ void membersOpenAdmin() {
     int choice = 1, ch = (int)NULL;
     bool isShowed = false;
     const char *line[] = { "Да", "Нет", NULL }, pointer = '>';
-    if (!checkFile("info.dat")) {
+    if (!checkFile("info.dat")) {               //Если файл не существует
         printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n");
-        indicateCursor(false);
+        indicateCursor(false);              //Скрыть каретку ввода
         while (true) {
-            if (ch == KEY_RETURN || ch == KEY_LEFT || ch == KEY_RIGHT || !isShowed) {
+            if (ch == KEY_RETURN || ch == KEY_LEFT || ch == KEY_RIGHT || !isShowed) {               //Если введенный символ - символ ввода или символ стрелки вверх или вниз или меню не было выведено
                 isShowed = true;
-                printf("%c[2K\r", 27);
-                if (ch == KEY_RETURN) {
-                    indicateCursor(true);
-                    break;
+                printf("%c[2K\r", 27);              //Стереть строку с экрана
+                if (ch == KEY_RETURN) {             //Если символ ввода
+                    indicateCursor(true);               //Показывать каретку ввода
+                    break;              //Выход их цикла
                 }
-                if (ch == KEY_LEFT) choice--;
-                if (ch == KEY_RIGHT) choice++;
-                if (choice > 2) choice = 2;
-                if (choice < 1) choice = 1;
+                if (ch == KEY_LEFT) choice--;               //Если символ "стрелка влево"
+                if (ch == KEY_RIGHT) choice++;              //Если символ "стрелка вправо"
+                if (choice > 2) choice = 2;             //Если указатель выбора больше 2, вернуть его в конечное положение
+                if (choice < 1) choice = 1;             //Если указатель выбора меньше 1, вернуть его в начальное положение
                 printf("Создать файл? ");
-                for (int i = 0; line[i]; i++) {
-                    if (choice == i + 1) {
-                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                        printf("%c", pointer);
+                for (int i = 0; line[i]; i++) {             //Вывод меню выбора создания файла
+                    if (choice == i + 1) {              //Если указатель выбора равен (i+1)-му индексу массива
+                        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменение цвета строки
+                        printf("%c", pointer);              //Вывод указателя
                     }
-                    printf(i + 1 == choice ? "%s " : " %s ", line[i]);
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                    printf(i + 1 == choice ? "%s " : " %s ", line[i]);              //Вывод строк меню
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Изменение цвета строк
                 }
             }
-            ch = _getch();
+            ch = _getch();              //Ввод символа
         }
-        if (choice == 1) {
-            if (createFile("info.dat")) {
+        if (choice == 1) {              //Если укзазатель равен 1
+            if (createFile("info.dat")) {               //Если удалось создать файл
                 printf("Открытие информации: Файл успешно создан!\n");
-                membersInit();
+                membersInit();              //Инициализация участников
                 system("pause");
-            }
+            }               //Если файл не удалось создать
             else printf("[Ошибка!]Открытие информации: Не удалось создать файл!\n");
         }
     }
-    else {
-        membersInit();
+    else {              //Если файл существует
+        membersInit();              //Инициализация участников
         system("pause");
     }
 };
 
 void membersOpenUser() {
-    if (checkFile("info.dat"))
-        membersInit();
-    else
+    if (checkFile("info.dat"))              //Если файл существует
+        membersInit();              //Инициализация участников
+    else                //Если файл не существует
         printf("[Ошибка!]Открытие информации: Файл ещё не создан!\n\n");
 }
 
 void membersInit() {
     FILE *file = NULL;
     long fsize;
-    if (info)
+    if (info)               //Если указатель на массив структур не равен NULL
         printf("[Ошибка!]Открытие информации: Файл уже открыт!\n\n");
-    else {
-        if ((file = fopen("info.dat", "rb+"))) {
-            fseek(file, 0, SEEK_END);     //Кол-ва байт
-            fsize = ftell(file);          //В файле
-            infoLinesCounter = fsize / sizeof(INFORMATION);
-            rewind(file);
+    else {              //Если указатель на массив структур равен NULL
+        if ((file = fopen("info.dat", "rb+"))) {                //Если файл удалось открыть
+            fseek(file, 0, SEEK_END);     //Установка указателя в файле на конец файла
+            fsize = ftell(file);          //Подсчёт байтов в файле до указателя
+            infoLinesCounter = fsize / sizeof(INFORMATION);             //Подсчёт количества участников
+            rewind(file);               //Установка указателя на начало файла
 
 
-            if (infoLinesCounter != 0) {
-                info = (INFORMATION *)malloc(infoLinesCounter * sizeof(INFORMATION));
-                for (int i = 0; i < infoLinesCounter; i++)
+            if (infoLinesCounter != 0) {                //Если в файле записан хотя бы один участник
+                info = (INFORMATION *)malloc(infoLinesCounter * sizeof(INFORMATION));               //Выделение памяти
+                for (int i = 0; i < infoLinesCounter; i++)              //Чтение информации из файла
                     fread((info + i), sizeof(INFORMATION), 1, file);
             }
-            fclose(file);
+            fclose(file);               //Закрыть файл
             printf("Открытие информации: Файл успешно открыт!\n\n");
         }
     }
@@ -1456,109 +1456,108 @@ void memberAdd() {
     struct tm *aTm = localtime(&t);
     bool isMemberExist = false;
     char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Добавление информации: Файл не открыт!\n\n");
-    else if (!(file = fopen("info.dat", "ab+")))
+    else if (!(file = fopen("info.dat", "ab+")))                //Если не удалось открыть файл для добавления
         printf("[Ошибка!]Добавление информации: Не удалось открыть файл для добавления!\n");
-    else {
-        info = (INFORMATION *)realloc(info, (infoLinesCounter + 1) * sizeof(INFORMATION));
+    else {              //Если удалось открыть файл для добавления
+        info = (INFORMATION *)realloc(info, (infoLinesCounter + 1) * sizeof(INFORMATION));              //Перераспределение памяти
         printf("Добавление участника.\n");
         do {
             do {
-                (info + infoLinesCounter)->number = checkToEnterOnlyInt(3, "Введите номер участника: ");
-                if ((info + infoLinesCounter)->number < 1) {
+                (info + infoLinesCounter)->number = checkToEnterOnlyInt(3, "Введите номер участника: ");                //Ввод номера участника
+                if ((info + infoLinesCounter)->number < 1) {                //Если введенный номер < 1
                     printf("[Ошибка!]Введите число больше 0!");
                     Sleep(1000);
-                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                    printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
                 }
-            } while ((info + infoLinesCounter)->number < 1);
-            for (int i = 0; i < infoLinesCounter; i++) {
-                if ((info + i)->number == (info + infoLinesCounter)->number) {
+            } while ((info + infoLinesCounter)->number < 1);                //Пока не будет введен номер > 0
+            for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участника с таким номером в массиве структур
+                if ((info + i)->number == (info + infoLinesCounter)->number) {              //Если i-ый участник имеет такой номер
                     isMemberExist = true;
-                    break;
+                    break;              //Выход из цикла
                 }
                 else isMemberExist = false;
             }
-            if (isMemberExist) {
+            if (isMemberExist) {                //Если такой участник был найден
                 printf("[Ошибка!]Участник с таким номером уже существует!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while (isMemberExist);
-        firstname = stringInputCheck(15, "Введите имя участника: ");
-        strcpy((info + infoLinesCounter)->fullname.firstname, firstname);
-        free(firstname);
-        surname = stringInputCheck(15, "Введите фамилию участника: ");
-        strcpy((info + infoLinesCounter)->fullname.surname, surname);
-        free(surname);
-        lastname = stringInputCheck(15, "Введите отчество участника: ");
-        strcpy((info + infoLinesCounter)->fullname.lastname, lastname);
-        free(lastname);
-        country = stringInputCheck(15, "Введите страну участника: ");
-        strcpy((info + infoLinesCounter)->country, country);
-        free(country);
+        } while (isMemberExist);                //Пока участник с таким номером будет не найден
+        firstname = stringInputCheck(15, "Введите имя участника: ");                //Ввод имени участника
+        strcpy((info + infoLinesCounter)->fullname.firstname, firstname);               //Копирование имени участника в ячейку массива структур
+        free(firstname);                //Освобождение памяти для переменной, содержащей имя участника
+        surname = stringInputCheck(15, "Введите фамилию участника: ");              //Ввод фамилии участника
+        strcpy((info + infoLinesCounter)->fullname.surname, surname);               //Копирование фамилии участника в ячейку массива структур
+        free(surname);              //Освобождение памяти для переменной, содержащей фамилию участника
+        lastname = stringInputCheck(15, "Введите отчество участника: ");                //Ввод отчества участника
+        strcpy((info + infoLinesCounter)->fullname.lastname, lastname);             //Копирование отчества участника в ячейку массива структур
+        free(lastname);             //Освобождение памяти для переменной, содержащей отчество участника
+        country = stringInputCheck(15, "Введите страну участника: ");               //Ввод страны участника
+        strcpy((info + infoLinesCounter)->country, country);                //Копирование отчества участника в ячейку массива структур
+        free(country);              //Освобождение памяти для переменной, содержащей страну участника
         do {
-            (info + infoLinesCounter)->dateOfBirth.day = checkToEnterOnlyInt(2, "Введите день рождения участника: ");
-            if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31) {
+            (info + infoLinesCounter)->dateOfBirth.day = checkToEnterOnlyInt(2, "Введите день рождения участника: ");               //Ввод дня рождения участнмка
+            if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31) {                //Если введенный день меньше 1 или больше 31
                 printf("[Ошибка!]Введите число от 1 до 31!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31);
+        } while ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31);                //Пока введенный день не будет > 0 или < 32
         do {
-            (info + infoLinesCounter)->dateOfBirth.month = checkToEnterOnlyInt(2, "Введите месяц рождения участника(числом): ");
-            if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12) {
+            (info + infoLinesCounter)->dateOfBirth.month = checkToEnterOnlyInt(2, "Введите месяц рождения участника(числом): ");                //Ввод месяца рождения участника
+            if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12) {                //Если введенный месяц меньше 1 или больше 12
                 printf("[Ошибка!]Введите число от 1 до 12!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12);
+        } while ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12);                //Пока введенный месяц не будет больше 0 или меньше 13
         do {
-            (info + infoLinesCounter)->dateOfBirth.year = checkToEnterOnlyInt(4, "Введите год рождения участника: ");
-            if ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019) {
+            (info + infoLinesCounter)->dateOfBirth.year = checkToEnterOnlyInt(4, "Введите год рождения участника: ");               //Ввод года рождения участника
+            if ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019) {             //Если введенный год меньше 1900 или больше 2019
                 printf("[Ошибка!]Введите число от 1900 до 2019!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while ((info + infoLinesCounter)->dateOfBirth.year < 1900 ||
-                 (info + infoLinesCounter)->dateOfBirth.year > 2019);
-        if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)
-            (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;
-        else (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;
-        category = categoryInput(10, "Введите разряд участника: ");
-        strcpy((info + infoLinesCounter)->category, category);
-        free(category);
-        model = stringInputCheck(15, "Введите модель коньков участника: ");
-        strcpy((info + infoLinesCounter)->model, model);
-        free(model);
+        } while ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019);             //Пока введенный год не будет больше 1900 или меньше 2019
+        if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)             //Если введенный месяц меньше текущего месяца
+            (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;                //От 2018 отнимается введенный год и получается возраст
+        else (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;               //От 2018 отнимается введенный год и получается возраст
+        category = categoryInput(10, "Введите разряд участника: ");             //Ввод разряда участника
+        strcpy((info + infoLinesCounter)->category, category);              //Копирование разряда участника в ячейку массива структур
+        free(category);             //Освобождение памяти для переменной, содержащей страну участника
+        model = stringInputCheck(15, "Введите модель коньков участника: ");             //Ввод модель коньков участника
+        strcpy((info + infoLinesCounter)->model, model);                //Копирование модели коньков учатсника в ячейку массива структур
+        free(model);                //Освобождение памяти для переменной, содержащей модель коньков участника
         do {
-            (info + infoLinesCounter)->points = checkToEnterOnlyInt(4, "Введите количество очков участника: ");
-            if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999) {
+            (info + infoLinesCounter)->points = checkToEnterOnlyInt(4, "Введите количество очков участника: ");             //Ввод количества очков участника
+            if ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999) {                //Если введенное количество очков участника меньше 0 или больше 9999
                 printf("[Ошибка!]Введите число от 0 до 9999!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк участника
             }
-        } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);
+        } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);                //Пока не будет введено количество очков участника больше 0 или меньше 9999
         do {
-            (info + infoLinesCounter)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите минуты круга участника: ");
-            if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59) {
+            (info + infoLinesCounter)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите минуты круга участника: ");              //Ввод минут круга участника
+            if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59) {                //Если введенные минуты круга учатсника меньше -1 или больше 60
                 printf("[Ошибка!]Введите число от 0 до 59!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59);
+        } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59);                //Пока не будут введены минуты круга участника больше -1 или меньше 60
         do {
-            (info + infoLinesCounter)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите секунды круга участника: ");
-            if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59) {
+            (info + infoLinesCounter)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите секунды круга участника: ");             //Ввод секунд круга участника
+            if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59) {                //Если введенные секунды круга участника меньше -1 или больше 60
                 printf("[Ошибка!]Введите число от 0 до 59!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59);
-        fwrite((info + infoLinesCounter), sizeof(INFORMATION), 1, file);
+        } while ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59);                //Пока не будут введены секунды круга участника больше -1 или меньше 60
+        fwrite((info + infoLinesCounter), sizeof(INFORMATION), 1, file);                //Запись ячейки массива структур в файл
         _flushall();
-        fclose(file);
-        infoLinesCounter++;
+        fclose(file);               //Закрытие файла
+        infoLinesCounter++;             //Счётчик количества учатсников ++
         printf("Участник успешно добавлен!\n\n");
     }
 }
@@ -1567,43 +1566,41 @@ void memberDelete() {
     int delNumber = 0, i = 0;
     bool isNumberExist = false;
     FILE *file = NULL;
-    if (info == NULL) {
+    if (!info) {                //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Удаление информации: Файл не открыт!\n\n");
     }
-    else if (infoLinesCounter == 0) {
+    else if (infoLinesCounter == 0) {               //Если количество участников равно нулю
         printf("[Ошибка!]Удаление информации: Файл пуст!\n\n");
     }
     else {
-        displayAllMembers();
+        displayAllMembers();                //Вывод всех участников на экран
         printf("Удаление участника.\n");
-        do {
-            delNumber = checkToEnterOnlyInt(3, "Введите номер участника для удаления: ");
-            for (i = 0; i < infoLinesCounter; i++) {
-                if (delNumber == (info + i)->number) {
-                    isNumberExist = true;
-                    break;
-                }
-                else isNumberExist = false;
+        delNumber = checkToEnterOnlyInt(3, "Введите номер участника для удаления: ");               //Ввод номера участника для удаления
+        for (i = 0; i < infoLinesCounter; i++) {                //Поиск участника в массиве структур с таким номером
+            if (delNumber == (info + i)->number) {              //Если введённый номер равен номеру i-го участника
+                isNumberExist = true;
+                break;              //Выход из цикла
             }
-            if (!isNumberExist) {
-                printf("[Ошибка!]Участника с таким номером не существует!\n\n");
-                return;
-            }
-        } while (!isNumberExist);
-        for (int j = i; j < infoLinesCounter; j++)
+            else isNumberExist = false;
+        }
+        if (!isNumberExist) {               //Если введенный номер не найден
+            printf("[Ошибка!]Участника с таким номером не существует!\n\n");
+            return;             //Выход из функции
+        }
+        for (int j = i; j < infoLinesCounter; j++)              //Сместить все ячейки после удаляемой влево на одну
             *(info + j) = *(info + (j + 1));
-        info = (INFORMATION*)realloc(info, sizeof(INFORMATION)*infoLinesCounter);
-        infoLinesCounter--;
-        if (checkFile("info.dat")) {
-            if ((file = fopen("info.dat", "wb"))) {
-                for (int j = 0; j < infoLinesCounter; j++)
+        info = (INFORMATION*)realloc(info, sizeof(INFORMATION)*infoLinesCounter);               //Перераспределение памяти
+        infoLinesCounter--;             //Счётчик количества участников --
+        if (checkFile("info.dat")) {                //Если файл существует
+            if ((file = fopen("info.dat", "wb"))) {             //Если файл удалось пересоздать
+                for (int j = 0; j < infoLinesCounter; j++)              //Запись ячеек массива структур в файл
                     fwrite((info + j), sizeof(INFORMATION), 1, file);
-                fclose(file);
+                fclose(file);               //Закрытие файла
                 printf("Участник успешно удалён!\n\n");
             }
-            else printf("[Ошибка!]Удаление информации: Не удалось перезаписать файл! Файл отчищен!\n\n");
+            else printf("[Ошибка!]Удаление информации: Не удалось перезаписать файл! Файл отчищен!\n\n");               //Если файл не удалось пересоздать
         }
-        else printf("[Ошибка!]Удаление информации: Не удалось найти файл!\n\n");
+        else printf("[Ошибка!]Удаление информации: Не удалось найти файл!\n\n");                //Если файл не существует
     }
 }
 

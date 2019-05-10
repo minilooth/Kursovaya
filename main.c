@@ -54,19 +54,19 @@ typedef struct {
 }INFORMATION;
 
 
-int usersLinesCounter = 0;
-int infoLinesCounter = 0;
-USER *user = NULL;
-INFORMATION *info = NULL;
+int usersLinesCounter = 0;              //счётчик количества пользователей
+int infoLinesCounter = 0;               //счётчик количества участников
+USER *user = NULL;              //массив структур пользователей
+INFORMATION *info = NULL;               //массив структур участников
 
 
 //Ввод
 char* stringInputCheck(int limit, const char* message);//функция ввода только букв
 char* bufferedInput(int limit, const char* message);//функция ввода ограниченного кол-ва символов
-int checkToEnterOnlyInt(int limit, const char *message);//функция ввода только целых
-char* maskedPasswordInput(int limit, const char* message);
-char* loginInput(int limit, const char* message);
-char* categoryInput(int limit, const char* message);
+int checkToEnterOnlyInt(int limit, const char *message);//функция ввода только целых чисел
+char* maskedPasswordInput(int limit, const char* message);//функция для ввода пароля
+char* loginInput(int limit, const char* message);//функция для ввода логина
+char* categoryInput(int limit, const char* message);//функция для ввода разряда
 
 //Меню
 void indicateCursor(bool status);//функция показа/скрытия каретки ввода
@@ -80,7 +80,7 @@ int searchAndFilteringMenu();//функция меню поиска и фильтрации
 void userManagement();//функция выбора функции меню управления пользователями
 int userManagementMenu();//фукнция меню управления пользователями
 int userLoginOrRegMenu();//функция подменю входа для пользователей
-int displayAllUsersMenu(bool showPass);
+int displayAllUsersMenu(bool showPass);//функция вывода меню показа всех пользователей
 
 // Файлы
 bool checkFile(const char* filename);//функция проверка файла на существование файла
@@ -124,19 +124,19 @@ void displayTopMembers();//функция вывода топ-3 лучших участников
 
 
 int main() {
-    setlocale(LC_ALL, "Rus");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-    system("color 0B");
-    system("mode con cols=139 lines=32");
-    indicateCursor(false);
+    setlocale(LC_ALL, "Rus");           //установка локали консоли
+    SetConsoleCP(1251);         //установка кодировки консоли
+    SetConsoleOutputCP(1251);           //установка кодировки текста консоли
+    system("color 0B");             //изменение цвета текста консоли
+    system("mode con cols=139 lines=32");               //установка размера окна консоли
+    indicateCursor(false);          //скрытие каретки ввода
     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n"
            "                                  Программа учёта информации об участниках соревнования по бегу на коньках                                 \n"
            "-------------------------------------------------------------------------------------------------------------------------------------------\n"
            "                                                                                                                             © by Minilooth");
-    Sleep(3500);
-    indicateCursor(true);
-    usersInit();
+    Sleep(3500);            //засыпание программы на 3.5 сек
+    indicateCursor(true);               //показ каретки ввода
+    usersInit();            //инициализация пользователей
     bool adminSubMenuFlag = false, userSubMenuFlag = false, userLogOrRegMenuFlag = false;
     while (true) {
         system("cls");
@@ -247,22 +247,22 @@ char* stringInputCheck(int limit, const char* message) {
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);
+        buffer = bufferedInput(limit, message);         //ввод строки с клавиатуры
         while (buffer[i] != '\0') {
-            checkLetter = isdigit((unsigned char)buffer[i]);
-            checkSymbol = isalnum((unsigned char)buffer[i]);
-            if (checkLetter != 0 || !checkSymbol) {
+            checkLetter = isdigit((unsigned char)buffer[i]);            //проверка символа на цифру от 0 до 9
+            checkSymbol = isalnum((unsigned char)buffer[i]);            //проверка символа на букву или число
+            if (checkLetter != 0 || !checkSymbol) {             //если символ не буква и не цифра
                 isLetter = false;
                 break;
             }
             else isLetter = true;
             i++;
         }
-        if (isLetter) {
-            buffer[0] = (char)toupper((int)buffer[0]);
+        if (isLetter) {             //если массив содержит только буквы
+            buffer[0] = (char)toupper((int)buffer[0]);              //изменение первой буквы на эту же букву верхнего регистра
             return buffer;
         }
-        else {
+        else {          //если массив содержит не только буквы
             printf("[Ошибка!]Это поле не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
@@ -273,34 +273,34 @@ char* stringInputCheck(int limit, const char* message) {
 char* bufferedInput(int limit, const char* message) {
     char ch, *buffer = NULL;
     int i = 0;
-    buffer = (char*)realloc(NULL, sizeof(char)*(limit + 1));
+    buffer = (char*)realloc(NULL, sizeof(char)*(limit + 1));            //выделение памяти под массив
     printf("%s", message);
     while (true) {
-        ch = (char)_getch();
-        if (ch != '\0') {
-            if (ch == KEY_RETURN || ch == KEY_TAB) {
-                if (i > 0) {
+        ch = (char)_getch();                //ввод символа с клавиатуры
+        if (ch != '\0') {               //если символ - не нуль-символ
+            if (ch == KEY_RETURN || ch == KEY_TAB) {                //если это символ ввода или табуляции
+                if (i > 0) {            //если счётчик символов больше 0
                     buffer[i] = '\0';
                     putchar('\n');
                     break;
                 }
-                else {
+                else {          //если счётчик сиволов равен 0
                     printf("\n[Ошибка!]Введите хотя бы один символ!");
                     Sleep(1000);
                     printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
                     printf("%s", message);
                 }
             }
-            else if (ch == KEY_BKSP && i > 0) {
+            else if (ch == KEY_BKSP && i > 0) {         //если символ backspace и счётчик символов больше 0
                 i--;
-                printf("\b \b");
+                printf("\b \b");                //стереть символ с консоли
             }
-            else if (ch == KEY_BKSP && !i)
+            else if (ch == KEY_BKSP && !i)              //если символ backspace и счётчик равен 0
                 continue;
             else {
-                if (i < limit) {
-                    buffer[i++] = ch;
-                    putchar(ch);
+                if (i < limit) {            //если счётчик меньше ограничителя
+                    buffer[i++] = ch;           //запись символа в массив
+                    putchar(ch);                //вывод символа на экран
                 }
             }
         }
@@ -314,26 +314,26 @@ int checkToEnterOnlyInt(int limit, const char *message) {
     bool isNumeral = false, flag = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);
-        while (buffer[i] != '\0') {
-            if (buffer[i] == '-' && !flag) {
+        buffer = bufferedInput(limit, message);         //ввод строки с клавиатуры
+        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
+            if (buffer[i] == '-' && !flag) {            //если i-ый символ равен символу "-" и флаг = true
                 i++;
                 flag = true;
             }
-            check = isdigit((unsigned char)buffer[i]);
-            if (!check) {
+            check = isdigit((unsigned char)buffer[i]);              //проверить является ли i-ый символ цифрой
+            if (!check) {           //если check != 0 - не является
                 isNumeral = false;
                 break;
             }
-            else isNumeral = true;
+            else isNumeral = true;            //если check == 0 - является
             i++;
         }
-        if (isNumeral) {
-            numberEntered = strtol(buffer, NULL, 10);
+        if (isNumeral) {                //если строка содержит только цифры
+            numberEntered = strtol(buffer, NULL, 10);               //преобразование строки в целое число
             free(buffer);
             return numberEntered;
         }
-        else {
+        else {                  //если строка содержит не цифры
             printf("[Ошибка!]Не правильный ввод!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
@@ -345,41 +345,41 @@ char* maskedPasswordInput(int limit, const char* message){
     char ch, *password = NULL;
     int i = 0;
     bool isSpaceEntered = false;
-    password = (char*)realloc(NULL, sizeof(char)*(limit + 1));
+    password = (char*)realloc(NULL, sizeof(char)*(limit + 1));          //выделение памяти под массив
     while(true) {
         i = 0;
         printf("%s", message);
-        while (true) {
+        while (true) {          //посимвольная запись символов в массив
             ch = (char) _getch();
             if (ch != '\0') {
-                if (ch == KEY_RETURN || ch == KEY_TAB) {
-                    password[i] = '\0';
+                if (ch == KEY_RETURN || ch == KEY_TAB) {            //если символ - символ ввода или табуляции
+                    password[i] = '\0';         //запись символа конца массива символов
                     putchar('\n');
                     break;
-                } else if (ch == KEY_BKSP && i > 0) {
+                } else if (ch == KEY_BKSP && i > 0) {               //если символ - backspace и счётчик символов > 0
                     i--;
-                    printf("\b \b");
-                } else if (ch == KEY_BKSP && i == 0) {
+                    printf("\b \b");               //стереть символ с экрана
+                } else if (ch == KEY_BKSP && i == 0) {              //если символ - backspace и счётчик символов = 0
                     continue;
-                } else if (i < limit) {
-                    password[i++] = ch;
-                    putchar('*');
+                } else if (i < limit) {                 //если счётчик символов меньше ограничителя
+                    password[i++] = ch;         //запись символа в массив
+                    putchar('*');               //вывод на экран символ "*"
                 }
             }
         }
-        if (i > 0) {
-            for (int j = 0; password[j]; j++) {
-                if (password[j] == ' ') {
+        if (i > 0) {                //если счётчик символов больше 0
+            for (int j = 0; password[j]; j++) {             //поиск символа "пробел" в массиве символа
+                if (password[j] == ' ') {               //если j-ый символ - пробел
                     isSpaceEntered = true;
                     break;
                 } else isSpaceEntered = false;
             }
-            if (isSpaceEntered) {
+            if (isSpaceEntered) {               //если обнаружен символ "пробел"
                 printf("[Ошибка!]Пароль не может содержать символ \" \"!");
                 Sleep(1000);
                 printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-            } else return password;
-        } else {
+            } else return password;         //если не обнаружен
+        } else {            //если счётчик символов равен 0
             printf("[Ошибка!]Введите хотя бы один символ!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
@@ -393,19 +393,19 @@ char* loginInput(int limit, const char* message){
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);
-        while (buffer[i] != '\0') {
-            checkSymbol = isalnum((unsigned char)buffer[i]);
-            if (!checkSymbol) {
+        buffer = bufferedInput(limit, message);             //ввод строки
+        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
+            checkSymbol = isalnum((unsigned char)buffer[i]);            //проверка i-го символа на цифру или букву
+            if (!checkSymbol) {             //если i-ый символ - цифра или буква
                 isLetter = false;
                 break;
             }
-            else isLetter = true;
+            else isLetter = true;           //если i-ый символ - не буква или не цифра
             i++;
         }
-        if (isLetter)
+        if (isLetter)               //если строка содержит только буквы или цифры
             return buffer;
-        else {
+        else {          //если не содержит не только буквы или цифры
             printf("[Ошибка!]Логин не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
@@ -415,26 +415,27 @@ char* loginInput(int limit, const char* message){
 
 char* categoryInput(int limit, const char* message){
     char *buffer = NULL;
-    int i = 0, checkSymbol = 0;
+    int i = 0, checkSymbol = 0, checkLetter = 0;
     bool isLetter = false;
     while (true) {
         i = 0;
-        buffer = bufferedInput(limit, message);
-        while (buffer[i] != '\0') {
-            if(buffer[i] != ' ' && buffer[i] != '.') {
-                checkSymbol = isalnum((unsigned char) buffer[i]);
-                if (!checkSymbol) {
+        buffer = bufferedInput(limit, message);         //ввод строки
+        while (buffer[i] != '\0') {             //пока i-ый символ не нуль-символ
+            if(buffer[i] != ' ' && buffer[i] != '.') {          //если i-ый символ не пробел и не точка
+                checkLetter = isdigit((unsigned char)buffer[i]);            //проверка символа на цифру от 0 до 9
+                checkSymbol = isalnum((unsigned char) buffer[i]);           //проверка i-го символа на букву
+                if (!checkSymbol || checkLetter != 0) {             //если i-ый символ не буква и не цифра
                     isLetter = false;
                     break;
-                } else isLetter = true;
+                } else isLetter = true;         //если i-ый символ буква или цифра
             }
             i++;
         }
-        if (isLetter) {
-            buffer[0] = (char)toupper((int)buffer[0]);
+        if (isLetter) {                 //если строка содержит только буквы или цифры
+            buffer[0] = (char)toupper((int)buffer[0]);              //перевод первого символа в верхний регистр
             return buffer;
         }
-        else {
+        else {              //если строка содержит не только буквы или цифры
             printf("[Ошибка!]Разряд не может содержать символ \"%c\"!", buffer[i]);
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
@@ -456,30 +457,30 @@ int menu() {
     int choice = 1, ch = (int)NULL;
     bool isShowed = false;
     const char *line[] = { "Вход под администратором.", "Вход под пользователем.", "Выход.", NULL }, pointer = '>';
-    indicateCursor(false);
+    indicateCursor(false);              //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {             //если был введен символ ввода
+                indicateCursor(true);               //показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            else if (ch == KEY_DOWN) choice++;
-            if (choice > 3) choice = 1;
-            else if (choice < 1) choice = 3;
+            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
+            else if (ch == KEY_DOWN) choice++;              //если был введен символ стрелки вниз
+            if (choice > 3) choice = 1;                 //если указатель выбора больше 3 вернуть его в начальное положение
+            else if (choice < 1) choice = 3;            //если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню:\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //вывод меню
+                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
+                    printf("%c", pointer);              //вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //смена цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -490,30 +491,30 @@ int adminSubmenu() {
                                           "Удаление записи.", "Просмотр всех данных в табличной форме.",
                                           "Различные процедуры поиска и фильтрации данных.", "Управление пользователями.",
                                           "Выход в меню.", NULL };
-    indicateCursor(false);
+    indicateCursor(false);                  //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {             //если был введен символ ввода
+                indicateCursor(true);               //показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 8) choice = 1;
-            if (choice < 1) choice = 8;
+            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                 //если был введен символ стрелки вниз
+            if (choice > 8) choice = 1;                 //если указатель выбора больше 8 вернуть его в начальное положение
+            if (choice < 1) choice = 8;                 //если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Подменю(для администраторов):\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {                 //вывод меню
+                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
+                    printf("%c", pointer);                  //вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                 //вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);                   //смена цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();                  //Ввод символа с клавиатуры
     }
 }
 
@@ -523,30 +524,30 @@ int userSubmenu() {
     const char pointer = '>', *line[] = { "Открытие файла с данными.", "Просмотр всех данных в табличной форме.",
                                           "Просмотр топ-3 самых быстрых участников.", "Различные процедуры поиска и фильтрации данных.",
                                           "Выход в меню.", NULL };
-    indicateCursor(false);
+    indicateCursor(false);                  //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");                  //Очистка экрана
+            if (ch == KEY_RETURN) {             //если был введен символ ввода
+                indicateCursor(true);                   //показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 5) choice = 1;
-            if (choice < 1) choice = 5;
+            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                   //если был введен символ стрелки вниз
+            if (choice > 5) choice = 1;                 //если указатель выбора больше 5 вернуть его в начальное положение
+            if (choice < 1) choice = 5;                 //если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Подменю(для пользователей):\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //вывод меню
+                if (choice == i + 1) {                  //если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
+                    printf("%c", pointer);              //вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);            //вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);           //смена цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -555,30 +556,30 @@ int userEditMenu(int i, bool showPass) {
     bool isShowed = false;
     const char pointer = '>', *line[] = { "Изменить логин.", "Изменить пароль.", "Изменить права администратора.", "Показать/скрыть пароль.",
                                           "Выход из меню редактирования аккунтов.", NULL };
-    indicateCursor(false);
+    indicateCursor(false);              //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            displayEditableUser(i, showPass);
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            displayEditableUser(i, showPass);                   //функция вывода ректируемого пользователя
+            if (ch == KEY_RETURN) {                 //если был введен символ ввода
+                indicateCursor(true);                   //показать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 5) choice = 1;
-            if (choice < 1) choice = 5;
+            if (ch == KEY_UP) choice--;                 //если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;                   //если был введен символ стрелки вниз
+            if (choice > 5) choice = 1;                 //если указатель выбора больше 5 вернуть его в начальное положение
+            if (choice < 1) choice = 5;                 //если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню редактирования аккаунтов:\n");
-            for (int j = 0; line[j]; j++) {
-                if (choice == j + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int j = 0; line[j]; j++) {                 //вывод меню
+                if (choice == j + 1) {                  //если указатель равен (j + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //изменить цвет строки
+                    printf("%c", pointer);                      //вывод указателя на экран
                 }
-                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);                //вывод строки из массива
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //смена цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -592,41 +593,41 @@ int memberEditMenu(int i) {
                                           "Изменение разряда участника.", "Изменение модели коньков участника.",
                                           "Изменение количества очков участника.", "Изменение минут круга участника.",
                                           "Изменение секунд круга участника.", "Выход из меню редактирования участника.", NULL };
-    indicateCursor(false);
-    displayEditableMember(i);
+    indicateCursor(false);              //Скрытие каретки ввода
+    displayEditableMember(i);               //Вывод редактируемого участника
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
-                displayEditableMember(i);
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
+            if (ch == KEY_RETURN) {               //Если был введен символ ввода
+                indicateCursor(true);               //Показывать каретку ввода
+                displayEditableMember(i);               //Вывод редактируемого участника
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 14) choice = 1;
-            if (choice < 1) choice = 14;
-            if(isShowed == true)
-                for (int j = 0; j < 15; j++)
+            if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
+            if (choice > 14) choice = 1;                //Если указатель выбора больше 14 вернуть его в начальное положение
+            if (choice < 1) choice = 14;                //Если указатель выбора менбше 1 вернуть его в конечного положение
+            if(isShowed == true)                //Если меню было выведено
+                for (int j = 0; j < 15; j++)            //Построчное стирание меню с экрана
                     printf("%c[2K\r%c[A", 27, 27);
             isShowed = true;
             printf("Меню редактирования участника:\n");
-            for (int j = 0; line[j]; j++) {
-                if (choice == j + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int j = 0; line[j]; j++) {             //Вывод меню
+                if (choice == j + 1) {              //Если указатель равен (j + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(j + 1 == choice ? "%s\n" : " %s\n", line[j]);                //Вывод строки
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Измение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();          //Ввод символа с клавиатуры
     }
 }
 
 void searchingAndFiltering() {
-    while (1) {
-        system("cls");
-        switch (searchAndFilteringMenu()) {
+    while (true) {
+        system("cls");              //Очистка меню
+        switch (searchAndFilteringMenu()) {             //Вывод и выбор пункта меню
             case 1: pointsFilter(); system("pause"); break;
             case 2: timeOfLapFilter(); system("pause"); break;
             case 3: ageFilter(); system("pause"); break;
@@ -649,38 +650,38 @@ int searchAndFilteringMenu() {
                                           "Фильтр по возрасту.", "Фильтр по году рождения.", "Поиск по номеру.",
                                           "Поиск по фамилии.", "Поиск по стране.", "Поиск по разряду.",
                                           "Сортировка по времени круга.", "Выход из меню поиска и фильтрации.", NULL };
-    indicateCursor(false);
+    indicateCursor(false);              //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {              //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);               //Показывать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 10) choice = 1;
-            if (choice < 1) choice = 10;
+            if (ch == KEY_UP) choice--;             //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
+            if (choice > 10) choice = 1;                //Если указатель выбора больше 10 вернуть его в начальное положение
+            if (choice < 1) choice = 10;                //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню поиска и фильтрации:\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //Вывод меню
+                if (choice == i + 1) {              //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //Вывод строки
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Измение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
 void userManagement() {
     bool showPass = false, displayAllUsersFlag = true;
     while (true) {
-        system("cls");
-        switch (userManagementMenu()) {
+        system("cls");              //Очистка экрана
+        switch (userManagementMenu()) {             //Вывод и выбор пункта меню
             case 1:
                 userAdd();
                 break;
@@ -716,30 +717,30 @@ int userManagementMenu() {
     bool isShowed = false;
     const char pointer = '>', *line[] = { "Добавить аккаунт.", "Удалить аккаунт.", "Редактировать аккаунт.",
                                           "Просмотр всех аккаунтов.", "Выход из меню управления пользователями/администраторами.", NULL };
-    indicateCursor(false);
+    indicateCursor(false);                  //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {                 //Если был введен символ ввода
+                indicateCursor(true);               //Показывать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 5) choice = 1;
-            if (choice < 1) choice = 5;
+            if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
+            if (choice > 5) choice = 1;                 //Если указатель выбора больше 10 вернуть его в начальное положение
+            if (choice < 1) choice = 5;                 //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Меню управления пользователями/администраторами:\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {                 //Вывод меню
+                if (choice == i + 1) {              //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //Вывод строки
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Измение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -747,30 +748,30 @@ int userLoginOrRegMenu(){
     int choice = 1, ch = (int)NULL;
     bool isShowed = false;
     const char pointer = '>', *line[] = { "Войти.", "Зарегистрироваться.", "Вернутся в меню." , NULL };
-    indicateCursor(false);
+    indicateCursor(false);              //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);               //Показывать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 3) choice = 1;
-            if (choice < 1) choice = 3;
+            if (ch == KEY_UP) choice--;             //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
+            if (choice > 3) choice = 1;             //Если указатель выбора больше 10 вернуть его в начальное положение
+            if (choice < 1) choice = 3;             //Если указатель выбора менбше 1 вернуть его в конечного положение
             printf("Вход под пользователем:\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //Вывод меню
+                if (choice == i + 1) {              //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //Вывод строки
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Измение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -780,29 +781,29 @@ int displayAllUsersMenu(bool showPass){
     const char pointer = '>', *line[] = { "Показать/скрыть пароли.", "Вернутся в меню." , NULL };
     indicateCursor(false);
     while (true) {
-        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {
+        if (ch == KEY_RETURN || ch == KEY_UP || ch == KEY_DOWN || !isShowed) {                  //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            system("cls");
-            if (ch == KEY_RETURN) {
-                indicateCursor(true);
+            system("cls");              //Очистка экрана
+            if (ch == KEY_RETURN) {             //Если был введен символ ввода
+                indicateCursor(true);               //Показывать каретку ввода
                 return choice;
             }
-            if (ch == KEY_UP) choice--;
-            if (ch == KEY_DOWN) choice++;
-            if (choice > 2) choice = 1;
-            if (choice < 1) choice = 2;
+            if (ch == KEY_UP) choice--;             //Если был введен символ стрелки вверх
+            if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
+            if (choice > 2) choice = 1;             //Если указатель выбора больше 10 вернуть его в начальное положение
+            if (choice < 1) choice = 2;             //Если указатель выбора менбше 1 вернуть его в конечного положение
             displayAllUsers(showPass);
             printf("Меню просмотра всех пользователей:\n");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //Вывод меню
+                if (choice == i + 1) {              //Если указатель равен (i + 1)-ой ячейке массива строк
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменить цвет строки
+                    printf("%c", pointer);              //Вывод указателя на экран
                 }
-                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s\n" : " %s\n", line[i]);                //Вывод строки
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Измение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа с клавиатуры
     }
 }
 
@@ -810,9 +811,9 @@ int displayAllUsersMenu(bool showPass){
 //Всё что связано с файлами
 bool checkFile(const char* filename) {
     FILE* file = NULL;
-    if (!(file = fopen(filename, "rt+")))
+    if (!(file = fopen(filename, "rt+")))               //Если файл не открывается для чтения - вернуть false
         return false;
-    else {
+    else {                  //Если файл открытивается для чтения - закрыть его и вернуть true
         fclose(file);
         return true;
     }
@@ -820,229 +821,231 @@ bool checkFile(const char* filename) {
 
 bool createFile(const char* filename) {
     FILE* file = NULL;
-    if ((file = fopen(filename, "wt"))) {
+    if ((file = fopen(filename, "wt"))) {               //Если файл создался то закрыть его и вернуть true
         fclose(file);
         return true;
-    }
-    else return false;
+    } else return false;                //Если не создался вернуть false
 }
 
 void crypterTool(int status) {
     int ch, key = 0;
-    if (status == ENCRYPT) key = 2;
+    if (status == ENCRYPT) key = 2;         //key - ключ шифрования
     else if (status == DECRYPT) key = -2;
     FILE *input = NULL, *output = NULL;
     if (!(input = fopen("db.dat", "rb"))) {
+        //Если файл с логинами/паролями не удалось открыть
         printf("[Ошибка!]Шифрование: Не удалось открыть файл с логинами/паролями!\n\n");
         system("pause");
         exit(0);
     }
     if (!(output = fopen("tempdb.dat", "wb"))) {
+        //Если временный файл не удалось создать
         printf("[Ошибка!]Шифрование: Не удалось создать временный файл с логинами/паролями!\n\n");
         system("pause");
         exit(0);
     }
     while (1) {
-        fread(&ch, sizeof(char), 1, input);
-        if (feof(input)) break;
-        else {
-            if (ch != '\n')
-                ch += key;
-            fwrite(&ch, sizeof(char), 1, output);
+        fread(&ch, sizeof(char), 1, input);         //Чтение символа из файла
+        if (feof(input)) break;             //Если конец файла то выйти из цикла
+        else {              //Если не конец файла
+            if (ch != '\n')         //Если прочитанный символ не равен символу следующей строки
+                ch += key;          //Прибавить к коду символа ключ
+            fwrite(&ch, sizeof(char), 1, output);           //Записать измененный символ во временный файл
         }
     }
-    fclose(input);
-    fclose(output);
+    fclose(input);          //Закрыть файл с логинами/пароля
+    fclose(output);             //Закрыть временный файл
     if (!(input = fopen("db.dat", "wb"))) {
+        //Если файл с логинами/паролями не удалось пересоздать
         printf("[Ошибка!]Шифрование: Не удалось перезаписать файл с логинами/паролями!\n\n");
         system("pause");
         exit(0);
     }
     if (!(output = fopen("tempdb.dat", "rb"))) {
+        //Если временный файл не удалось открыть для чтения
         printf("[Ошибка!]Шифрование: Не удалось открыть временный файл с логинами/паролями!\n\n");
         system("pause");
         exit(0);
     }
     while (1) {
-        fread(&ch, sizeof(char), 1, output);
-        if (feof(output)) break;
-        else fwrite(&ch, sizeof(char), 1, input);
+        fread(&ch, sizeof(char), 1, output);            //Чтение символа из временного файла
+        if (feof(output)) break;                //Если конец файла выйти из цикла
+        else fwrite(&ch, sizeof(char), 1, input);               //Записать прочитанный символ в файл с логинами/пароляит
     }
-
-    fclose(output);
+    fclose(output);             //Закрыть временный файл
     if (remove("tempdb.dat")) {
+        //Если не удалось удалить временный файл
         printf("\n[Ошибка!]Шифрование: Не удалось удалить временный файл с логинами/паролями!\n\n");
         system("pause");
         exit(0);
     }
-    fclose(input);
+    fclose(input);              //Закрыть файл с логинами/паролями
 }
 
 
 //Всё что связано с пользователями
 bool adminLogin() {
-    system("cls");
+    system("cls");              //Очистка экрана
     int i = 0, j = 0, attemptCounter = 0;
     bool isLoginRight = false, isPasswordRight = false;
     char *login = NULL, password[30], ch;
-    do {
-        login = bufferedInput(29, "Введите логин: ");
-        for (i = 0; i < usersLinesCounter; i++)
-            if (!strcmp(login, (user + i)->login) && (user + i)->isAdmin == true) {
-                isLoginRight = true;
-                break;
-            }
-        if (!isLoginRight) {
-            printf("[Ошибка!]Такого администратора не существует!\n\n");
-            system("pause");
-            return false;
+    login = bufferedInput(29, "Введите логин: ");               //Ввод логина
+    for (i = 0; i < usersLinesCounter; i++) {         //Поиск логина в массиве
+        if (!strcmp(login, (user + i)->login) && (user + i)->isAdmin == true) {         //Если такой логин найден и он имеет права администратора
+            isLoginRight = true;
+            break;              //Выход из цикла
         }
-    } while (!isLoginRight);
-    do {
+    }
+    if (!isLoginRight) {                //Если такой логин не найден
+        printf("[Ошибка!]Такого администратора не существует!\n\n");
+        system("pause");
+        free(login);
+        return false;
+    }
+    do {                //Ввод пароля
         j = 0;
         printf("Введите пароль: ");
         while (true) {
-            ch = (char) _getch();
-            if (ch != '\0') {
-                if (ch == KEY_RETURN || ch == KEY_TAB) {
-                    password[j] = '\0';
-                    break;
-                } else if (ch == KEY_BKSP && j > 0) {
+            ch = (char) _getch();               //Ввод символа
+            if (ch != '\0') {               //Если это не нуль-символ
+                if (ch == KEY_RETURN || ch == KEY_TAB) {            //Если символ ввода или символ табуляции
+                    password[j] = '\0';             //Запись нуль-символа в j-ую ячейку
+                    break;              //Выход из цикла
+                } else if (ch == KEY_BKSP && j > 0) {           //Если символ backspace и счётчик символов > 0
                     j--;
-                    printf("\b \b");
-                } else if (ch == KEY_BKSP && j == 0) {
-                    continue;
+                    printf("\b \b");                //Удаление символа с экрана
+                } else if (ch == KEY_BKSP && j == 0) {          //Если символ backspace и счётчик символов = 0
+                    continue;           //Переход на следующую итерацию цикла
                 } else {
-                    if (j < 29 && attemptCounter < 5) {
-                        password[j++] = ch;
-                        putchar('*');
-                    } else if (j < 29) {
-                        password[j++] = ch;
-                        putchar(ch);
+                    if (j < 29 && attemptCounter < 5) {         //Если счётчик символов < 29 и счётчик попыток < 5
+                        password[j++] = ch;         //Запись символа в массив
+                        putchar('*');               //Маскировка вводимого символа символов "*"
+                    } else if (j < 29) {            //Если счётчик символов < 29 и счётчик попыток >= 5
+                        password[j++] = ch;         //Запись символа в массив
+                        putchar(ch);                //Вывод вводимого символа
                     }
                 }
             }
         }
-        if (!strcmp(password, (user + i)->password))
+        if (!strcmp(password, (user + i)->password))            //Если введенный пароль совпадает с паролем логина
             isPasswordRight = true;
-        else {
-            if(attemptCounter < 10){
+        else {              //Если не совпадает
+            if(attemptCounter < 10){                //Если счётчик попыток меньше 10
                 printf("\n[Ошибка!]Неверный пароль!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-                attemptCounter++;
-            } else {
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
+                attemptCounter++;               //Счётчик попыток ++
+            } else {                //Если счётчик попыток больше 10
                 printf("\n[Ошибка!]Неверный пароль!\n");
                 printf("\nВы превысили максималальное число попыток ввода!\n\n");
                 Sleep(1000);
                 system("pause");
-                return false;
+                return false;           //Вернуть false
             }
         }
-    } while (!isPasswordRight);
+    } while (!isPasswordRight);             //Пока не будет введен верный пароль
     printf("\n\nВы успешно авторизовались!");
     Sleep(1000);
     printf("%c[2K\rДобро пожаловать, %s!\n\n", 27, (user + i)->login);
     free(login);
     system("pause");
-    return true;
+    return true;            //Если авторизация прошла успешно вернуть true
 }
 
 bool userLogin() {
-    system("cls");
+    system("cls");              //Очистка экрана
     int i = 0, j = 0, attemptCounter = 0;
     bool isLoginRight = false, isPasswordRight = false;
     char *login = NULL, password[30], ch;
-    do {
-        login = bufferedInput(29, "Введите логин: ");
-        for (i = 0; i < usersLinesCounter; i++)
-            if (!strcmp(login, (user + i)->login) && (user + i)->isAdmin == false) {
-                isLoginRight = true;
-                break;
-            }
-        if (!isLoginRight) {
-            printf("[Ошибка!]Такого пользователя не существует!\n\n");
-            system("pause");
-            free(login);
-            return false;
+    login = bufferedInput(29, "Введите логин: ");               //Ввод логина
+    for (i = 0; i < usersLinesCounter; i++) {               //Поиск логина в массиве
+        if (!strcmp(login, (user + i)->login) && (user + i)->isAdmin == false) {                //Если такой логин найден и он не имеет права администратора
+            isLoginRight = true;
+            break;              //Выход из цикла
         }
-    } while (!isLoginRight);
-    do {
+    }
+    if (!isLoginRight) {                //Если такой логин не найден
+        printf("[Ошибка!]Такого пользователя не существует!\n\n");
+        system("pause");
+        free(login);
+        return false;
+    }
+    do {                //Ввод пароля
         j = 0;
         printf("Введите пароль: ");
         while (true) {
-            ch = (char) _getch();
-            if (ch != '\0') {
-                if (ch == KEY_RETURN || ch == KEY_TAB) {
-                    password[j] = '\0';
-                    break;
-                } else if (ch == KEY_BKSP && j > 0) {
+            ch = (char) _getch();               //Ввод символа
+            if (ch != '\0') {               //Если это не нуль-символ
+                if (ch == KEY_RETURN || ch == KEY_TAB) {                //Если символ ввода или символ табуляции
+                    password[j] = '\0';             //Запись нуль-символа в j-ую ячейку
+                    break;              //Выход из цикла
+                } else if (ch == KEY_BKSP && j > 0) {               //Если символ backspace и счётчик символов > 0
                     j--;
-                    printf("\b \b");
-                } else if (ch == KEY_BKSP && j == 0) {
-                    continue;
+                    printf("\b \b");                //Удаление символа с экрана
+                } else if (ch == KEY_BKSP && j == 0) {              //Если символ backspace и счётчик символов = 0
+                    continue;               //Переход на следующую итерацию цикла
                 } else {
-                    if (j < 29 && attemptCounter < 5) {
-                        password[j++] = ch;
-                        putchar('*');
-                    } else if (j < 29) {
-                        password[j++] = ch;
-                        putchar(ch);
+                    if (j < 29 && attemptCounter < 5) {             //Если счётчик символов < 29 и счётчик попыток < 5
+                        password[j++] = ch;             //Запись символа в массив
+                        putchar('*');               //Маскировка вводимого символа символов "*"
+                    } else if (j < 29) {                //Если счётчик символов < 29 и счётчик попыток >= 5
+                        password[j++] = ch;             //Запись символа в массив
+                        putchar(ch);                //Вывод вводимого символа
                     }
                 }
             }
         }
-        if (!strcmp(password, (user + i)->password))
+        if (!strcmp(password, (user + i)->password))                //Если введенный пароль совпадает с паролем логина
             isPasswordRight = true;
-        else {
-            if(attemptCounter < 10){
+        else {              //Если не совпадает
+            if(attemptCounter < 10){                //Если счётчик попыток меньше 10
                 printf("\n[Ошибка!]Неверный пароль!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-                attemptCounter++;
-            } else {
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
+                attemptCounter++;               //Счётчик попыток ++
+            } else {                //Если счётчик попыток больше 10
                 printf("\n[Ошибка!]Неверный пароль!\n");
                 printf("\nВы превысили максималальное число попыток ввода!\n\n");
                 Sleep(1000);
                 system("pause");
-                return false;
+                return false;               //Вернуть false
             }
         }
-    } while (!isPasswordRight);
+    } while (!isPasswordRight);             //Пока не будет введен верный пароль
     printf("\n\nВы успешно авторизовались!");
     Sleep(1000);
     printf("%c[2K\rДобро пожаловать, %s!\n\n", 27, (user + i)->login);
     free(login);
     system("pause");
-    return true;
+    return true;                //Если авторизация прошла успешно вернуть true
 }
 
 void firstStartAdminReg() {
     FILE *file = NULL;
     char *login = NULL, *password = NULL;
     USER newUser;
-    system("cls");
+    system("cls");          //Очистка экрана
     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n"
            "                  Вы зашли в программу в первый раз. Для корректной работы программы нужно зарегистрировать администратора!                \n"
            "-------------------------------------------------------------------------------------------------------------------------------------------\n");
     printf("Регистрация администратора.\n\n");
-    login = loginInput(29, "Введите логин: ");
-    strcpy(newUser.login,login);
-    password = maskedPasswordInput(29, "Введите пароль: ");
-    strcpy(newUser.password, password);
-    newUser.isAdmin = 1;
-    if ((file = fopen("db.dat", "ab+"))) {
-        fwrite(&newUser, sizeof(USER), 1, file);
-        fclose(file);
-        crypterTool(ENCRYPT);
+    login = loginInput(29, "Введите логин: ");              //Ввод логина
+    strcpy(newUser.login,login);                //Копирование логина в переменную типа USER
+    password = maskedPasswordInput(29, "Введите пароль: ");             //Ввод пароля
+    strcpy(newUser.password, password);             //Копирование пароля в переменную типа USER
+    newUser.isAdmin = 1;                //Изменение прав администратора в переменной типа USER
+    if ((file = fopen("db.dat", "ab+"))) {              //Если файл удалось открыть
+        fwrite(&newUser, sizeof(USER), 1, file);                //Запись переменной типа USER в файл
+        fclose(file);               //Закрытие файла
+        crypterTool(ENCRYPT);               //Зашифровака файла
         printf("\nНовый администратор успешно зарегестрирован!\n\n");
         system("pause");
     }
-    else {
+    else {              //Если не удалось открыть файл
         printf("\n[Ошибка!]Регистрация: Не удалось открыть файл для добавления нового администратора!\n");
         exit(0);
     }
-    system("cls");
+    system("cls");              //Очистка экрана
 }
 
 void usersInit() {
@@ -1050,38 +1053,30 @@ void usersInit() {
     long fsize = 0;
     if (checkFile("db.dat")) {               //Если файл существует
         if ((file = fopen("db.dat", "rb"))){                //Если файл удалось открыть для чтения
-
-
-            fseek(file, 0, SEEK_END);               //Подсчёт кол-ва байт в файле
-            fsize = ftell(file);
-            usersLinesCounter = fsize/sizeof(USER);
-            rewind(file);
-
-
-            if (usersLinesCounter != 0) {               //Если есть хотябы одна строка
+            fseek(file, 0, SEEK_END);               //Установка указателя в конец файла
+            fsize = ftell(file);                //Чтение байт перед указателем
+            usersLinesCounter = fsize/sizeof(USER);             //Расчёт количества пользователей
+            rewind(file);               //Установка указателя на начало файла
+            if (usersLinesCounter != 0) {               //Если есть хотябы один пользователь
                 crypterTool(DECRYPT);               //Расшифровать файл
-                user = (USER *)malloc(usersLinesCounter * (sizeof(USER)));
-                for (int i = 0; i < usersLinesCounter; i++)
+                user = (USER *)malloc(usersLinesCounter * (sizeof(USER)));          //Выделение памяти
+                for (int i = 0; i < usersLinesCounter; i++)             //Чтение из файла и запись в массив
                     fread((user + i), sizeof(USER), 1, file);
-                fclose(file);
-                crypterTool(ENCRYPT); //Зашифровать файл
-            } else {
-                //Если нет ни одной строки
-                firstStartAdminReg();
-                usersInit();
+                fclose(file);               //Закрытие файла
+                crypterTool(ENCRYPT);               //Зашифровать файл
+            } else {                //Если нет ни одной строки
+                firstStartAdminReg();               //Функция регистрации пользователя при первом запуске программы
+                usersInit();                //Инициализация пользователей
             }
-        } else {
-            //Если файл не удалось открыть
+        } else {                //Если файл не удалось открыть
             printf("[Ошибка!]Инициальзация пользователей: Не удалось открыть файл с логинами/паролями!\n");
             system("pause");
             exit(0);
         }
-    } else if (createFile("db.dat")) {
-        //Если файл не существует - создать
+    } else if (createFile("db.dat")) {                  //Если файл не существует - создать
         firstStartAdminReg();
         usersInit();
-    } else {
-        //Если файл не существует и его не удалось создать
+    } else {                //Если файл не существует и его не удалось создать
         printf("[Ошибка!]Инициальзация пользователей: Не удалось создать файл с логинами/паролями!\n");
         system("pause");
         exit(0);
@@ -1094,75 +1089,73 @@ void userAdd() {
     char *login = NULL, *password = NULL;
     const char *line[] = { "Да", "Нет", NULL }, pointer = '>';
     FILE* file = NULL;
-    user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));
+    user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));                //Перераспределение памяти
     printf("Добавить пользователя:\n");
     do {
-        login = loginInput(29, "Введите логин: ");
-        for (int i = 0; i < usersLinesCounter; i++) {
-            if (strcmp((user + i)->login, login) == 0) {
+        login = loginInput(29, "Введите логин: ");              //Ввод логина
+        for (int i = 0; i < usersLinesCounter; i++) {           //Проверка на существование такого логина
+            if (strcmp((user + i)->login, login) == 0) {                //Если i-ый логин совпадает с введенным
                 isLoginExist = true;
-                break;
+                break;              //Выход из цикла
             }
-            else isLoginExist = false;
+            else isLoginExist = false;              //Если не совпадает
         }
-        if (isLoginExist) {
+        if (isLoginExist) {                 //Если такой логин найден
             printf("[Ошибка!]Такой аккаунт уже существует!");
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Очистка двух последних строк
         }
-        else strcpy((user + usersLinesCounter)->login, login);
-    } while (isLoginExist);
-    free(login);
-    password = maskedPasswordInput(29, "Введите пароль: ");
-    strcpy((user + usersLinesCounter)->password, password);
-    free(password);
-    indicateCursor(false);
+        else strcpy((user + usersLinesCounter)->login, login);              //Если не найден записать в выделенную ячейку массива структур этот логин
+    } while (isLoginExist);             //Пока не будет введен не существующий логин
+    free(login);                //Освобождение памяти для логина
+    password = maskedPasswordInput(29, "Введите пароль: ");             //Ввод пароля
+    strcpy((user + usersLinesCounter)->password, password);             //Копирование пароля в выделенную ячейеку массива структур
+    free(password);             //Освобождение памяти для пароля
+    indicateCursor(false);              //Скрытие каретки ввода
     while (true) {
-        if (ch == KEY_LEFT || ch == KEY_RIGHT || ch == KEY_RETURN || !isShowed) {
+        if (ch == KEY_LEFT || ch == KEY_RIGHT || ch == KEY_RETURN || !isShowed) {               //Если введенный символ - символ ввода или символ стрелки вверх или вних или меню не было выведено
             isShowed = true;
-            if (ch == KEY_RETURN) {
-                printf("%c[2K\r", 27);
+            if (ch == KEY_RETURN) {             //Если введенный символ символ ввода
+                printf("%c[2K\r", 27);              //Стереть строку с экрана
                 printf("Администратор? ");
-                for (int i = 0; line[i]; i++)
-                    if (choice == i + 1)
-                        printf("%s", line[i]);
-                indicateCursor(true);
-                break;
+                for (int i = 0; line[i]; i++)               //Вывод выбора на экран
+                    if (choice == i + 1)                //Если выбор равен (i+1)-ой ячейке массива
+                        printf("%s", line[i]);              //Вывод этой ячейки
+                indicateCursor(true);               //Показывать каретку ввода
+                break;              //Выход из цикла
             }
-            printf("%c[2K\r", 27);
-            if (ch == KEY_LEFT) choice--;
-            if (ch == KEY_RIGHT) choice++;
-            if (choice > 2) choice = 2;
-            if (choice < 1) choice = 1;
+            printf("%c[2K\r", 27);              //Стереть строку с экрана
+            if (ch == KEY_LEFT) choice--;               //Если символ стрелка влево
+            if (ch == KEY_RIGHT) choice++;              //Если символ стрелка вправо
+            if (choice > 2) choice = 2;             //Если указатель выбора больше 2 вернуть его в начальное положение
+            if (choice < 1) choice = 1;             //если указатель выбора меньше 1 вернуть его в конечное положение
             printf("Администратор? ");
-            for (int i = 0; line[i]; i++) {
-                if (choice == i + 1) {
-                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
-                    printf("%c", pointer);
+            for (int i = 0; line[i]; i++) {             //Вывод меню выбора
+                if (choice == i + 1) {              //Если выбор равен (i+1) - ой ячейку массива
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);               //Изменение цвета строки
+                    printf("%c", pointer);              //Вывод указателя
                 }
-                printf(i + 1 == choice ? "%s " : " %s ", line[i]);
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
+                printf(i + 1 == choice ? "%s " : " %s ", line[i]);              //Вывод строк
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);               //Изменение цвета строк
             }
         }
-        ch = _getch();
+        ch = _getch();              //Ввод символа
     }
-    if (choice == 1) (user + usersLinesCounter)->isAdmin = 1;
-    else (user + usersLinesCounter)->isAdmin = 0;
-    if (checkFile("db.dat")) {
-        //Если файл существует
-        crypterTool(DECRYPT);//Расшифровать
-        if ((file = fopen("db.dat", "ab+"))) {
-            //Если файл удалось открыть
-            fwrite((user + usersLinesCounter), sizeof(USER), 1, file);
-            fclose(file);
+    if (choice == 1) (user + usersLinesCounter)->isAdmin = 1;               //Если выбор равен 1 дать права администратора этому пользователю
+    else (user + usersLinesCounter)->isAdmin = 0;               //В других случаях не давать права администратора
+    if (checkFile("db.dat")) {              //Если файл существует
+        crypterTool(DECRYPT);               //Расшифровать
+        if ((file = fopen("db.dat", "ab+"))) {              //Если файл удалось открыть
+            fwrite((user + usersLinesCounter), sizeof(USER), 1, file);              //Запись этой ячейки массива структур в файл
+            fclose(file);               //Закрыть файл
             printf("\nАккаунт успешно добавлен!\n\n");
-            _flushall();
+            _flushall();                //Перезагрузить все файлы
             usersLinesCounter++;
         }
-        else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n"); //Если файл не удалось открыть
-        crypterTool(ENCRYPT);//Зашифровать
+        else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n");             //Если файл не удалось открыть
+        crypterTool(ENCRYPT);               //Зашифровать
     }
-    else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n"); //Если файл не существует
+    else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n");              //Если файл не существует
     system("pause");
 }
 
@@ -1171,28 +1164,27 @@ void userDelete() {
     int i = 0, adminCounter = 0;
     bool isLoginExist = false;
     FILE* file = NULL;
-    for(int j = 0; j < usersLinesCounter; j++) {
-        if ((user + j)->isAdmin)
-            adminCounter++;
+    for(int j = 0; j < usersLinesCounter; j++) {            //Счётчик количества администраторов
+        if ((user + j)->isAdmin)                //Если j-ый пользователь имеет права админинстратора
+            adminCounter++;             //Счётчик количества админинстраторов ++
     }
-    displayAllUsers(false);
+    displayAllUsers(false);             //Вывод всех пользователей на экран, не показывая их пароль
     printf("Удаление аккаунта.\n");
-    do {
-        login = bufferedInput(29, "Введите логин аккаунта, который вы хотите удалить: ");
-        for (i = 0; i < usersLinesCounter; i++) {
-            if (!strcmp((user + i)->login, login)) {
-                isLoginExist = true;
-                break;
-            }
+    login = bufferedInput(29, "Введите логин аккаунта, который вы хотите удалить: ");               //Ввод логина
+    for (i = 0; i < usersLinesCounter; i++) {               //Поиск такого логина в массиве
+        if (!strcmp((user + i)->login, login)) {                //Если i-ый логин совпадает с введенным
+            isLoginExist = true;
+            break;                  //Выход из цикла
         }
-        if (!isLoginExist) {
-            printf("[Ошибка!]Такого аккаунта не существует!");
-            Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-        }
-    } while (!isLoginExist);
-    free(login);
-    if(adminCounter == 1 && (user + i)->isAdmin) {
+    }
+    if (!isLoginExist) {                //Если такой логин не найден
+        printf("[Ошибка!]Такого аккаунта не существует!");
+        Sleep(1000);
+        printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Удаление строки с экрана
+        return;                 //Выход из функции
+    }
+    free(login);                //Освобождение памяти для логина
+    if(adminCounter == 1 && (user + i)->isAdmin) {              //Если удаляемый логин администратора и он последний
         system("cls");
         displayAllUsers(false);
         printf("[Ошибка!]Нельзя удалить последнего администратора!\n\n");
@@ -1201,15 +1193,15 @@ void userDelete() {
         if (checkFile("db.dat")) {             //Если файл существует
             crypterTool(DECRYPT);               //Расшифровать
             if ((file = fopen("db.dat", "wb"))) {               //Если файл удалось пересоздать
-                for (int j = i; j < usersLinesCounter; j++)
+                for (int j = i; j < usersLinesCounter; j++)             //Сдвинуть все ячейки влево после удаляемого пользователя
                     *(user + j) = *(user + (j + 1));
-                user = (USER *) realloc(user, sizeof(USER) * usersLinesCounter);
+                user = (USER *) realloc(user, sizeof(USER) * usersLinesCounter);            //Перераспределить память
                 usersLinesCounter--;
-                for (int j = 0; j < usersLinesCounter; j++)
+                for (int j = 0; j < usersLinesCounter; j++)             //Перезапись в файл
                     fwrite((user + j), sizeof(USER), 1, file);
-                fclose(file);
-                system("cls");
-                displayAllUsers(false);
+                fclose(file);                   //Закрыть файл
+                system("cls");              //Очистка экрана
+                displayAllUsers(false);             //Показать всех пользователей, скрывая их пароль
                 printf("Аккаунт успешно удалён!\n\n");
             } else
                 printf("[Ошибка!]Удаление пользователей: Ошибка открытия файла с логинами/паролями! Файл отчищен!\n\n");               //Если файл не удалось пересоздать
@@ -1225,99 +1217,95 @@ void userEdit() {
     int i = 0, adminCounter = 0;
     bool isLoginExist = false, isNewLoginExist = false, editFlag = false, showPass = false;
     FILE* file = NULL;
-    displayAllUsers(showPass);
-    do {
-        login = bufferedInput(29, "Введите логин аккаунта, который вы хотите отредактировать: ");
-        for (i = 0; i < usersLinesCounter; i++) {
-            if (!strcmp((user + i)->login, login)) {
-                isLoginExist = true;
-                break;
-            }
-            else isLoginExist = false;
+    displayAllUsers(showPass);              //Показать всех пользователей, скрывая их пароль
+    login = loginInput(29, "Введите логин аккаунта, который вы хотите отредактировать: ");               //Ввод логина
+    for (i = 0; i < usersLinesCounter; i++) {               //Поиск введенного логина в массиве
+        if (!strcmp((user + i)->login, login)) {                //Если i-ый логин совпадает с введенным
+            isLoginExist = true;
+            break;              //Выход из цикла
         }
-        if (!isLoginExist) {
-            printf("[Ошибка!]Такого аккаунта не существует!");
-            return;
-        }
-    } while (!isLoginExist);
-    free(login);
+        else isLoginExist = false;
+    }
+    if (!isLoginExist) {                //Если такой логин не найден
+        printf("[Ошибка!]Такого аккаунта не существует!");
+        return;
+    }
+    free(login);                //Освобождение памяти для логина
     while (!editFlag) {
-        adminCounter = 0;
-        for(int j = 0; j < usersLinesCounter; j++) {
-            if ((user + j)->isAdmin)
-                adminCounter++;
+        adminCounter = 0;               //Обнуление счётчика количества администраторов
+        for(int j = 0; j < usersLinesCounter; j++) {                //Счётчик количества администраторов
+            if ((user + j)->isAdmin)                //Если j-ый пользователей имеет права администратора
+                adminCounter++;             //Счётчик администраторов ++
         }
-        switch (userEditMenu(i, showPass)) {
+        switch (userEditMenu(i, showPass)) {                //Вывод информации об редактируемом пользователе и меню редактирования
             case 1: {
                 printf("Изменить логин.\n");
                 do {
-                    newLogin = loginInput(29, "Введите новый логин: ");
-                    for (int j = 0; j < usersLinesCounter; j++) {
-                        if (strcmp((user + j)->login, newLogin) == 0) {
+                    newLogin = loginInput(29, "Введите новый логин: ");                 //Ввод нового логина
+                    for (int j = 0; j < usersLinesCounter; j++) {               //Поиск введенного логина в массиве
+                        if (strcmp((user + j)->login, newLogin) == 0) {             //Если j-ый логин совпадает с введенным
                             isNewLoginExist = true;
-                            break;
+                            break;              //Выход из цикла
                         }
                         else isNewLoginExist = false;
                     }
-                    if (isNewLoginExist) {
+                    if (isNewLoginExist) {              //Если такой логин найден
                         printf("[Ошибка!]Такой логин уже существует!\n");
                         Sleep(1000);
                         printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
                     }
-                } while (isNewLoginExist);
-                strcpy((user + i)->login, newLogin);
-                displayEditableUser(i, showPass);
+                } while (isNewLoginExist);              //Пока не будет найден такой логин в массиве
+                strcpy((user + i)->login, newLogin);                //Копирование нового логина в редактируемую ячейку массива структур
+                displayEditableUser(i, showPass);               //Вывод информации об редактируемом пользователе
                 printf("Логин успешно изменен!\n\n");
-                free(newLogin);
+                free(newLogin);             //Освобождение памяти для нового логина
                 system("pause");
-                break;
+                break;              //Выход из switch
             }
             case 2: {
                 printf("Изменение пароля.\n");
-                newPassword = maskedPasswordInput(29, "Введите новый пароль: ");
-                strcpy((user + i)->password, newPassword);
-                displayEditableUser(i, showPass);
+                newPassword = maskedPasswordInput(29, "Введите новый пароль: ");                    //Ввод нового пароля
+                strcpy((user + i)->password, newPassword);              //Копирование нового пароля в редактируемую ячейку массива структур
+                displayEditableUser(i, showPass);               //Вывод информации об редактируемом пользователе
                 printf("Пароль успешно изменен!\n\n");
-                free(newPassword);
+                free(newPassword);              //Освобождение памяти для нового пароля
                 system("pause");
-                break;
+                break;              //Выход из switch
             }
             case 3: {
-                if(adminCounter == 1 && (user + i)->isAdmin)
+                if(adminCounter == 1 && (user + i)->isAdmin)                //Если пытаются редактировать права администратора последнего администратора
                     printf("[Ошибка!]Нельзя изменить права последнего администратора!\n\n");
                 else {
-                    if ((user + i)->isAdmin) {
+                    if ((user + i)->isAdmin) {              //Если пользователь имеет права администратора убрать их
                         (user + i)->isAdmin = false;
-                        displayEditableUser(i, showPass);
+                        displayEditableUser(i, showPass);               //Вывод информации об редактируемом пользователе
                         printf("Права администратора успешно изменены.\n\n");
-                    } else {
+                    } else {                    //Если пользователь не имеет права адмнистратора дать их
                         (user + i)->isAdmin = true;
-                        displayEditableUser(i, showPass);
+                        displayEditableUser(i, showPass);               //Вывод информации об редактируемом пользователе
                         printf("Права администратора успешно изменены.\n\n");
                     }
                 }
                 system("pause");
-                break;
+                break;              //Выход из switch
             }
-            case 4: showPass = showPass == true ? false : true; break;
+            case 4: showPass = showPass == true ? false : true; break;              //Изменение переменной которая показывает или скрывает пароль
             case 5: editFlag = true; break;
             default: break;
         }
         if (editFlag) break;
     }
-    if (checkFile("db.dat")) {
-        //Если файл существует
-        crypterTool(DECRYPT);//Расшифровать
-        if ((file = fopen("db.dat", "wb"))) {
-            //Если файл удалось пересоздать
-            for (i = 0; i < usersLinesCounter; i++)
+    if (checkFile("db.dat")) {              //Если файл существует
+        crypterTool(DECRYPT);               //Расшифровать
+        if ((file = fopen("db.dat", "wb"))) {               //Если файл удалось пересоздать
+            for (i = 0; i < usersLinesCounter; i++)             //Запись i-ого пользователя в файл
                 fwrite((user + i), sizeof(USER), 1, file);
-            fclose(file);
+            fclose(file);               //Закрытие файла
         }
-        else printf("[Ошибка!]Редактирование пользователей: Не удалось открыть файл с логинами/паролями! Файл отчищен!\n\n");//Если файл не удалось пересоздать
-        crypterTool(ENCRYPT);//Зашифровать
+        else printf("[Ошибка!]Редактирование пользователей: Не удалось открыть файл с логинами/паролями! Файл отчищен!\n\n");               //Если файл не удалось пересоздать
+        crypterTool(ENCRYPT);               //Зашифровать
     }
-    else printf("[Ошибка!]Редактирование пользователей: Не удалось открыть файл с логинами/паролями!\n\n");//Если файл не существует
+    else printf("[Ошибка!]Редактирование пользователей: Не удалось открыть файл с логинами/паролями!\n\n");             //Если файл не существует
 }
 
 void displayEditableUser(int i, bool showPass) {
@@ -1344,44 +1332,42 @@ void userReg(){
     bool isLoginExist = false;
     char *login = NULL, *password = NULL;
     FILE* file = NULL;
-    user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));
+    user = (USER*)realloc(user, (usersLinesCounter + 1) * sizeof(USER));                    //Перераспределение памяти
     printf("Регистрация пользователя:\n");
     do {
-        login = loginInput(29, "Введите логин: ");
-        for (int i = 0; i < usersLinesCounter; i++) {
-            if (strcmp((user + i)->login, login) == 0) {
+        login = loginInput(29, "Введите логин: ");                  //Ввод логина
+        for (int i = 0; i < usersLinesCounter; i++) {                   //Поиск введенного логина в массиве
+            if (strcmp((user + i)->login, login) == 0) {                    //Если i-ый логин совпадает с введенным
                 isLoginExist = true;
-                break;
+                break;              //Выход из цикла
             }
             else isLoginExist = false;
         }
-        if (isLoginExist) {
+        if (isLoginExist) {                 //Если такой логин найден
             printf("[Ошибка!]Такой аккаунт уже существует!");
             Sleep(1000);
-            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стерание двух последних строк с экрана
         }
-        else strcpy((user + usersLinesCounter)->login, login);
-    } while (isLoginExist);
-    free(login);
-    password = maskedPasswordInput(29, "Введите пароль: ");
-    strcpy((user + usersLinesCounter)->password, password);
-    free(password);
-    (user + usersLinesCounter)->isAdmin = 0;
-    if (checkFile("db.dat")) {
-        //Если файл существует
-        crypterTool(DECRYPT);//Расшифровать
-        if ((file = fopen("db.dat", "ab+"))) {
-            //Если файл удалось открыть
-            fwrite((user + usersLinesCounter), sizeof(USER), 1, file);
-            fclose(file);
+        else strcpy((user + usersLinesCounter)->login, login);              //Если такой логин не найден, скопировать в выделенную ячейку массива структур
+    } while (isLoginExist);             //Пока такой логин будет не найден
+    free(login);                //Освобождение переменной
+    password = maskedPasswordInput(29, "Введите пароль: ");             //Ввод пароля
+    strcpy((user + usersLinesCounter)->password, password);             //Копирование пароля в выделенную ячейку массива структур
+    free(password);                 //Освобождение переменной
+    (user + usersLinesCounter)->isAdmin = 0;                //Не давать права администратора
+    if (checkFile("db.dat")) {              //Если файл существует
+        crypterTool(DECRYPT);               //Расшифровать
+        if ((file = fopen("db.dat", "ab+"))) {              //Если файл удалось открыть
+            fwrite((user + usersLinesCounter), sizeof(USER), 1, file);              //Записать ячейку массива структур в файл
+            fclose(file);               //Закрыть файл
             printf("\nВы успешно зарегистрировались!\n\n");
             _flushall();
-            usersLinesCounter++;
+            usersLinesCounter++;                //Счётчик пользователей ++
         }
-        else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n"); //Если файл не удалось открыть
-        crypterTool(ENCRYPT);//Зашифровать
+        else printf("[Ошибка!]Добавление пользователей: Ошибка открытия файла с логинами/паролями! Пользователь не добавлен!\n\n");             //Если файл не удалось открыть
+        crypterTool(ENCRYPT);               //Зашифровать
     }
-    else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n"); //Если файл не существует
+    else printf("[Ошибка!]Добавление пользователей: Файл не существует!\n\n");              //Если файл не существует
     system("pause");
 }
 

@@ -1611,232 +1611,231 @@ void memberEdit() {
     bool isMemberExist = false, isNumberExist = false, infoEditFlag = false;
     int number = 0, i = 0, j = 0, newNumber = 0, newBirthDay = 0, newBirthMonth = 0, newBirthYear = 0;
     char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
-    if (!info) {
+    if (!info) {                //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Редактирование информации: Файл не открыт!\n\n");
         system("pause");
     }
-    else if (infoLinesCounter == 0) {
+    else if (infoLinesCounter == 0) {               //Если счётчик участников равен нулю
         printf("[Ошибка!]Редактирование информации: Файл пуст!\n\n");
         system("pause");
     }
     else {
-        displayAllMembers();
-        do {
-            number = checkToEnterOnlyInt(3, "Введите номер участника, которого нужно отредактировать: ");
-            for (i = 0; i < infoLinesCounter; i++) {
-                if ((info + i)->number == number) {
-                    isMemberExist = true;
-                    break;
-                }
-                else isMemberExist = false;
+        displayAllMembers();                //Вывод всех участников на экран
+        number = checkToEnterOnlyInt(3, "Введите номер участника, которого нужно отредактировать: ");               //Ввод номера участника
+        for (i = 0; i < infoLinesCounter; i++) {                //Поиск участника с таким номером в массиве структур
+            if ((info + i)->number == number) {             //Если i-ый участник имеет такой номер
+                isMemberExist = true;
+                break;              //Выход из цикла
             }
-            if (!isMemberExist) {
-                printf("[Ошибка!]Участника с таким номером не существует!\n\n");
-                system("pause");
-                return;
-            }
-        } while (!isMemberExist);
+            else isMemberExist = false;
+        }
+        if (!isMemberExist) {               //Если участник с таким номером не найден
+            printf("[Ошибка!]Участника с таким номером не существует!\n\n");
+            system("pause");
+            return;             //Выход из функции
+        }
         while (!infoEditFlag) {
-            switch (memberEditMenu(i)) {
+            switch (memberEditMenu(i)) {                //Вывод информации об редактируемом участнике и меню редактирования
                 case 1: {
                     printf("Изменеие номера участника.\n");
                     do {
                         do {
-                            newNumber = checkToEnterOnlyInt(3, "Введите новый номер участника: ");
-                            if (newNumber < 1) {
+                            newNumber = checkToEnterOnlyInt(3, "Введите новый номер участника: ");                  //Ввод нового номера участника
+                            if (newNumber < 1) {                //Если введенный номер меньше 1
                                 printf("[Ошибка!]Введите число больше 0!");
                                 Sleep(1000);
-                                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух полседних строк с экрана
                             }
-                        } while (newNumber < 1);
-                        for (j = 0; j < infoLinesCounter; j++) {
-                            if ((info + j)->number == newNumber) {
+                        } while (newNumber < 1);                //Пока не будет введен номер больше 0
+                        for (j = 0; j < infoLinesCounter; j++) {                    //Поиск участника с таким номером в масмиве структур
+                            if ((info + j)->number == newNumber) {              //Если j-ый участник имеет такой номер
                                 isNumberExist = true;
-                                break;
+                                break;              //Выход из цикла
                             }
                             else isNumberExist = false;
                         }
-                        if (isNumberExist) {
+                        if (isNumberExist) {                //Если участник с таким номером найден
                             printf("[Ошибка!]Участник с таким номером уже существует!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while (isNumberExist);
-                    (info + i)->number = newNumber;
-                    displayEditableMember(i);
+                    } while (isNumberExist);                //Пока не будет введен не существующий номер
+                    (info + i)->number = newNumber;             //Изменение номера на введенный у j-ого участника
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Номер участника успешно изменен!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 2: {
                     printf("Изменение имени участника.\n");
-                    firstname = stringInputCheck(15, "Введите новое имя участника: ");
-                    strcpy((info + i)->fullname.firstname, firstname);
-                    free(firstname);
-                    displayEditableMember(i);
+                    firstname = stringInputCheck(15, "Введите новое имя участника: ");              //Ввод новое имя участника
+                    strcpy((info + i)->fullname.firstname, firstname);              //Копирование нового имени в редактируемую ячейку массива структур
+                    free(firstname);                //Освобождение памяти для переменной, содержащей имя участника
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Имя участника успешно изменено!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 3: {
                     printf("Изменение фамилии участника.\n");
-                    surname = stringInputCheck(15, "Введите новую фамилию участника: ");
-                    strcpy((info + i)->fullname.surname, surname);
-                    free(surname);
-                    displayEditableMember(i);
+                    surname = stringInputCheck(15, "Введите новую фамилию участника: ");                //Ввод новой фамилии участника
+                    strcpy((info + i)->fullname.surname, surname);              //Копирование новой фамилии в редактируемую ячейку массива структур
+                    free(surname);              //Освобождение памяти для переменной, содержащей фамилию участника
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Фамилия участника успешна изменена!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 4: {
                     printf("Изменение отчества участника.\n");
-                    lastname = stringInputCheck(15, "Введите новое отчество участника: ");
-                    strcpy((info + i)->fullname.lastname, lastname);
-                    free(lastname);
-                    displayEditableMember(i);
+                    lastname = stringInputCheck(15, "Введите новое отчество участника: ");              //Ввод нового отчества участника
+                    strcpy((info + i)->fullname.lastname, lastname);                //Копирование нового отчества в редактируемую ячейку массива стурктур
+                    free(lastname);             //Освобождение памяти для переменной, сожержащей отчество участника
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Отчество участника успешно изменено!\n\n");
                     system("pause");
-                    break;
+                    break;                  //Выход из switch
                 }
                 case 5: {
                     printf("Изменение страны участника.\n");
-                    country = stringInputCheck(15, "Введите новую страну участника: ");
-                    strcpy((info + i)->country, country);
-                    free(country);
-                    displayEditableMember(i);
+                    country = stringInputCheck(15, "Введите новую страну участника: ");             //Ввод новой страны участника
+                    strcpy((info + i)->country, country);               //Копирование новой страны в редактируемую ячейку массива структур
+                    free(country);              //Освобождение памяти для переменной, содержащей страну участника
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Страна участника успешно изменена.\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 6: {
                     printf("Изменение дня рождения участника.\n");
                     do {
-                        newBirthDay = checkToEnterOnlyInt(2, "Введите новый день рождения участника: ");
-                        if (newBirthDay < 1 || newBirthDay > 31) {
+                        newBirthDay = checkToEnterOnlyInt(2, "Введите новый день рождения участника: ");                //Ввод нового дня рождения
+                        if (newBirthDay < 1 || newBirthDay > 31) {              //Если введенной день меньше 1 или больше 31
                             printf("[Ошибка!]Введите число от 1 до 31!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while (newBirthDay < 1 || newBirthDay > 31);
-                    (info + i)->dateOfBirth.day = newBirthDay;
-                    displayEditableMember(i);
+                    } while (newBirthDay < 1 || newBirthDay > 31);              //Пока не будет введен день больше 0 или меньше 32
+                    (info + i)->dateOfBirth.day = newBirthDay;              //Копирование нового дня в редактируемую ячейку массива структур
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("День рождения участника успешно изменен!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 7: {
                     printf("Изменение месяца рождения участника.\n");
                     do {
-                        newBirthMonth = checkToEnterOnlyInt(2, "Введите новый месяц рождения участника(числом): ");
-                        if (newBirthMonth < 1 || newBirthMonth > 12) {
+                        newBirthMonth = checkToEnterOnlyInt(2, "Введите новый месяц рождения участника(числом): ");             //Ввод нового месяца пождения участника
+                        if (newBirthMonth < 1 || newBirthMonth > 12) {              //Если введенный месяц меньше 1 или больше 12
                             printf("[Ошибка!]Введите число от 1 до 12!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while (newBirthMonth < 1 || newBirthMonth > 12);
-                    (info + i)->dateOfBirth.month = newBirthMonth;
-                    displayEditableMember(i);
+                    } while (newBirthMonth < 1 || newBirthMonth > 12);              //Пока не будет введен месяц больше 1 или меньше 13
+                    (info + i)->dateOfBirth.month = newBirthMonth;              //Копирование нового месяца в редактируемую ячейку массива структур
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Месяц рождения участника успешно изменен!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 8: {
                     printf("Изменение года рождения участника.\n");
                     do {
-                        newBirthYear = checkToEnterOnlyInt(4, "Введите новый год рождения участника: ");
-                        if (newBirthYear < 1900 || newBirthYear > 2019) {
+                        newBirthYear = checkToEnterOnlyInt(4, "Введите новый год рождения участника: ");                //Ввод нового года рожение учатсника
+                        if (newBirthYear < 1900 || newBirthYear > 2019) {               //Если введен год меньше 1900 или больше 2019
                             printf("[Ошибка!]Введите число от 1900 до 2019!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while (newBirthYear < 1900 || newBirthYear > 2019);
-                    (info + i)->dateOfBirth.year = newBirthYear;
-                    if ((info + i)->dateOfBirth.month >= aTm->tm_mon + 1)
-                        (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;
+                    } while (newBirthYear < 1900 || newBirthYear > 2019);               //Пока не будет введене год больше 1899 или меньше 2020
+                    (info + i)->dateOfBirth.year = newBirthYear;                //Копирование нового года в редактируемую ячейку массива структур
+                    if ((info + i)->dateOfBirth.month >= aTm->tm_mon + 1)               //Если новый месяц меньше текущего месяца
+                        (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;              //Вычисление возраста
                     else
                         (info + i)->dateOfBirth.age = 2019 - (info + i)->dateOfBirth.year;
-                    displayEditableMember(i);
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Год рождения участника успешно изменен!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 9: {
                     printf("Изменение разряда участника.\n");
-                    category = categoryInput(10, "Введите новый разряд участника: ");
-                    strcpy((info + i)->category, category);
-                    free(category);
-                    displayEditableMember(i);
+                    category = categoryInput(10, "Введите новый разряд участника: ");               //Ввод нового разряда участника
+                    strcpy((info + i)->category, category);                 //Копирование нового разряда в редактруемую ячейку массива структур
+                    free(category);                 //Освобождение памяти для переменной, содержащей новый разряд
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Разряд участника успешно изменен!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 10: {
                     printf("Изменение модели коньков участника.\n");
-                    model = stringInputCheck(15, "Введите новую модель коньков участника: ");
-                    strcpy((info + i)->model, model);
-                    free(model);
-                    displayEditableMember(i);
+                    model = stringInputCheck(15, "Введите новую модель коньков участника: ");               //Ввод новой модели коньков участника
+                    strcpy((info + i)->model, model);               //Копирование новой модели коньков участника в редактируемую ячейку
+                    free(model);                //Освобождение памяти для переменной, содержащей новую модель коньков
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Модель коньков участника успешно изменена!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 11: {
                     printf("Изменение количества очков участника.\n");
                     do {
-                        (info + i)->points = checkToEnterOnlyInt(4, "Введите новое количество очков участника: ");
-                        if ((info + i)->points < 0 || (info + i)->points > 9999) {
+                        (info + i)->points = checkToEnterOnlyInt(4, "Введите новое количество очков участника: ");              //Ввод нового количества очков участника
+                        if ((info + i)->points < 0 || (info + i)->points > 9999) {              //Если введенное количество очков меньше 0 и больше 9999
                             printf("[Ошибка!]Введите число от 0 до 9999!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
                         }
-                    } while ((info + i)->points < 0 || (info + i)->points > 9999);
-                    displayEditableMember(i);
+                    } while ((info + i)->points < 0 || (info + i)->points > 9999);              //Пока не будут введены новые очки участника больше -1 или меньше 10000
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Количество очков участника успешно изменено!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 12: {
                     printf("Изменение минут круга участника.\n");
                     do {
-                        (info + i)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите новые минуты круга участника: ");
-                        if ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59) {
+                        (info + i)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите новые минуты круга участника: ");               //Ввод новых минут круга участника
+                        if ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59) {              //Если введенные минуты меньше 0 или больше 59
                             printf("[Ошибка!]Введите число от 0 до 59!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59);
-                    displayEditableMember(i);
+                    } while ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59);              //Пока не будут введены минуты больше -1 или меньше 60
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Минуты круга участника успешно изменены!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 13: {
                     printf("Изменение секунд круга участника.\n");
                     do {
-                        (info + i)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите новые секунды круга участника: ");
-                        if ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59) {
+                        (info + i)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите новые секунды круга участника: ");              //Ввод новых секунд круга участника
+                        if ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59) {              //Если введны секунды меньше 0 или больше 59
                             printf("[Ошибка!]Введите число от 0 до 59!");
                             Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
                         }
-                    } while ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59);
-                    displayEditableMember(i);
+                    } while ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59);              //Пока не будут введены секунды больше -1 или меньше 60
+                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
                     printf("Секунды круга участника успешно изменены!\n\n");
                     system("pause");
-                    break;
+                    break;              //Выход из switch
                 }
                 case 14: infoEditFlag = true; break;
                 default: break;
             }
         }
-        if (checkFile("info.dat")) {
-            if ((file = fopen("info.dat", "wb"))) {
-                for (j = 0; j < infoLinesCounter; j++)
+        if (checkFile("info.dat")) {                //Если файл существует
+            if ((file = fopen("info.dat", "wb"))) {             //Если удалось пересоздать файл
+                for (j = 0; j < infoLinesCounter; j++)              //Запись ячеек массива структур в файл
                     fwrite((info + j), sizeof(INFORMATION), 1, file);
+                fclose(file);               //Закрытие файла
             }
-            else printf("[Ошибка!]Редактирование информации: Не удалось перезаписать файл! Файл отчищен!\n");
+            else printf("[Ошибка!]Редактирование информации: Не удалось перезаписать файл! Файл отчищен!\n");               //Если не удалось пересоздать файл
         }
-        else printf("[Ошибка!]Редактирование информации: Не удалось найти файл!\n");
+        else printf("[Ошибка!]Редактирование информации: Не удалось найти файл!\n");                //Если файл не существует
     }
 }
 
@@ -1856,9 +1855,9 @@ void displayEditableMember(int i) {
 
 void displayAllMembers() {
     system("cls");
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Вывод информации: Файл еще не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Вывод информации: Файл пуст!\n\n");
     else {
         printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1879,24 +1878,24 @@ void displayAllMembers() {
 void pointsFilter() {
     int points = 0;
     bool isAtLeastOneMember = false;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         do {
-            points = checkToEnterOnlyInt(4, "Введите количество очков: ");
-            if (points < 0 || points > 9999) {
+            points = checkToEnterOnlyInt(4, "Введите количество очков: ");              //Ввод количества очков для фильтра
+            if (points < 0 || points > 9999) {              //Если введенное количество очков меньше 0 или больше 9999
                 printf("[Ошибка!]Введите число больше 0 и меньше 9999!");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while (points < 0 || points > 9999);
-        system("cls");
+        } while (points < 0 || points > 9999);              //Пока не будут введено количетсво очков больше -1 или меньше 10000
+        system("cls");              //Очистка экрана
         printf("Участники, у которых очков больше %i: ", points);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->points > points) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников с количеством очков больше введенного
+            if ((info + i)->points > points) {              //Если у i-го участнико количество очков больше введенного
+                if (!isAtLeastOneMember) {              //Если найден хотя бы один такой участник
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1909,10 +1908,10 @@ void pointsFilter() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если найден хотя бы один такой участник и массив полностю перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если таких участников не найдено
             printf("Нет ни одного участника с очками больше %i.\n\n", points);
     }
 }
@@ -1920,36 +1919,33 @@ void pointsFilter() {
 void timeOfLapFilter() {
     int minutesOfLap = 0, secondsOfLap = 0;
     bool isAtLeastOneMember = false;
-    if (!info) {
+    if (!info)                //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    }
-    else if (infoLinesCounter == 0) {
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
-    }
     else {
         do {
-            minutesOfLap = checkToEnterOnlyInt(2, "Введите количество минут круга: ");
-            if (minutesOfLap < 0 || minutesOfLap > 59) {
+            minutesOfLap = checkToEnterOnlyInt(2, "Введите количество минут круга: ");          //Ввод минут круга для поиска
+            if (minutesOfLap < 0 || minutesOfLap > 59) {                //Если введенные минуты меньше 0 или больше 59
                 printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while (minutesOfLap < 0 || minutesOfLap > 59);
+        } while (minutesOfLap < 0 || minutesOfLap > 59);                //Пока не будут введены минуты больше -1 или меньше 60
         do {
-            secondsOfLap = checkToEnterOnlyInt(2, "Введите количество секунд круга: ");
-            if (secondsOfLap < 0 || secondsOfLap > 59) {
+            secondsOfLap = checkToEnterOnlyInt(2, "Введите количество секунд круга: ");             //Ввод секунд круга для поиска
+            if (secondsOfLap < 0 || secondsOfLap > 59) {                //Если введенные секунды меньше 0 или больше 59
                 printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while (secondsOfLap < 0 || secondsOfLap > 59);
-        system("cls");
+        } while (secondsOfLap < 0 || secondsOfLap > 59);                //Пока не будут введены секунды больше -1 или меньше 60
+        system("cls");              //Очистка экрана
         printf("Участники, у которых время круга меньше %02i:%02i : ", minutesOfLap, secondsOfLap);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->timeOfLap.minutes < minutesOfLap)
-                if ((info + i)->timeOfLap.seconds <
-                    ((info + i)->timeOfLap.minutes == minutesOfLap ? secondsOfLap : 60)) {
-                    if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников, у которых время круга меньше введенного
+            if ((info + i)->timeOfLap.minutes < minutesOfLap)               //Если у i-го учатсника минуты круга меньше введенных
+                if ((info + i)->timeOfLap.seconds < ((info + i)->timeOfLap.minutes == minutesOfLap ? secondsOfLap : 60)) {              //Если введенные минуты равно минутам i-го учатсника то секунды сравниваются с введенными
+                    if (!isAtLeastOneMember) {              //Если найден хотя бы один участник
                         printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                         printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                         printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -1962,36 +1958,35 @@ void timeOfLapFilter() {
                            (info + i)->timeOfLap.seconds);
                     isAtLeastOneMember = true;
                 }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если найден хотябы один участник и массив полностью перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
-            printf("Нет ни одного участника с временем круга меньше %02i:%02i.\n\n", minutesOfLap,
-                   secondsOfLap);
+        if (!isAtLeastOneMember)                //Если не найдено ни одно участника
+            printf("Нет ни одного участника с временем круга меньше %02i:%02i.\n\n", minutesOfLap, secondsOfLap);
     }
 }
 
 void ageFilter() {
     int age = 0;
     bool isAtLeastOneMember = false;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         do {
-            age = checkToEnterOnlyInt(3, "Введите возраст: ");
-            if (age < 0 || age > 119) {
+            age = checkToEnterOnlyInt(3, "Введите возраст: ");              //Ввод возраста для поиска
+            if (age < 0 || age > 119) {             //Если введенный возраст меньше 0 или больше 119
                 printf("[Ошибка!]Введите число больше 0 и меньше 119!\n");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while (age < 0 || age > 119);
-        system("cls");
+        } while (age < 0 || age > 119);             //Пока не будет введен возраст больше -1 или меньше 119
+        system("cls");              //Очистка экрана
         printf("Участники, возраст которых больше %i: ", age);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->dateOfBirth.age > age) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников
+            if ((info + i)->dateOfBirth.age > age) {                //Если возраст i-го участника больше введенного
+                if (!isAtLeastOneMember) {              //Если найден хотя бы один участник
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2004,10 +1999,10 @@ void ageFilter() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если найден хотя бы один участник и массив полностью перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если не найден ни один участик
             printf("Нет ни одного участника с очками больше %i.\n\n", age);
     }
 }
@@ -2015,24 +2010,24 @@ void ageFilter() {
 void yearOfBirthFilter() {
     int yearOfBirth = 0;
     bool isAtLeastOneMember = false;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         do {
-            yearOfBirth = checkToEnterOnlyInt(4, "Введите год рождения: ");
-            if (yearOfBirth < 1900 || yearOfBirth > 2019) {
+            yearOfBirth = checkToEnterOnlyInt(4, "Введите год рождения: ");             //Ввод года рождения для фильтрации
+            if (yearOfBirth < 1900 || yearOfBirth > 2019) {             //Если введенный год рождения меньше 1900 или больше 2019
                 printf("[Ошибка!]Введите число больше 1900 и меньше 2019!\n");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
             }
-        } while (yearOfBirth < 1900 || yearOfBirth > 2019);
-        system("cls");
+        } while (yearOfBirth < 1900 || yearOfBirth > 2019);             //Пока не будет введен год рождения больше 1899 или меньше 2020
+        system("cls");              //Очистка экрана
         printf("Участники, год рождения у которых больше %i: ", yearOfBirth);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->dateOfBirth.year > yearOfBirth) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников
+            if ((info + i)->dateOfBirth.year > yearOfBirth) {               //Если у i-го участника возраст больше введенного
+                if (!isAtLeastOneMember) {              //Если найден хотя бы один участник
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2045,11 +2040,11 @@ void yearOfBirthFilter() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1) {
+            if (isAtLeastOneMember && i == infoLinesCounter - 1) {              //Если найден хотябы один участник и массив полностю перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
             }
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если ни одного участника не найдено
             printf("Нет ни одного участника с годом рождения больше %i.\n\n", yearOfBirth);
     }
 }
@@ -2057,13 +2052,13 @@ void yearOfBirthFilter() {
 void timeOfLapSorting() {
     FILE* file = NULL;
     INFORMATION tmp;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Сортировка: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Сортировка: Файл пуст!\n\n");
     else {
-        if ((file = fopen("info.dat", "wb"))) {
-            for (int i = 1; i < infoLinesCounter; i++)
+        if ((file = fopen("info.dat", "wb"))) {             //Если удалось открыть файл для перезаписи
+            for (int i = 1; i < infoLinesCounter; i++)              //Сортировка вставками
                 for (int j = i; j > 0; j--)
                     if ((info + (j - 1))->timeOfLap.minutes == (info + j)->timeOfLap.minutes) {
                         if ((info + (j - 1))->timeOfLap.seconds > (info + j)->timeOfLap.seconds) {
@@ -2077,11 +2072,11 @@ void timeOfLapSorting() {
                         *(info + (j - 1)) = *(info + j);
                         *(info + j) = tmp;
                     }
-            for (int j = 0; j < infoLinesCounter; j++)
+            for (int j = 0; j < infoLinesCounter; j++)              //Запись ячеек массива структур в файл
                 fwrite((info + j), sizeof(INFORMATION), 1, file);
-            fclose(file);
+            fclose(file);               //Закрытие файла
             printf("Сортировка: Участники успешно отсортированы!\n\n");
-        }
+        }               //Если не удалось открыть файл для перезаписи
         else printf("[Ошибка!]Сортировка: Не удалось открыть файл! Файл отчищен!\n\n");
     }
 }
@@ -2089,23 +2084,23 @@ void timeOfLapSorting() {
 void numberSearch() {
     int number = 0;
     bool isFounded = false;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
         do {
-            number = checkToEnterOnlyInt(3, "Введите номер: ");
-            if (number < 0) {
+            number = checkToEnterOnlyInt(3, "Введите номер: ");             //Ввод номера для поиска
+            if (number < 0) {               //Если введенный номер меньше 0
                 printf("[Ошибка!]Введите число больше 0!\n");
                 Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
             }
-        } while (number < 0);
-        system("cls");
+        } while (number < 0);               //Пока не будет введен номер больше -1
+        system("cls");              //Очистка экрана
         printf("Участник, номер которого %i: ", number);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if ((info + i)->number == number) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников
+            if ((info + i)->number == number) {             //Если номер i-го участника равен введенному
                 printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                 printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2117,10 +2112,10 @@ void numberSearch() {
                        (info + i)->timeOfLap.seconds);
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
                 isFounded = true;
-                break;
+                break;              //Выход из цикла
             }
         }
-        if (!isFounded)
+        if (!isFounded)             //Если такой участник не найден
             printf("Участник с номером %i не найден.\n\n", number);
     }
 }
@@ -2128,17 +2123,17 @@ void numberSearch() {
 void surnameSearch() {
     bool isAtLeastOneMember = false;
     char *surname = NULL;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        surname = stringInputCheck(15, "Введите фамилию: ");
-        system("cls");
+        surname = stringInputCheck(15, "Введите фамилию: ");                //Ввод фамилии для поиска
+        system("cls");              //Очистка экрана
         printf("Участники, с фамилией %s: ", surname);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if (strcmp((info + i)->fullname.surname, surname) == 0) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников
+            if (strcmp((info + i)->fullname.surname, surname) == 0) {               //Если фамилия i-го участника такая же как введенная
+                if (!isAtLeastOneMember) {              //Если найден хотя бы один участник
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2151,10 +2146,10 @@ void surnameSearch() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если хотя бы один участник найден и массив полностью перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если ни один участник не найден
             printf("Нет ни одного участника с фамилией %s.\n\n", surname);
     }
 }
@@ -2162,17 +2157,17 @@ void surnameSearch() {
 void countrySearch() {
     bool isAtLeastOneMember = false;
     char *country = NULL;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        country = stringInputCheck(15, "Введите страну: ");
-        system("cls");
+        country = stringInputCheck(15, "Введите страну: ");             //Ввод страны
+        system("cls");              //Очистка экрана
         printf("Участники, из страны %s: ", country);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if (strcmp((info + i)->country, country) == 0) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск учатсников
+            if (strcmp((info + i)->country, country) == 0) {                //Если страна i-го участника совпадает с введенной
+                if (!isAtLeastOneMember) {              //Если хотя бы один участник найден
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2185,10 +2180,10 @@ void countrySearch() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если хотя бы один участник найден и массив полностью перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если хотя бы один участник найден
             printf("Нет ни одного участника из страны %s.\n\n", country);
     }
 }
@@ -2196,17 +2191,17 @@ void countrySearch() {
 void categorySearch() {
     bool isAtLeastOneMember = false;
     char *category = NULL;
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Поиск и фильтрация: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        category = categoryInput(10, "Введите разряд: ");
-        system("cls");
+        category = categoryInput(10, "Введите разряд: ");               //Ввод разряда
+        system("cls");              //Очистка экрана
         printf("Участники, с разрядом %s: ", category);
-        for (int i = 0; i < infoLinesCounter; i++) {
-            if (strcmp((info + i)->category, category) == 0) {
-                if (!isAtLeastOneMember) {
+        for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников
+            if (strcmp((info + i)->category, category) == 0) {              //Если разряд i-го участника совпадает с введенным
+                if (!isAtLeastOneMember) {              //Если хотя бы один участник найден
                     printf("\n-------------------------------------------------------------------------------------------------------------------------------------------\n");
                     printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
                     printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
@@ -2219,10 +2214,10 @@ void categorySearch() {
                        (info + i)->timeOfLap.seconds);
                 isAtLeastOneMember = true;
             }
-            if (isAtLeastOneMember && i == infoLinesCounter - 1)
+            if (isAtLeastOneMember && i == infoLinesCounter - 1)                //Если хотя бы один участник найден и массив полностю перебран
                 printf("-------------------------------------------------------------------------------------------------------------------------------------------\n\n");
         }
-        if (!isAtLeastOneMember)
+        if (!isAtLeastOneMember)                //Если не найден ни один участник
             printf("Нет ни одного участника с разрядом %s.\n\n", category);
     }
 }
@@ -2230,14 +2225,14 @@ void categorySearch() {
 void displayTopMembers() {
     INFORMATION *infoCopy = NULL, tmp;
     system("cls");
-    if (!info)
+    if (!info)              //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Вывод топ-3 участников: Файл не открыт!\n\n");
-    else if (infoLinesCounter == 0)
+    else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Вывод топ-3 участников: Файл пуст!\n\n");
     else {
-        infoCopy = (INFORMATION*)realloc(NULL, sizeof(INFORMATION)*infoLinesCounter);
-        memcpy(infoCopy, info, sizeof(INFORMATION)*infoLinesCounter);
-        if (infoLinesCounter != 1) {
+        infoCopy = (INFORMATION*)realloc(NULL, sizeof(INFORMATION)*infoLinesCounter);               //Выделение памяти для копии массива
+        memcpy(infoCopy, info, sizeof(INFORMATION)*infoLinesCounter);               //Копирование информации в копию массива
+        if (infoLinesCounter != 1) {                //Если участников больше одного, то отсортировать копию массива
             for (int i = 1; i < infoLinesCounter; i++)
                 for (int j = i; j > 0; j--)
                     if ((infoCopy + (j - 1))->timeOfLap.minutes == (infoCopy + j)->timeOfLap.minutes) {
@@ -2256,7 +2251,7 @@ void displayTopMembers() {
         printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
         printf("|НОМЕР|ИМЯ             ФАМИЛИЯ         ОТЧЕСТВО       |    СТРАНА     |ДАТА  РОЖДЕНИЯ|ВОЗРАСТ|  РАЗРЯД  | МОДЕЛЬ КОНЬКОВ |ОЧКИ|ВРЕМЯ КРУГА|\n");
         printf("-------------------------------------------------------------------------------------------------------------------------------------------\n");
-        for (int i = 0; i < infoLinesCounter && i < 3; i++) {
+        for (int i = 0; i < infoLinesCounter && i < 3; i++) {               //Вывод первых трех участников
             printf("|%-3i  |%-15s %-15s %-15s|%-15s|  %02i/%02i/%-4i  |  %-3i  |%-10s|%-16s|%-4i|   %02i:%02i   |\n",
                    (infoCopy + i)->number, (infoCopy + i)->fullname.firstname, (infoCopy + i)->fullname.surname,
                    (infoCopy + i)->fullname.lastname, (infoCopy + i)->country, (infoCopy + i)->dateOfBirth.day,

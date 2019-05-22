@@ -1659,7 +1659,7 @@ void memberEdit() {
     FILE *file = NULL;
     struct tm *aTm = localtime(&t);
     bool isMemberExist = false, isNumberExist = false, infoEditFlag = false;
-    int number = 0, i = 0, j = 0, newNumber = 0, newBirthDay = 0, newBirthMonth = 0, newBirthYear = 0;
+    int number = 0, i = 0, j = 0, newNumber = 0;
     char *firstname = NULL, *surname = NULL, *lastname = NULL, *country = NULL, *category = NULL, *model = NULL;
     if (!info) {                //Если указатель на массив структур равен NULL
         printf("[Ошибка!]Редактирование информации: Файл не открыт!\n\n");

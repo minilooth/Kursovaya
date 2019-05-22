@@ -67,6 +67,8 @@ int checkToEnterOnlyInt(int limit, const char *message);//функция ввода только ц
 char* maskedPasswordInput(int limit, const char* message);//функция для ввода пароля
 char* loginInput(int limit, const char* message);//функция для ввода логина
 char* categoryInput(int limit, const char* message);//функция для ввода разряда
+void dateOfBirthInput(int *day, int *month, int *year, const char* message);
+void timeOfLapInput(int *minutes, int *seconds, const char* message);
 
 //Меню
 void indicateCursor(bool status);//функция показа/скрытия каретки ввода
@@ -443,6 +445,91 @@ char* categoryInput(int limit, const char* message){
     }
 }
 
+void dateOfBirthInput(int *day, int *month, int *year, const char* message) {
+    char *buffer = NULL;
+    bool isDateInputtedCorrectly = false, isDayInputtedCorrectly = false, isMonthInputtedCorrectly = false, isYearInputtedCorrectly = false;
+    do {
+        isDayInputtedCorrectly = false;
+        isMonthInputtedCorrectly = false;
+        isYearInputtedCorrectly = false;
+        buffer = bufferedInput(10, message);
+        if (buffer[2] != '.' || buffer[5] != '.') {
+            printf("[Ошибка!]Дата введена некорректно!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+
+
+        *day = atoi(buffer);
+        if (*day < 1 || *day > 31) {
+            printf("[Ошибка!]День должен быть введен от 1 до 31!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        else isDayInputtedCorrectly = true;
+
+
+        *month = atoi(buffer + 3);
+        if (*month < 1 || *month > 12) {
+            printf("[Ошибка!]Месяц должен быть введен от 1 до 12!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        else isMonthInputtedCorrectly = true;
+
+
+        *year = atoi(buffer + 6);
+        if (*year < 1900 || *year > 2019) {
+            printf("[Ошибка!]Год должен быть введен от 1900 до 2019!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        else isYearInputtedCorrectly = true;
+
+
+        if (isDayInputtedCorrectly == true && isMonthInputtedCorrectly == true && isYearInputtedCorrectly == true)
+            isDateInputtedCorrectly = true;
+    } while (isDateInputtedCorrectly == false);
+}
+
+void timeOfLapInput(int *minutes, int *seconds, const char* message) {
+    char *buffer = NULL;
+    bool isTimeInputtedCorrectly = false, isMinutesInputtedCorrectly = false, isSecondsInputtedCorrectly = false;
+    do {
+        isMinutesInputtedCorrectly = false;
+        isSecondsInputtedCorrectly = false;
+        buffer = bufferedInput(5, message);
+        if (buffer[2] != ':') {
+            printf("[Ошибка!]Время круга введено некорректно!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        *minutes = atoi(buffer);
+        if (*minutes < 0 || *minutes > 59) {
+            printf("[Ошибка!]Минуты должны быть введены от 0 до 59!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        else isMinutesInputtedCorrectly = true;
+        *seconds = atoi(buffer + 3);
+        if (*seconds < 0 || *seconds > 59) {
+            printf("[Ошибка!]Секунды должны быть введены от 0 до 59!");
+            Sleep(1000);
+            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+            continue;
+        }
+        else isSecondsInputtedCorrectly = true;
+        if (isMinutesInputtedCorrectly == true && isSecondsInputtedCorrectly == true)
+            isTimeInputtedCorrectly = true;
+    } while (isTimeInputtedCorrectly == false);
+}
+
 
 //Все что связано с меню
 void indicateCursor(bool status) {
@@ -588,11 +675,10 @@ int memberEditMenu(int i) {
     bool isShowed = false;
     const char pointer = '>', *line[] = { "Изменение номера участника.", "Изменение имени участника.",
                                           "Изменение фамилии участника.", "Изменение отчества участника.",
-                                          "Изменение страны участника.", "Изменение дня рождения участника.",
-                                          "Изменение месяца рождения участника.", "Изменение года рождения участника.",
+                                          "Изменение страны участника.", "Изменение даты рождения участника.",
                                           "Изменение разряда участника.", "Изменение модели коньков участника.",
-                                          "Изменение количества очков участника.", "Изменение минут круга участника.",
-                                          "Изменение секунд круга участника.", "Выход из меню редактирования участника.", NULL };
+                                          "Изменение количества очков участника.", "Изменение времени круга участника.",
+                                           "Выход из меню редактирования участника.", NULL };
     indicateCursor(false);              //Скрытие каретки ввода
     displayEditableMember(i);               //Вывод редактируемого участника
     while (true) {
@@ -604,10 +690,10 @@ int memberEditMenu(int i) {
             }
             if (ch == KEY_UP) choice--;                 //Если был введен символ стрелки вверх
             if (ch == KEY_DOWN) choice++;               //Если был введен символ стрелки вниз
-            if (choice > 14) choice = 1;                //Если указатель выбора больше 14 вернуть его в начальное положение
-            if (choice < 1) choice = 14;                //Если указатель выбора менбше 1 вернуть его в конечного положение
+            if (choice > 11) choice = 1;                //Если указатель выбора больше 14 вернуть его в начальное положение
+            if (choice < 1) choice = 11;                //Если указатель выбора менбше 1 вернуть его в конечного положение
             if(isShowed == true)                //Если меню было выведено
-                for (int j = 0; j < 15; j++)            //Построчное стирание меню с экрана
+                for (int j = 0; j < 12; j++)            //Построчное стирание меню с экрана
                     printf("%c[2K\r%c[A", 27, 27);
             isShowed = true;
             printf("Меню редактирования участника:\n");
@@ -1497,30 +1583,7 @@ void memberAdd() {
         country = stringInputCheck(15, "Введите страну участника: ");               //Ввод страны участника
         strcpy((info + infoLinesCounter)->country, country);                //Копирование отчества участника в ячейку массива структур
         free(country);              //Освобождение памяти для переменной, содержащей страну участника
-        do {
-            (info + infoLinesCounter)->dateOfBirth.day = checkToEnterOnlyInt(2, "Введите день рождения участника: ");               //Ввод дня рождения участнмка
-            if ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31) {                //Если введенный день меньше 1 или больше 31
-                printf("[Ошибка!]Введите число от 1 до 31!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
-            }
-        } while ((info + infoLinesCounter)->dateOfBirth.day < 1 || (info + infoLinesCounter)->dateOfBirth.day > 31);                //Пока введенный день не будет > 0 или < 32
-        do {
-            (info + infoLinesCounter)->dateOfBirth.month = checkToEnterOnlyInt(2, "Введите месяц рождения участника(числом): ");                //Ввод месяца рождения участника
-            if ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12) {                //Если введенный месяц меньше 1 или больше 12
-                printf("[Ошибка!]Введите число от 1 до 12!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-            }
-        } while ((info + infoLinesCounter)->dateOfBirth.month < 1 || (info + infoLinesCounter)->dateOfBirth.month > 12);                //Пока введенный месяц не будет больше 0 или меньше 13
-        do {
-            (info + infoLinesCounter)->dateOfBirth.year = checkToEnterOnlyInt(4, "Введите год рождения участника: ");               //Ввод года рождения участника
-            if ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019) {             //Если введенный год меньше 1900 или больше 2019
-                printf("[Ошибка!]Введите число от 1900 до 2019!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-            }
-        } while ((info + infoLinesCounter)->dateOfBirth.year < 1900 || (info + infoLinesCounter)->dateOfBirth.year > 2019);             //Пока введенный год не будет больше 1900 или меньше 2019
+        dateOfBirthInput(&((info + infoLinesCounter)->dateOfBirth.day), &((info + infoLinesCounter)->dateOfBirth.month), &((info + infoLinesCounter)->dateOfBirth.year), "Введите день рождения участника(в формате дд.мм.гггг): ");
         if ((info + infoLinesCounter)->dateOfBirth.month > aTm->tm_mon + 1)             //Если введенный месяц меньше текущего месяца
             (info + infoLinesCounter)->dateOfBirth.age = 2018 - (info + infoLinesCounter)->dateOfBirth.year;                //От 2018 отнимается введенный год и получается возраст
         else (info + infoLinesCounter)->dateOfBirth.age = 2019 - (info + infoLinesCounter)->dateOfBirth.year;               //От 2018 отнимается введенный год и получается возраст
@@ -1538,22 +1601,7 @@ void memberAdd() {
                 printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк участника
             }
         } while ((info + infoLinesCounter)->points < 0 || (info + infoLinesCounter)->points > 9999);                //Пока не будет введено количество очков участника больше 0 или меньше 9999
-        do {
-            (info + infoLinesCounter)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите минуты круга участника: ");              //Ввод минут круга участника
-            if ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59) {                //Если введенные минуты круга учатсника меньше -1 или больше 60
-                printf("[Ошибка!]Введите число от 0 до 59!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-            }
-        } while ((info + infoLinesCounter)->timeOfLap.minutes < 0 || (info + infoLinesCounter)->timeOfLap.minutes > 59);                //Пока не будут введены минуты круга участника больше -1 или меньше 60
-        do {
-            (info + infoLinesCounter)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите секунды круга участника: ");             //Ввод секунд круга участника
-            if ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59) {                //Если введенные секунды круга участника меньше -1 или больше 60
-                printf("[Ошибка!]Введите число от 0 до 59!");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-            }
-        } while ((info + infoLinesCounter)->timeOfLap.seconds < 0 || (info + infoLinesCounter)->timeOfLap.seconds > 59);                //Пока не будут введены секунды круга участника больше -1 или меньше 60
+        timeOfLapInput(&((info + infoLinesCounter)->timeOfLap.minutes), &((info + infoLinesCounter)->timeOfLap.seconds), "Введите время круга участника(в формате мм:сс): ");
         fwrite((info + infoLinesCounter), sizeof(INFORMATION), 1, file);                //Запись ячейки массива структур в файл
         _flushall();
         fclose(file);               //Закрытие файла
@@ -1596,6 +1644,8 @@ void memberDelete() {
                 for (int j = 0; j < infoLinesCounter; j++)              //Запись ячеек массива структур в файл
                     fwrite((info + j), sizeof(INFORMATION), 1, file);
                 fclose(file);               //Закрытие файла
+                system("cls");
+                displayAllMembers();
                 printf("Участник успешно удалён!\n\n");
             }
             else printf("[Ошибка!]Удаление информации: Не удалось перезаписать файл! Файл отчищен!\n\n");               //Если файл не удалось пересоздать
@@ -1707,58 +1757,18 @@ void memberEdit() {
                     break;              //Выход из switch
                 }
                 case 6: {
-                    printf("Изменение дня рождения участника.\n");
-                    do {
-                        newBirthDay = checkToEnterOnlyInt(2, "Введите новый день рождения участника: ");                //Ввод нового дня рождения
-                        if (newBirthDay < 1 || newBirthDay > 31) {              //Если введенной день меньше 1 или больше 31
-                            printf("[Ошибка!]Введите число от 1 до 31!");
-                            Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-                        }
-                    } while (newBirthDay < 1 || newBirthDay > 31);              //Пока не будет введен день больше 0 или меньше 32
-                    (info + i)->dateOfBirth.day = newBirthDay;              //Копирование нового дня в редактируемую ячейку массива структур
-                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
-                    printf("День рождения участника успешно изменен!\n\n");
-                    system("pause");
-                    break;              //Выход из switch
-                }
-                case 7: {
-                    printf("Изменение месяца рождения участника.\n");
-                    do {
-                        newBirthMonth = checkToEnterOnlyInt(2, "Введите новый месяц рождения участника(числом): ");             //Ввод нового месяца пождения участника
-                        if (newBirthMonth < 1 || newBirthMonth > 12) {              //Если введенный месяц меньше 1 или больше 12
-                            printf("[Ошибка!]Введите число от 1 до 12!");
-                            Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-                        }
-                    } while (newBirthMonth < 1 || newBirthMonth > 12);              //Пока не будет введен месяц больше 1 или меньше 13
-                    (info + i)->dateOfBirth.month = newBirthMonth;              //Копирование нового месяца в редактируемую ячейку массива структур
-                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
-                    printf("Месяц рождения участника успешно изменен!\n\n");
-                    system("pause");
-                    break;              //Выход из switch
-                }
-                case 8: {
-                    printf("Изменение года рождения участника.\n");
-                    do {
-                        newBirthYear = checkToEnterOnlyInt(4, "Введите новый год рождения участника: ");                //Ввод нового года рожение учатсника
-                        if (newBirthYear < 1900 || newBirthYear > 2019) {               //Если введен год меньше 1900 или больше 2019
-                            printf("[Ошибка!]Введите число от 1900 до 2019!");
-                            Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-                        }
-                    } while (newBirthYear < 1900 || newBirthYear > 2019);               //Пока не будет введене год больше 1899 или меньше 2020
-                    (info + i)->dateOfBirth.year = newBirthYear;                //Копирование нового года в редактируемую ячейку массива структур
+                    printf("Изменение даты рождения участника.\n");
+                    dateOfBirthInput(&((info + i)->dateOfBirth.day), &((info + i)->dateOfBirth.month), &((info + i)->dateOfBirth.year), "Введите новую дату рождения(в формате дд.мм.гггг): ");
                     if ((info + i)->dateOfBirth.month >= aTm->tm_mon + 1)               //Если новый месяц меньше текущего месяца
                         (info + i)->dateOfBirth.age = 2018 - (info + i)->dateOfBirth.year;              //Вычисление возраста
                     else
                         (info + i)->dateOfBirth.age = 2019 - (info + i)->dateOfBirth.year;
                     displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
-                    printf("Год рождения участника успешно изменен!\n\n");
+                    printf("Дата рождения участника успешно изменена!\n\n");
                     system("pause");
                     break;              //Выход из switch
                 }
-                case 9: {
+                case 7: {
                     printf("Изменение разряда участника.\n");
                     category = categoryInput(10, "Введите новый разряд участника: ");               //Ввод нового разряда участника
                     strcpy((info + i)->category, category);                 //Копирование нового разряда в редактруемую ячейку массива структур
@@ -1768,7 +1778,7 @@ void memberEdit() {
                     system("pause");
                     break;              //Выход из switch
                 }
-                case 10: {
+                case 8: {
                     printf("Изменение модели коньков участника.\n");
                     model = stringInputCheck(15, "Введите новую модель коньков участника: ");               //Ввод новой модели коньков участника
                     strcpy((info + i)->model, model);               //Копирование новой модели коньков участника в редактируемую ячейку
@@ -1778,7 +1788,7 @@ void memberEdit() {
                     system("pause");
                     break;              //Выход из switch
                 }
-                case 11: {
+                case 9: {
                     printf("Изменение количества очков участника.\n");
                     do {
                         (info + i)->points = checkToEnterOnlyInt(4, "Введите новое количество очков участника: ");              //Ввод нового количества очков участника
@@ -1793,37 +1803,15 @@ void memberEdit() {
                     system("pause");
                     break;              //Выход из switch
                 }
-                case 12: {
-                    printf("Изменение минут круга участника.\n");
-                    do {
-                        (info + i)->timeOfLap.minutes = checkToEnterOnlyInt(2, "Введите новые минуты круга участника: ");               //Ввод новых минут круга участника
-                        if ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59) {              //Если введенные минуты меньше 0 или больше 59
-                            printf("[Ошибка!]Введите число от 0 до 59!");
-                            Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-                        }
-                    } while ((info + i)->timeOfLap.minutes < 0 || (info + i)->timeOfLap.minutes > 59);              //Пока не будут введены минуты больше -1 или меньше 60
+                case 10: {
+                    printf("Изменение времени круга участника.\n");
+                    timeOfLapInput(&((info + i)->timeOfLap.minutes), &((info + i)->timeOfLap.seconds), "Введите новое время круга участника(в формате мм:сс): ");
                     displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
-                    printf("Минуты круга участника успешно изменены!\n\n");
+                    printf("Время круга участника успешно изменено!\n\n");
                     system("pause");
                     break;              //Выход из switch
                 }
-                case 13: {
-                    printf("Изменение секунд круга участника.\n");
-                    do {
-                        (info + i)->timeOfLap.seconds = checkToEnterOnlyInt(2, "Введите новые секунды круга участника: ");              //Ввод новых секунд круга участника
-                        if ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59) {              //Если введны секунды меньше 0 или больше 59
-                            printf("[Ошибка!]Введите число от 0 до 59!");
-                            Sleep(1000);
-                            printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-                        }
-                    } while ((info + i)->timeOfLap.seconds < 0 || (info + i)->timeOfLap.seconds > 59);              //Пока не будут введены секунды больше -1 или меньше 60
-                    displayEditableMember(i);               //Вывод всей информации об редактируемом участнике
-                    printf("Секунды круга участника успешно изменены!\n\n");
-                    system("pause");
-                    break;              //Выход из switch
-                }
-                case 14: infoEditFlag = true; break;
+                case 11: infoEditFlag = true; break;
                 default: break;
             }
         }
@@ -1924,22 +1912,7 @@ void timeOfLapFilter() {
     else if (infoLinesCounter == 0)             //Если нет ни одного участника
         printf("[Ошибка!]Поиск и фильтрация: Файл пуст!\n\n");
     else {
-        do {
-            minutesOfLap = checkToEnterOnlyInt(2, "Введите количество минут круга: ");          //Ввод минут круга для поиска
-            if (minutesOfLap < 0 || minutesOfLap > 59) {                //Если введенные минуты меньше 0 или больше 59
-                printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк с экрана
-            }
-        } while (minutesOfLap < 0 || minutesOfLap > 59);                //Пока не будут введены минуты больше -1 или меньше 60
-        do {
-            secondsOfLap = checkToEnterOnlyInt(2, "Введите количество секунд круга: ");             //Ввод секунд круга для поиска
-            if (secondsOfLap < 0 || secondsOfLap > 59) {                //Если введенные секунды меньше 0 или больше 59
-                printf("[Ошибка!]Введите число больше 0 и меньше 59!\n");
-                Sleep(1000);
-                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);               //Стирание двух последних строк
-            }
-        } while (secondsOfLap < 0 || secondsOfLap > 59);                //Пока не будут введены секунды больше -1 или меньше 60
+        timeOfLapInput(&minutesOfLap, &secondsOfLap, "Введите время круга для фильтра(в формате мм:сс): ");
         system("cls");              //Очистка экрана
         printf("Участники, у которых время круга меньше %02i:%02i : ", minutesOfLap, secondsOfLap);
         for (int i = 0; i < infoLinesCounter; i++) {                //Поиск участников, у которых время круга меньше введенного

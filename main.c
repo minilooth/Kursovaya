@@ -68,8 +68,8 @@ int checkToEnterOnlyInt(int limit, const char *message);//функция ввода только ц
 char* maskedPasswordInput(int limit, const char* message);//функция для ввода пароля
 char* loginInput(int limit, const char* message);//функция для ввода логина
 char* categoryInput(int limit, const char* message);//функция для ввода разряда
-void dateOfBirthInput(int *day, int *month, int *year, const char* message);
-void timeOfLapInput(int *minutes, int *seconds, const char* message);
+void dateOfBirthInput(int *day, int *month, int *year, const char* message);//функция ввода даты рождения
+void timeOfLapInput(int *minutes, int *seconds, const char* message);//функция ввода времени круга
 
 //Меню
 void indicateCursor(bool status);//функция показа/скрытия каретки ввода
@@ -1712,8 +1712,8 @@ void memberAdd() {
         fclose(file);               //Закрытие файла
         infoLinesCounter++;             //Счётчик количества учатсников ++
         printf("Участник успешно добавлен!\n\n");
-        system("pause");
     }
+    system("pause");
 }
 
 void memberDelete() {

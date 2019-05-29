@@ -468,8 +468,9 @@ char* categoryInput(int limit, const char* message) {
 
 void dateOfBirthInput(int *day, int *month, int *year, const char* message) {
     char *buffer = NULL;
-    bool isDateInputtedCorrectly = false, isDayInputtedCorrectly, isMonthInputtedCorrectly, isYearInputtedCorrectly, isDateConsistOfDigits;
+    bool isDateInputtedCorrectly = false, isDayInputtedCorrectly, isMonthInputtedCorrectly, isYearInputtedCorrectly, isDateConsistOfDigits, isLeapYear;
     do {
+        isLeapYear = true;
         isDateConsistOfDigits = true;
         isDayInputtedCorrectly = false;
         isMonthInputtedCorrectly = false;
@@ -494,27 +495,45 @@ void dateOfBirthInput(int *day, int *month, int *year, const char* message) {
             continue;
         }
         *day = atoi(buffer);
+        *month = atoi(buffer + 3);
+        *year = atoi(buffer + 6);
         if (*day < 1 || *day > 31) {
             printf("[Ошибка!]День должен быть введен от 1 до 31!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-        }
-        else isDayInputtedCorrectly = true;
-        *month = atoi(buffer + 3);
+        } else isDayInputtedCorrectly = true;
         if (*month < 1 || *month > 12) {
             printf("[Ошибка!]Месяц должен быть введен от 1 до 12!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
-        }
-        else isMonthInputtedCorrectly = true;
-        *year = atoi(buffer + 6);
+        } else isMonthInputtedCorrectly = true;
         if (*year < 1900 || *year > 2019) {
             printf("[Ошибка!]Год должен быть введен от 1900 до 2019!");
             Sleep(1000);
             printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+        } else isYearInputtedCorrectly = true;
+        if (isDayInputtedCorrectly == true && isMonthInputtedCorrectly == true && isYearInputtedCorrectly == true) {
+            if ((*month == 4 || *month == 6 || *month == 9 || *month == 11) && *day > 30) {
+                printf("[Ошибка!]В этом месяце 30 дней!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                isDayInputtedCorrectly = false;
+            }
+            if (*year % 4 != 0 || (*year % 100 == 0 && *year % 400 == 0))
+                isLeapYear = false;
+            if (*month == 2 && *day > 29) {
+                printf("[Ошибка!]В этом месяце 28 или 29 дней!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                isDayInputtedCorrectly = false;
+            } else if (*month == 2 && *day > 28 && isLeapYear == false) {
+                printf("[Ошибка!]Этот год не високосный!");
+                Sleep(1000);
+                printf("%c[2K\r%c[A%c[2K\r", 27, 27, 27);
+                isDayInputtedCorrectly = false;
+            }
         }
-        else isYearInputtedCorrectly = true;
-        if (isDayInputtedCorrectly == true && isMonthInputtedCorrectly == true && isYearInputtedCorrectly == true)
+        if(isDayInputtedCorrectly == true && isMonthInputtedCorrectly == true && isYearInputtedCorrectly == true)
             isDateInputtedCorrectly = true;
     } while (isDateInputtedCorrectly == false);
 }
